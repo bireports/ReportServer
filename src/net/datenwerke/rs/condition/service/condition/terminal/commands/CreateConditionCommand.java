@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -94,7 +94,7 @@ public class CreateConditionCommand implements ConditionSubCommandHook {
 		try{
 			Report report = (Report) session.getObjectResolver().getObject(reportRef,Read.class);
 			if(null == report || !( report instanceof TableReport) )
-				return new CommandResult("Coud not find table report with id " + reportRef);
+				return new CommandResult("Could not find table report with id " + reportRef);
 			
 			if(! (report instanceof ReportVariant))
 				return new CommandResult("Expected a report variant.");

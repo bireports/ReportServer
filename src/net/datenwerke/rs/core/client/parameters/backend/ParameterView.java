@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -553,7 +553,7 @@ public class ParameterView extends MainPanelView{
 	
 	
 	protected void displayEditParameter(final ParameterDefinitionDto definition) {
-		WestPropertiesDialog editParameterWindow = new WestPropertiesDialog();
+		WestPropertiesDialog editParameterWindow = new WestPropertiesDialog(840, 620, 210);
 		editParameterWindow.setOnEsc(false);
 		
 		editParameterWindow.setHeadingText(ParametersMessages.INSTANCE.editParameter() + (definition.getKey() == null ? "key" : definition.getKey())); //$NON-NLS-1$

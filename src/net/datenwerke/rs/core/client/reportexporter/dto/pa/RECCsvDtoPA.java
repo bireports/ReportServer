@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -46,6 +46,7 @@ public interface RECCsvDtoPA extends PropertyAccess<RECCsvDto> {
 
 
 	/* Properties */
+	public ValueProvider<RECCsvDto,String> lineSeparator();
 	public ValueProvider<RECCsvDto,Boolean> printHeader();
 	public ValueProvider<RECCsvDto,String> quote();
 	public ValueProvider<RECCsvDto,String> separator();

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,15 +23,16 @@
  
 package net.datenwerke.rs.dashboard.service.dashboard;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
-import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report__;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.AbstractDashboardManagerNode;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.AbstractDashboardManagerNode__;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.Dadget;
@@ -49,21 +50,63 @@ import net.datenwerke.rs.utils.simplequery.annotations.Predicate;
 import net.datenwerke.rs.utils.simplequery.annotations.QueryByAttribute;
 import net.datenwerke.rs.utils.simplequery.annotations.QueryById;
 import net.datenwerke.rs.utils.simplequery.annotations.SimpleQuery;
+import net.datenwerke.security.service.authenticator.AuthenticatorService;
 import net.datenwerke.security.service.eventlogger.annotations.FireMergeEntityEvents;
 import net.datenwerke.security.service.eventlogger.annotations.FirePersistEntityEvents;
 import net.datenwerke.security.service.eventlogger.annotations.FireRemoveEntityEvents;
+import net.datenwerke.security.service.treedb.SecuredTreeDBManagerImpl;
+import net.datenwerke.security.service.usermanager.UserManagerService;
+import net.datenwerke.security.service.usermanager.UserPropertiesService;
 import net.datenwerke.security.service.usermanager.entities.User;
+import net.datenwerke.security.service.usermanager.entities.UserProperty;
 
-public class DashboardServiceImpl implements DashboardService{
+public class DashboardServiceImpl extends SecuredTreeDBManagerImpl<AbstractDashboardManagerNode> implements DashboardService{
 
 	private final Provider<EntityManager> entityManagerProvider;
+	private final UserPropertiesService userPropertiesService;
+	private final Provider<AuthenticatorService> authenticatorServiceProvider;
+	private final UserManagerService userService;
 
 	@Inject
 	public DashboardServiceImpl(
-		Provider<EntityManager> entityManagerProvider	
+		Provider<EntityManager> entityManagerProvider,
+		UserPropertiesService userPropertiesService,
+		Provider<AuthenticatorService> authenticatorServiceProvider,
+		UserManagerService userService
 		){
 		this.entityManagerProvider = entityManagerProvider;
+		this.userPropertiesService = userPropertiesService;
+		this.authenticatorServiceProvider = authenticatorServiceProvider;
+		this.userService = userService;
+	}
+	
+	@Override
+	public Dashboard getExplicitPrimaryDashboard(User user) {
 		
+		UserProperty property = userPropertiesService.getProperty(user, USER_PROPERTY_PRIMARY_DASHBOARD);
+		if(null != property){
+			try{
+				long id = Long.valueOf(property.getValue());
+				Dashboard dashboard = getDashboardById(id);
+				UserDashboard ud = getUserDashboard(user);
+				if (null == ud) 
+					return null;
+				if(null != dashboard && isOwner(user, dashboard))
+					return dashboard;
+			} catch(NumberFormatException e){
+			} catch(NoResultException e){
+			}
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public boolean isOwner(User user, Dashboard dashboard) {
+		UserDashboard ud = getUserDashboard(user);
+		if (null == ud) 
+			return false;
+		return ud.getDashboardContainer().getDashboards().contains(dashboard);
 	}
 	
 	@Override
@@ -74,7 +117,17 @@ public class DashboardServiceImpl implements DashboardService{
 		UserDashboard ud = getUserDashboard(user);
 		if(null == ud)
 			ud = createDashboardForUser(user);
-		return ud.getDashboardContainer();
+		
+		DashboardContainer container = ud.getDashboardContainer();
+		Dashboard explicitDashboard = getExplicitPrimaryDashboard(user);
+		if (null != explicitDashboard) {
+			for (Dashboard userDashboard: container.getDashboards()) {
+				if (userDashboard == explicitDashboard) {
+					userDashboard.setPrimary(true);
+				}
+			}
+		}
+		return container;
 	}
 	
 	@Override
@@ -196,4 +249,56 @@ public class DashboardServiceImpl implements DashboardService{
 	public void persist(Dashboard dashboard) {
 		entityManagerProvider.get().persist(dashboard);
 	}
+
+	@Override
+	@SimpleQuery
+	public Collection<Dashboard> getAllDashboards() {
+		return null; // by magic
+	}
+
+	@Override
+	public Collection<Dashboard> getDashboards() {
+		User user = authenticatorServiceProvider.get().getCurrentUser();
+		DashboardContainer container = getDashboardFor(user);
+		return container.getDashboards();
+	}
+
+	@Override
+	public void setPrimaryDashboard(Dashboard dashboard) {
+		User currentUser = authenticatorServiceProvider.get().getCurrentUser();
+
+		UserProperty property = userPropertiesService.getProperty(currentUser, USER_PROPERTY_PRIMARY_DASHBOARD);
+		if(null == property){
+			if(null != dashboard){
+				property = new UserProperty(USER_PROPERTY_PRIMARY_DASHBOARD, String.valueOf(dashboard.getId()));
+				userPropertiesService.setProperty(currentUser, property);
+			}
+		} else{
+			if(null != dashboard)
+				property.setValue(dashboard.getId());
+			else
+				userPropertiesService.removeProperty(currentUser, property);
+		}
+		
+		userService.merge(currentUser);
+	}
+
+	@Override
+	@QueryById
+	public AbstractDashboardManagerNode getNodeById(long id) {
+		return null; // magic
+	}
+
+	@Override
+	@QueryByAttribute(where=AbstractDashboardManagerNode__.parent,type=PredicateType.IS_NULL)
+	public List<AbstractDashboardManagerNode> getRoots() {
+		return null; // magic
+	}
+
+	@Override
+	@SimpleQuery
+	public List<AbstractDashboardManagerNode> getAllNodes(){
+		return null;
+	}
+
 }

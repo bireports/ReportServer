@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -28,13 +28,13 @@ import com.google.inject.multibindings.Multibinder;
 
 import net.datenwerke.rs.saiku.server.rest.SaikuRestModule;
 import net.datenwerke.rs.saiku.service.datasource.MondrianDatasource;
-import net.datenwerke.rs.saiku.service.saiku.reportengine.SaikuReportService;
-import net.datenwerke.rs.saiku.service.saiku.reportengine.SaikuReportServiceImpl;
 import net.datenwerke.rs.saiku.service.saiku.reportengine.output.metadata.SaikuMetadataExporter;
 import net.datenwerke.rs.saiku.service.saiku.reportengine.output.metadata.SaikuPlainMetadataExporter;
 
 public class SaikuModule extends AbstractModule {
 
+	public static final String CONFIG_FILE = "reportengines/reportengines.cf";
+	
 	public final static String OUTPUT_FORMAT_CHART_HTML = "SAIKU_CHART_HTML";
 	
 	@Override
@@ -45,13 +45,15 @@ public class SaikuModule extends AbstractModule {
 		Multibinder<SaikuMetadataExporter> metadataExporterBinder = Multibinder.newSetBinder(binder(), SaikuMetadataExporter.class);
 		metadataExporterBinder.addBinding().to(SaikuPlainMetadataExporter.class);
 		
+		bind(ThinQueryService.class).to(ThinQueryServiceImpl.class); // singleton necessary due to context map
 		bind(OlapUtilService.class).to(OlapUtilServiceImpl.class);
-		bind(OlapQueryService.class).to(OlapQueryServiceImpl.class);
-		bind(SaikuReportService.class).to(SaikuReportServiceImpl.class);
+		bind(SaikuService.class).to(SaikuServiceImpl.class);
+		
 		bind(SaikuStartup.class).asEagerSingleton();
 		
 		install(new SaikuRestModule());
 	}
 
+	
 
 }

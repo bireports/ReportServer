@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -124,6 +124,9 @@ public class DashboardReference2DtoGenerator implements Poso2DtoGenerator<Dashbo
 
 			/*  set n */
 			dto.setN(poso.getN() );
+
+			/*  set primary */
+			dto.setPrimary(poso.isPrimary() );
 
 			/*  set singlePage */
 			dto.setSinglePage(poso.isSinglePage() );

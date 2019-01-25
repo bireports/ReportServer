@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,6 +23,17 @@
  
 package net.datenwerke.treedb.ext.client.eximport.ex;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
+import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.info.InfoConfig;
+import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+
 import net.datenwerke.gf.client.managerhelper.hooks.MainPanelViewToolbarConfiguratorHook;
 import net.datenwerke.gf.client.managerhelper.mainpanel.MainPanelView;
 import net.datenwerke.gf.client.uiutils.ClientDownloadHelper;
@@ -40,16 +51,6 @@ import net.datenwerke.rs.eximport.client.eximport.locale.ExImportMessages;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Label;
-import com.sencha.gxt.widget.core.client.box.ProgressMessageBox;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
-
 /**
  * 
  *
@@ -61,8 +62,6 @@ public abstract class QuickExportHookerBase implements MainPanelViewToolbarConfi
 	protected final ToolbarService toolbarUtils;
 	protected final UtilsUIService utilsUiService;
 	
-	private ProgressMessageBox progressBox;
-
 	public QuickExportHookerBase(
 		ToolbarService toolbarUtils,
 		UtilsUIService utilsUiService
@@ -94,48 +93,25 @@ public abstract class QuickExportHookerBase implements MainPanelViewToolbarConfi
 	}
 
 	protected void startProgress() {
-		progressBox = new ProgressMessageBox(ExImportMessages.INSTANCE.quickExportProgressTitle(), ExImportMessages.INSTANCE.quickExportProgressTitle());
-		progressBox.setProgressText(ExImportMessages.INSTANCE.quickExportProgressText());
-		progressBox.setModal(true);
+		try{
+			InfoConfig infoConfig = new DefaultInfoConfig(ExImportMessages.INSTANCE.quickExportProgressTitle(), ExImportMessages.INSTANCE.exportWait());
+			infoConfig.setWidth(350);
+			infoConfig.setDisplay(3500);
+			Info.display(infoConfig);
+		}catch(Exception e){}
 		
-		Timer t1 = new Timer() {
-			@Override
-			public void run() {
-				if(null != progressBox)
-					progressBox.updateProgress(0.3, ExImportMessages.INSTANCE.quickExportProgressText());
-			}
-		};
-		t1.schedule(3000);
-		
-		Timer t2 = new Timer() {
-			@Override
-			public void run() {
-				if(null != progressBox)
-					progressBox.updateProgress(0.7, ExImportMessages.INSTANCE.quickExportProgressText());
-			}
-		};
-		t2.schedule(20000);
 	}
 
-	protected void stopProgress(){
-		if(null != progressBox){
-			progressBox.hide();
-			progressBox = null;
-		}
-	}
-	
 	abstract protected void quickExportClicked(final AbstractNodeDto selectedNode);
 
 	protected AsyncCallback<Void> getExportCallback() {
 		return new RsAsyncCallback<Void>(){
 			@Override
 			public void onSuccess(Void result) {
-				stopProgress();
 				exportSucceded();
 			}
 			@Override
 			public void onFailure(Throwable caught) {
-				stopProgress();
 			}
 		};
 	}
@@ -187,7 +163,6 @@ public abstract class QuickExportHookerBase implements MainPanelViewToolbarConfi
 		return new RsAsyncCallback<String>(){
 			@Override
 			public void onSuccess(String result) {
-				stopProgress();
 				displayQuickExportResult(result);
 			}
 		};

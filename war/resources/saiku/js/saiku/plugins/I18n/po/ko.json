@@ -20,6 +20,7 @@
 	"Show MDX" : "MDX 보기",
 	"Show Explain Plan" : "실행계획 보기",
 	"Query Scenario" : "질의 시나리오",
+	"Drill across on cell": "세포를 가로 지르다",
 	"Drill through on cell" : "셀 드릴스루",
 	"Export Drill-Through on cell to CSV" : "셀 드릴스루 데이터를 CSV로 저장",
 	"Export XLS" : "XLS 내보내기",
@@ -45,5 +46,7 @@
 	"Available members:" : "선택 가능한 멤버",
 	"Used members:" : "선택된 멤버",
 	"Search: &nbsp;" : "찾기: &nbsp;",
-	"Show Unique Names" : "고유이름 보기"
+	"Show Unique Names" : "고유이름 보기",
+	"You need to include at least one level on rows for a valid query.": "유효한 조회를 위해 행에 최소한 하나의 레벨을 포함시켜야합니다.",
+    "You need to include at least one level on rows for a valid query.": "유효한 조회를 위해 행에 최소한 하나의 레벨을 포함시켜야합니다."
 }

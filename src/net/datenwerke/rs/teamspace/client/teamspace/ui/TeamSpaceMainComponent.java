@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -129,7 +129,7 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 	
 	@FormatterFactories(@FormatterFactory(factory=NullSafeFormatter.class,methods=@FormatterFactoryMethod(name="nullsafe")))
 	public interface TeamSpaceTemplates extends XTemplates {
-		@XTemplate("<div class=\"rs-lview-title\">{entry.name:nullsafe}</div>" + 
+		@XTemplate("<div class=\"rs-lview-title\">{entry.name:nullsafe} ({entry.id:nullsafe})</div>" + 
 			    "<div class=\"rs-lview-desc\">{entry.description:nullsafe}&nbsp;</div>"
 				)
 	    public SafeHtml render(TeamSpaceDto entry); 
@@ -688,6 +688,9 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 			}
 		});
 		columns.add(iconColumn);
+		
+		ColumnConfig<TeamSpaceDto, Long> idColumn = new ColumnConfig<TeamSpaceDto, Long>(tsPA.id(), 60, BaseMessages.INSTANCE.id());
+		columns.add(idColumn);
 		
 		ColumnConfig<TeamSpaceDto, String> nameColumn = new ColumnConfig<TeamSpaceDto, String>(tsPA.name(), 150, BaseMessages.INSTANCE.propertyName());
 		columns.add(nameColumn);

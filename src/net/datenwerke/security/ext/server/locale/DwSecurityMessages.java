@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -35,5 +35,7 @@ public interface DwSecurityMessages extends Messages{
 	
 	String firstname();
 	String lastname();
+	
+	String username();
 }
 

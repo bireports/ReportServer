@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -93,7 +93,7 @@ public class TsDiskReportHandler implements GeneralReferenceHandlerHook {
 			}
 			
 			@Override
-			public boolean accepctView(String viewId) {
+			public boolean acceptView(String viewId) {
 				return true;
 			}
 			

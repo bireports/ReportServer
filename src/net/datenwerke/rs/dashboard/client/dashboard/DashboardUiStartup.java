@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -27,13 +27,17 @@ import java.util.List;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import net.datenwerke.gf.client.administration.AdministrationUIModule;
 import net.datenwerke.gf.client.administration.AdministrationUIService;
 import net.datenwerke.gf.client.administration.hooks.AdminModuleProviderHook;
+import net.datenwerke.gf.client.dispatcher.Dispatchable;
 import net.datenwerke.gf.client.dispatcher.hooks.DispatcherTakeOverHook;
+import net.datenwerke.gf.client.history.HistoryCallback;
+import net.datenwerke.gf.client.history.HistoryLocation;
 import net.datenwerke.gf.client.history.HistoryUiService;
 import net.datenwerke.gf.client.homepage.hooks.ClientMainModuleProviderHook;
 import net.datenwerke.gf.client.managerhelper.hooks.MainPanelViewProviderHook;
@@ -41,6 +45,7 @@ import net.datenwerke.gf.client.managerhelper.hooks.TreeConfiguratorHook;
 import net.datenwerke.gf.client.managerhelper.hooks.TreePostSelectAsyncHook;
 import net.datenwerke.gf.client.treedb.TreeDBHistoryCallback;
 import net.datenwerke.gf.client.treedb.UITree;
+import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHook;
 import net.datenwerke.gxtdto.client.waitonevent.SynchronousCallbackOnEventTrigger;
 import net.datenwerke.gxtdto.client.waitonevent.WaitOnEventTicket;
 import net.datenwerke.gxtdto.client.waitonevent.WaitOnEventUIService;
@@ -58,6 +63,7 @@ import net.datenwerke.rs.dashboard.client.dashboard.hookers.DashboardToolbarPara
 import net.datenwerke.rs.dashboard.client.dashboard.hookers.DashboardToolbarRefreshHooker;
 import net.datenwerke.rs.dashboard.client.dashboard.hookers.MainPanelViewProviderHooker;
 import net.datenwerke.rs.dashboard.client.dashboard.hookers.MarkNodeAsFavoriteHooker;
+import net.datenwerke.rs.dashboard.client.dashboard.hookers.UserProfileDashboardPropertiesHooker;
 import net.datenwerke.rs.dashboard.client.dashboard.hooks.DadgetProcessorHook;
 import net.datenwerke.rs.dashboard.client.dashboard.hooks.DashboardToolbarHook;
 import net.datenwerke.rs.dashboard.client.dashboard.provider.annotations.DashboardManagerAdminViewTree;
@@ -67,7 +73,9 @@ import net.datenwerke.rs.dashboard.client.dashboard.security.DashboardAdminSecur
 import net.datenwerke.rs.dashboard.client.dashboard.security.DashboardViewGenericTargetIdentifier;
 import net.datenwerke.rs.dashboard.client.dashboard.security.DashboardViewSecurityTargetDomainHooker;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.admin.DashboardManagerPanel;
+import net.datenwerke.rs.dashboard.client.dashboard.ui.helper.DashboardProvider;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hooks.TsFavoriteMenuHook;
+import net.datenwerke.rs.userprofile.client.userprofile.hooks.UserProfileCardProviderHook;
 import net.datenwerke.security.client.security.SecurityUIService;
 import net.datenwerke.security.client.security.dto.ReadDto;
 import net.datenwerke.security.client.security.hooks.GenericSecurityViewDomainHook;
@@ -92,6 +100,8 @@ public class DashboardUiStartup {
 		
 		DashboardAdminSecurityTargetDomainHooker adminSecurityTargetDomain,
 		
+		final UserProfileDashboardPropertiesHooker userProfileProvider,
+		
 		final MainPanelViewProviderHooker mainPanelViewProvider,
 		
 		final Provider<DashboardAdminModule> adminModuleProvider,
@@ -111,7 +121,9 @@ public class DashboardUiStartup {
 		
 		final Provider<DashboardClientMainModule> mainModuleProvider,
 		
-		DashboardInlineDispatcher dashboardDispatcher
+		final Provider<DashboardInlineDispatcher> dashboardDispatcher,
+		
+		Provider<DashboardProvider> dashboardProvider
 		) {
 
 		/* attach security target domain */
@@ -148,11 +160,17 @@ public class DashboardUiStartup {
 					
 					hookHandler.attachHooker(DashboardToolbarHook.class, dashboardToolbarParameterHooker,20);
 					hookHandler.attachHooker(DashboardToolbarHook.class, dashboardToolbarRefreshHooker,30);
+					
+					/* user profile */
+					hookHandler.attachHooker(UserProfileCardProviderHook.class, userProfileProvider);
 				}
 				
 				waitOnEventService.signalProcessingDone(ticket);
 			}
 		});
+		
+		/* simpleform */
+		hookHandler.attachHooker(FormFieldProviderHook.class, dashboardProvider, HookHandlerService.PRIORITY_LOW);
 		
 		/* config tree */
 		hookHandler.attachHooker(TreeConfiguratorHook.class, treeConfigurator);
@@ -194,6 +212,17 @@ public class DashboardUiStartup {
 		
 		historyService.addHistoryCallback(DashboardUiModule.DASHBOARD_HISTORY_TOKEN,
 				new TreeDBHistoryCallback(dashboardManagerTree, eventBus, dashboardAdminPanel, AdministrationUIModule.ADMIN_PANEL_ID));
+		
+		historyService.addHistoryCallback(DashboardInlineDispatcher.LOCATION, new HistoryCallback() {
+			
+			@Override
+			public void locationChanged(HistoryLocation location) {
+				RootPanel.get().clear();
+				DashboardInlineDispatcher dispatcher = dashboardDispatcher.get();
+				Dispatchable dispatcheable = dispatcher.getDispatcheable();
+				RootPanel.get().add(dispatcheable.getWidget());
+			}
+		});
 		
 	}
 }

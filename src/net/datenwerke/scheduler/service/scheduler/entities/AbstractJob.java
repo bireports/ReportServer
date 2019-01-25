@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -303,6 +303,6 @@ public abstract class AbstractJob {
 		this.lastOutcome = lastOutcome;
 	}
 
-
+	public abstract void copyTransientFieldsFrom(AbstractJob job);
 
 }

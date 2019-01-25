@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -39,6 +39,8 @@ public class BaseReportEngineUiModule extends AbstractGinModule {
 	public static final String REPORT_PROPERTY_DL_FILTER_COUNT_DEFAULT = "ui:filter:count:default";
 	
 	public static final String REPORT_PROPERTY_DL_PREVIEW_COUNT_DEFAULT = "ui:preview:count:default";
+	
+	public static final String REPORT_PROPERTY_OUTPUT_FORMAT_DEFAULT = "output_format_default";
 	
 	@Override
 	protected void configure() {

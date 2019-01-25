@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -37,6 +37,7 @@ import net.datenwerke.rs.passwordpolicy.service.locale.PasswordPolicyMessages;
 import net.datenwerke.rs.utils.crypto.PasswordHasher;
 import net.datenwerke.rs.utils.eventbus.EventBus;
 import net.datenwerke.rs.utils.localization.LocalizationServiceImpl;
+import net.datenwerke.security.ext.client.crypto.rpc.CryptoRpcService;
 import net.datenwerke.security.service.security.locale.SecurityMessages;
 import net.datenwerke.security.service.usermanager.UserManagerService;
 import net.datenwerke.security.service.usermanager.UserPropertiesService;
@@ -58,6 +59,7 @@ public class LostPasswordServiceImpl implements LostPasswordService{
 	private final MailService mailService;
 	private final EventBus eventBus;
 	private final UserPropertiesService userPropertiesService;
+	private final CryptoRpcService cryptoRpcService;
 	
 	@Inject
 	public LostPasswordServiceImpl(
@@ -66,7 +68,8 @@ public class LostPasswordServiceImpl implements LostPasswordService{
 			UserManagerService userManagerService, 
 			Provider<PasswordGenerator> passwordGenerator, 
 			UserPropertiesService userPropertiesService, 
-			MailService mailService
+			MailService mailService,
+			CryptoRpcService cryptoRpcService
 	) {
 		this.eventBus = eventBus;
 		this.passwordHasher = passwordHasher;
@@ -74,6 +77,7 @@ public class LostPasswordServiceImpl implements LostPasswordService{
 		this.passwordGenerator = passwordGenerator;
 		this.userPropertiesService = userPropertiesService;
 		this.mailService = mailService;
+		this.cryptoRpcService = cryptoRpcService;
 	}
 	
 	@Override
@@ -91,9 +95,12 @@ public class LostPasswordServiceImpl implements LostPasswordService{
 				
 			/* generate temporary password */
 			String randomPassword = pwdGen.newPassword();
+			
+			/* use the user's salt */
+			String salt = cryptoRpcService.getUserSalt(user.getUsername());
 
 			/* store the password in the users properties */
-			userPropertiesService.setPropertyValue(user, LostPasswordModule.USER_PROPERTY_TMP_PASSWORD, passwordHasher.hashPassword(randomPassword));
+			userPropertiesService.setPropertyValue(user, LostPasswordModule.USER_PROPERTY_TMP_PASSWORD, passwordHasher.hashPassword(randomPassword, salt));
 			userPropertiesService.setPropertyValue(user, LostPasswordModule.USER_PROPERTY_TMP_PASSWORD_DATE, Long.toString(System.currentTimeMillis()));
 			
 			userManagerService.merge(user);

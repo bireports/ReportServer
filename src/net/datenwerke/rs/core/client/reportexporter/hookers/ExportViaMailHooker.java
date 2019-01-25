@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -34,8 +34,10 @@ import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFC
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.gxtdto.client.resources.BaseResources;
 import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.core.client.helper.simpleform.ExportTypeSelection;
 import net.datenwerke.rs.core.client.helper.simpleform.config.SFFCExportTypeSelector;
+import net.datenwerke.rs.core.client.reportexecutor.hooks.PrepareReportModelForStorageOrExecutionHook;
 import net.datenwerke.rs.core.client.reportexecutor.ui.ReportExecutorInformation;
 import net.datenwerke.rs.core.client.reportexecutor.ui.ReportExecutorMainPanel;
 import net.datenwerke.rs.core.client.reportexporter.ReportExporterDao;
@@ -65,6 +67,9 @@ public class ExportViaMailHooker implements ExportExternalEntryProviderHook {
 	
 	@Inject
 	private LoginService loginService;
+	
+	@Inject
+	private HookHandlerService hookHandler;
 	
 	@Override
 	public void getMenuEntry(Menu menu, final ReportDto report,
@@ -134,6 +139,12 @@ public class ExportViaMailHooker implements ExportExternalEntryProviderHook {
 				if(!type.isConfigured()){
 					new DwAlertMessageBox(BaseMessages.INSTANCE.error(), ReportExporterMessages.INSTANCE.exportTypeNotConfigured()).show();
 					return;
+				}
+				
+				for(PrepareReportModelForStorageOrExecutionHook hooker : hookHandler.getHookers(PrepareReportModelForStorageOrExecutionHook.class)){
+					if(hooker.consumes(report)){
+						hooker.prepareForExecutionOrStorage(report, info.getExecuteReportToken());
+					}
 				}
 				
 				reDao.exportViaMail(

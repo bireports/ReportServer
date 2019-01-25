@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -666,7 +666,7 @@ public class EnvironmentValidator extends HttpServlet {
 			if(toVersion < Integer.MAX_VALUE || hasUpdateScript(branch, dialect, currentVersion + 1)){
 				String script = getUpdateScript(branch, dialect, currentVersion + 1);
 
-				logger.info("Running script " + branch + "-" + toVersion + "-" + dialect + "_UPDATE.sql");
+				logger.info("Running script " + branch + "-" + (currentVersion + 1) + "-" + dialect + "_UPDATE.sql");
 
 				runSqlScript(script);
 

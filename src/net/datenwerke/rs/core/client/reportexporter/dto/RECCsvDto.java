@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -52,6 +52,42 @@ abstract public class RECCsvDto extends RsDto implements ReportExecutionConfigDt
 
 
 	/* Fields */
+	private String lineSeparator;
+	private  boolean lineSeparator_m;
+	public static final String PROPERTY_LINE_SEPARATOR = "dpi-reccsv-lineseparator";
+
+	private transient static PropertyAccessor<RECCsvDto, String> lineSeparator_pa = new PropertyAccessor<RECCsvDto, String>() {
+		@Override
+		public void setValue(RECCsvDto container, String object) {
+			container.setLineSeparator(object);
+		}
+
+		@Override
+		public String getValue(RECCsvDto container) {
+			return container.getLineSeparator();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return String.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "lineSeparator";
+		}
+
+		@Override
+		public void setModified(RECCsvDto container, boolean modified) {
+			container.lineSeparator_m = modified;
+		}
+
+		@Override
+		public boolean isModified(RECCsvDto container) {
+			return container.isLineSeparatorModified();
+		}
+	};
+
 	private boolean printHeader;
 	private  boolean printHeader_m;
 	public static final String PROPERTY_PRINT_HEADER = "dpi-reccsv-printheader";
@@ -164,6 +200,55 @@ abstract public class RECCsvDto extends RsDto implements ReportExecutionConfigDt
 	public RECCsvDto() {
 		super();
 	}
+
+	public String getLineSeparator()  {
+		if(! isDtoProxy()){
+			return this.lineSeparator;
+		}
+
+		if(isLineSeparatorModified())
+			return this.lineSeparator;
+
+		if(! GWT.isClient())
+			return null;
+
+		String _value = dtoManager.getProperty(this, instantiatePropertyAccess().lineSeparator());
+
+		return _value;
+	}
+
+
+	public void setLineSeparator(String lineSeparator)  {
+		/* old value */
+		String oldValue = null;
+		if(GWT.isClient())
+			oldValue = getLineSeparator();
+
+		/* set new value */
+		this.lineSeparator = lineSeparator;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(lineSeparator_pa, oldValue, lineSeparator, this.lineSeparator_m));
+
+		/* set indicator */
+		this.lineSeparator_m = true;
+
+		this.fireObjectChangedEvent(RECCsvDtoPA.INSTANCE.lineSeparator(), oldValue);
+	}
+
+
+	public boolean isLineSeparatorModified()  {
+		return lineSeparator_m;
+	}
+
+
+	public static PropertyAccessor<RECCsvDto, String> getLineSeparatorPropertyAccessor()  {
+		return lineSeparator_pa;
+	}
+
 
 	public boolean isPrintHeader()  {
 		if(! isDtoProxy()){
@@ -326,6 +411,8 @@ abstract public class RECCsvDto extends RsDto implements ReportExecutionConfigDt
 	}
 
 	public void clearModified()  {
+		this.lineSeparator = null;
+		this.lineSeparator_m = false;
 		this.printHeader = false;
 		this.printHeader_m = false;
 		this.quote = null;
@@ -337,6 +424,8 @@ abstract public class RECCsvDto extends RsDto implements ReportExecutionConfigDt
 
 	public boolean isModified()  {
 		if(super.isModified())
+			return true;
+		if(lineSeparator_m)
 			return true;
 		if(printHeader_m)
 			return true;
@@ -350,6 +439,7 @@ abstract public class RECCsvDto extends RsDto implements ReportExecutionConfigDt
 
 	public List<PropertyAccessor> getPropertyAccessors()  {
 		List<PropertyAccessor> list = super.getPropertyAccessors();
+		list.add(lineSeparator_pa);
 		list.add(printHeader_pa);
 		list.add(quote_pa);
 		list.add(separator_pa);
@@ -359,6 +449,8 @@ abstract public class RECCsvDto extends RsDto implements ReportExecutionConfigDt
 
 	public List<PropertyAccessor> getModifiedPropertyAccessors()  {
 		List<PropertyAccessor> list = super.getModifiedPropertyAccessors();
+		if(lineSeparator_m)
+			list.add(lineSeparator_pa);
 		if(printHeader_m)
 			list.add(printHeader_pa);
 		if(quote_m)
@@ -372,6 +464,7 @@ abstract public class RECCsvDto extends RsDto implements ReportExecutionConfigDt
 	public List<PropertyAccessor> getPropertyAccessorsByView(net.datenwerke.gxtdto.client.dtomanager.DtoView view)  {
 		List<PropertyAccessor> list = super.getPropertyAccessorsByView(view);
 		if(view.compareTo(DtoView.NORMAL) >= 0){
+			list.add(lineSeparator_pa);
 			list.add(printHeader_pa);
 			list.add(quote_pa);
 			list.add(separator_pa);

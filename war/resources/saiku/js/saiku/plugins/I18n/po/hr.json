@@ -47,6 +47,7 @@
     "Loading": "Učitavanje",
     "Measure": "Mjera",
     "Refresh Cubes (Clear Cache)": "Osvježi kocke (Obriši predmemoriju)",
+    "Drill across on cell": "Bušite preko ćelije",
     "Drill through on cell": "Svrdlaj kroz ćeliju",
     "Export Drill-Through on cell to CSV": "Izvezi svrdlanje kroz ćeliju u CSV",
     "Search: &nbsp;": "Traži: &nbsp;",
@@ -63,5 +64,8 @@
     "Show Explain Plan": "Prikaži plan izvršavanja",
     "Query Scenario": "Scenarij upita",
     "Hide Parents": "Sakrij roditelje",
-    "Tags": "Oznake"
+    "Tags": "Oznake",
+    "You need to include at least one measure or a level on columns for a valid query.": "Za valjani upit morate uključiti najmanje jednu mjeru ili razinu na stupce.",
+    "You need to include at least one level on rows for a valid query.": "Za valjani upit morate uključiti barem jednu razinu na retke.",
+    "Reset Cube": "Poništi kocku"
 }

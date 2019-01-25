@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -54,14 +54,6 @@ public interface JuelService {
 	 * @return A new {@link ELContext}
 	 */
 	public ELContext provideBasicContext(ExpressionFactory factory);
-	
-	/**
-	 * Provides a new {@link ELContext} with some default values set.
-	 * 
-	 * @param factory The {@link ExpressionFactory} to create expressions with.
-	 * @return A new {@link ELContext}
-	 */
-	public ELContext provideBasicContext(ExpressionFactory factory, ContextConfig config);
 	
 	public boolean isValidExpression(String expression);
 

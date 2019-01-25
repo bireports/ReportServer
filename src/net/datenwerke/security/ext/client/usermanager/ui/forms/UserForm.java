@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -29,6 +29,7 @@ import java.util.Map;
 
 import net.datenwerke.gf.client.managerhelper.mainpanel.SimpleFormView;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
+import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCAllowBlank;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCPasswordField;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCStaticDropdownList;
 import net.datenwerke.security.client.usermanager.dto.SexDto;
@@ -68,6 +69,10 @@ public class UserForm extends SimpleFormView {
 						
 						return map;
 					}
+					@Override
+					public boolean allowBlank() {
+						return true;
+					}
 			});
 		form.setFieldWidth(1);
 	
@@ -75,7 +80,13 @@ public class UserForm extends SimpleFormView {
 		form.addField(String.class, UserDtoPA.INSTANCE.firstname(), UsermanagerMessages.INSTANCE.firstname()); //$NON-NLS-1$
 		
 		/* last name */
-		form.addField(String.class, UserDtoPA.INSTANCE.lastname(), UsermanagerMessages.INSTANCE.lastname()); //$NON-NLS-1$
+		form.addField(String.class, UserDtoPA.INSTANCE.lastname(), UsermanagerMessages.INSTANCE.lastname(), new SFFCAllowBlank() {
+			
+			@Override
+			public boolean allowBlank() {
+				return false;
+			}
+		}); //$NON-NLS-1$
 		
 		/* end personal */
 		form.endColumn();
@@ -84,7 +95,13 @@ public class UserForm extends SimpleFormView {
 		form.beginColumn();
 		
 		/* user name */
-		form.addField(String.class, UserDtoPA.INSTANCE.username(), UsermanagerMessages.INSTANCE.username()); //$NON-NLS-1$
+		form.addField(String.class, UserDtoPA.INSTANCE.username(), UsermanagerMessages.INSTANCE.username(),  new SFFCAllowBlank() {
+			
+			@Override
+			public boolean allowBlank() {
+				return false;
+			}
+		}); //$NON-NLS-1$
 		
 		/* password field */
 		form.addField(String.class, UserDtoPA.INSTANCE.password(), UsermanagerMessages.INSTANCE.password(), new SFFCPasswordField() {
@@ -101,7 +118,7 @@ public class UserForm extends SimpleFormView {
 		
 		form.endRow();
 		
-		
+		form.setValidateOnSubmit(true);
 	}
 
 }

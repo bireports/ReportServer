@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -39,34 +39,41 @@
 
 package net.datenwerke.rs.saiku.server.rest.util;
 
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-
-import net.datenwerke.rs.saiku.server.rest.objects.resultset.Cell;
-import net.datenwerke.rs.saiku.server.rest.objects.resultset.QueryResult;
 
 import org.saiku.olap.dto.resultset.AbstractBaseCell;
 import org.saiku.olap.dto.resultset.CellDataSet;
 import org.saiku.olap.dto.resultset.DataCell;
 import org.saiku.olap.dto.resultset.MemberCell;
+import org.saiku.service.olap.totals.TotalNode;
+import org.saiku.service.util.export.ResultSetHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.datenwerke.rs.saiku.server.rest.objects.resultset.Cell;
+import net.datenwerke.rs.saiku.server.rest.objects.resultset.QueryResult;
+import net.datenwerke.rs.saiku.server.rest.objects.resultset.Total;
 
 public class RestUtil {
-	
-	public static QueryResult convert(ResultSet rs) {
+    private static final Logger log = LoggerFactory.getLogger(RestUtil.class);
+
+	public static QueryResult convert(ResultSet rs) throws Exception {
 		return convert(rs, 0);
 	}
 
-	public static QueryResult convert(ResultSet rs, int limit) {
+	private static QueryResult convert(ResultSet rs, int limit) throws Exception {
 
 		Integer width = 0;
         Integer height = 0;
-        
+        ResultSetHelper rsch = new ResultSetHelper();
         Cell[] header = null;
-        ArrayList<Cell[]> rows = new ArrayList<Cell[]>();
+        ArrayList<Cell[]> rows = new ArrayList<>();
         
-        // System.out.println("DATASET");
         try {
 			while (rs.next() && (limit == 0 || height < limit)) {
 			    if (height == 0) {
@@ -77,13 +84,12 @@ public class RestUtil {
 			        }
 			        if (width > 0) {
 			            rows.add(header);
-			            // System.out.println(" |");
 			        }
 			    }
 			    Cell[] row = new Cell[width];
 			    for (int i = 0; i < width; i++) {
-			    	String content = rs.getString(i + 1);
-			        
+			    	int colType = rs.getMetaData().getColumnType(i + 1);
+			    	String content = rsch.getValue(rs, colType, i + 1);
 			        if (content == null)
 			            content = "";
 			        row[i] = new Cell(content, Cell.Type.DATA_CELL);
@@ -92,8 +98,7 @@ public class RestUtil {
 			    height++;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("SQL Exception", e);
 		}
 		
 		return new QueryResult(rows,0,width,height);
@@ -103,8 +108,21 @@ public class RestUtil {
 		return convert(cellSet, 0);
 	}
 	
+	public static Total[][] convertTotals(List<TotalNode>[] totalLists) {
+		if (null == totalLists)
+			return null;
+		Total[][] retVal = new Total[totalLists.length][];
+		for (int i = 0; i < totalLists.length; i++) {
+			List<TotalNode> current = totalLists [i];
+			retVal[i] = new Total[current.size()];
+			for (int j = 0; j < current.size(); j++)
+				retVal[i][j] = new Total(current.get(j));
+		}
+		return retVal;
+	}
+	
 	public static QueryResult convert(CellDataSet cellSet, int limit) {
-		ArrayList<Cell[]> rows = new ArrayList<Cell[]>();
+		ArrayList<Cell[]> rows = new ArrayList<>();
 		if (cellSet == null || cellSet.getCellSetBody() == null || cellSet.getCellSetHeaders() == null) {
 			return null;
 		}
@@ -120,13 +138,12 @@ public class RestUtil {
 			AbstractBaseCell[] row = body[i];
 			rows.add(convert(row, Cell.Type.ROW_HEADER));
 		}
-		
-		QueryResult qr = new QueryResult(rows, cellSet.getRuntime(), cellSet.getWidth(), cellSet.getHeight());
-		return qr;
+
+	  return new QueryResult(rows, cellSet);
 		
 	}
 	
-	public static Cell[] convert(AbstractBaseCell[] acells, Cell.Type headertype) {
+	private static Cell[] convert(AbstractBaseCell[] acells, Cell.Type headertype) {
 		Cell[]  cells = new Cell[acells.length];
 		for (int i = 0; i < acells.length; i++) {
 			cells[i] = convert(acells[i], headertype);
@@ -134,7 +151,7 @@ public class RestUtil {
 		return cells;
 	}
 	
-	public static Cell convert(AbstractBaseCell acell, Cell.Type headertype) {
+	private static Cell convert(AbstractBaseCell acell, Cell.Type headertype) {
 		if (acell != null) {
 			if (acell instanceof DataCell) {
 				DataCell dcell = (DataCell) acell;

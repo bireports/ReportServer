@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -115,7 +115,7 @@ public class AuthenticatorWindowExtraOptionHooker implements AuthenticatorWindow
 						icon = "cn";
 					}else if("zh-TW".equals(icon)){
 						icon = "cn";
-					}
+					} 
 					
 					SafeUri iconUri = UriUtils.fromSafeConstant("resources/icons/flags/" + icon + ".png");
 					SafeStyles bgStyle = SafeStylesUtils.forBackgroundImage(iconUri);

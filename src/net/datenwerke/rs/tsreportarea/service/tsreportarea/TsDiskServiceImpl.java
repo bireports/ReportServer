@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -24,8 +24,10 @@
 package net.datenwerke.rs.tsreportarea.service.tsreportarea;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.NoResultException;
@@ -108,7 +110,7 @@ public class TsDiskServiceImpl extends LoggedTreeDbManagerImpl<AbstractTsDiskNod
 			Report report = reference.getReport();
 			if(null != report && report instanceof ReportVariant){
 				List<TsDiskReportReference> references = getReferencesTo(report);
-				if(null != references && 1 == references.size() && reference.equals(references.get(0)) && ! report.isWriteProtected()){
+				if(null != references && 1 == references.size() && reference.equals(references.get(0)) && ! report.isWriteProtected() && ! report.isConfigurationProtected()){
 					/* remove report from node */
 					reference.setReport(null);
 					merge(reference);
@@ -215,6 +217,43 @@ public class TsDiskServiceImpl extends LoggedTreeDbManagerImpl<AbstractTsDiskNod
 		return ts;
 	}
 	
+	@Override
+	public Map<TeamSpace, List<List<AbstractTsDiskNode>>> getTeamSpacesWithPathsThatLinkTo(Report report) {
+		Map<TeamSpace, List<List<AbstractTsDiskNode>>> res = new HashMap<>();
+
+		List<TsDiskReportReference> references = getReferencesTo(report);
+		for (TsDiskReportReference ref : references) {
+			TeamSpace ts = getTeamSpaceFor(ref);
+			List<AbstractTsDiskNode> path = getPathFor(ref);
+
+			if (!res.containsKey(ts)) {
+				List<List<AbstractTsDiskNode>> pathList = new ArrayList<>();
+				res.put(ts, pathList);
+			}
+			List<List<AbstractTsDiskNode>> pathList = res.get(ts);
+			pathList.add(path);
+		}
+		return res;
+
+	}
+	
+	@Override
+	public List<AbstractTsDiskNode> getPathFor(AbstractTsDiskNode node) {
+		if (node instanceof HibernateProxy)
+			node = (AbstractTsDiskNode) ((HibernateProxy) node).getHibernateLazyInitializer().getImplementation();
+		if (null == node)
+			return null;
+
+		if (node instanceof TsDiskRoot) {
+			List<AbstractTsDiskNode> root = new ArrayList<>();
+			root.add(node);
+			return root;
+		}
+
+		List<AbstractTsDiskNode> path = getPathFor(node.getParent());
+		path.add(node);
+		return path;
+	}
 	
 	@Override
 	@QueryByAttribute(where=TsDiskReportReference__.report)

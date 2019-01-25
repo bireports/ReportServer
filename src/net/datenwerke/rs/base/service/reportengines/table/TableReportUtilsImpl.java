@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -194,7 +194,7 @@ public class TableReportUtilsImpl implements TableReportUtils {
 		if(ignoreAnyColumnConfiguration)
 			report.setIgnoreAnyColumnConfiguration(true);
 
-		Map<String, ColumnMetadata> columnMetadataMap = tableReportMetadataService.createColumnMetadataMap(report);
+		Map<String, ColumnMetadata> columnMetadataMap = tableReportMetadataService.createColumnMetadataMap(report, user);
 		
 		/* disable subtotal */
 		report.setEnableSubtotals(false);

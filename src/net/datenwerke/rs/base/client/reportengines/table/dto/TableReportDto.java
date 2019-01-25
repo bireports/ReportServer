@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -26,6 +26,7 @@ package net.datenwerke.rs.base.client.reportengines.table.dto;
 import com.google.gwt.core.client.GWT;
 import java.lang.Boolean;
 import java.lang.NullPointerException;
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -209,6 +210,42 @@ abstract public class TableReportDto extends ReportDtoDec {
 		}
 	};
 
+	private String cubeXml;
+	private  boolean cubeXml_m;
+	public static final String PROPERTY_CUBE_XML = "dpi-tablereport-cubexml";
+
+	private transient static PropertyAccessor<TableReportDto, String> cubeXml_pa = new PropertyAccessor<TableReportDto, String>() {
+		@Override
+		public void setValue(TableReportDto container, String object) {
+			container.setCubeXml(object);
+		}
+
+		@Override
+		public String getValue(TableReportDto container) {
+			return container.getCubeXml();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return String.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "cubeXml";
+		}
+
+		@Override
+		public void setModified(TableReportDto container, boolean modified) {
+			container.cubeXml_m = modified;
+		}
+
+		@Override
+		public boolean isModified(TableReportDto container) {
+			return container.isCubeXmlModified();
+		}
+	};
+
 	private Boolean distinctFlag;
 	private  boolean distinctFlag_m;
 	public static final String PROPERTY_DISTINCT_FLAG = "dpi-tablereport-distinctflag";
@@ -278,6 +315,42 @@ abstract public class TableReportDto extends ReportDtoDec {
 		@Override
 		public boolean isModified(TableReportDto container) {
 			return container.isEnableSubtotalsModified();
+		}
+	};
+
+	private boolean hideParents;
+	private  boolean hideParents_m;
+	public static final String PROPERTY_HIDE_PARENTS = "dpi-tablereport-hideparents";
+
+	private transient static PropertyAccessor<TableReportDto, Boolean> hideParents_pa = new PropertyAccessor<TableReportDto, Boolean>() {
+		@Override
+		public void setValue(TableReportDto container, Boolean object) {
+			container.setHideParents(object);
+		}
+
+		@Override
+		public Boolean getValue(TableReportDto container) {
+			return container.isHideParents();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return Boolean.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "hideParents";
+		}
+
+		@Override
+		public void setModified(TableReportDto container, boolean modified) {
+			container.hideParents_m = modified;
+		}
+
+		@Override
+		public boolean isModified(TableReportDto container) {
+			return container.isHideParentsModified();
 		}
 	};
 
@@ -584,6 +657,55 @@ abstract public class TableReportDto extends ReportDtoDec {
 	}
 
 
+	public String getCubeXml()  {
+		if(! isDtoProxy()){
+			return this.cubeXml;
+		}
+
+		if(isCubeXmlModified())
+			return this.cubeXml;
+
+		if(! GWT.isClient())
+			return null;
+
+		String _value = dtoManager.getProperty(this, instantiatePropertyAccess().cubeXml());
+
+		return _value;
+	}
+
+
+	public void setCubeXml(String cubeXml)  {
+		/* old value */
+		String oldValue = null;
+		if(GWT.isClient())
+			oldValue = getCubeXml();
+
+		/* set new value */
+		this.cubeXml = cubeXml;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(cubeXml_pa, oldValue, cubeXml, this.cubeXml_m));
+
+		/* set indicator */
+		this.cubeXml_m = true;
+
+		this.fireObjectChangedEvent(TableReportDtoPA.INSTANCE.cubeXml(), oldValue);
+	}
+
+
+	public boolean isCubeXmlModified()  {
+		return cubeXml_m;
+	}
+
+
+	public static PropertyAccessor<TableReportDto, String> getCubeXmlPropertyAccessor()  {
+		return cubeXml_pa;
+	}
+
+
 	public Boolean isDistinctFlag()  {
 		if(! isDtoProxy()){
 			return this.distinctFlag;
@@ -679,6 +801,55 @@ abstract public class TableReportDto extends ReportDtoDec {
 
 	public static PropertyAccessor<TableReportDto, Boolean> getEnableSubtotalsPropertyAccessor()  {
 		return enableSubtotals_pa;
+	}
+
+
+	public boolean isHideParents()  {
+		if(! isDtoProxy()){
+			return this.hideParents;
+		}
+
+		if(isHideParentsModified())
+			return this.hideParents;
+
+		if(! GWT.isClient())
+			return false;
+
+		boolean _value = dtoManager.getProperty(this, instantiatePropertyAccess().hideParents());
+
+		return _value;
+	}
+
+
+	public void setHideParents(boolean hideParents)  {
+		/* old value */
+		boolean oldValue = false;
+		if(GWT.isClient())
+			oldValue = isHideParents();
+
+		/* set new value */
+		this.hideParents = hideParents;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(hideParents_pa, oldValue, hideParents, this.hideParents_m));
+
+		/* set indicator */
+		this.hideParents_m = true;
+
+		this.fireObjectChangedEvent(TableReportDtoPA.INSTANCE.hideParents(), oldValue);
+	}
+
+
+	public boolean isHideParentsModified()  {
+		return hideParents_m;
+	}
+
+
+	public static PropertyAccessor<TableReportDto, Boolean> getHideParentsPropertyAccessor()  {
+		return hideParents_pa;
 	}
 
 
@@ -860,10 +1031,14 @@ abstract public class TableReportDto extends ReportDtoDec {
 		this.columns_m = false;
 		this.cube = false;
 		this.cube_m = false;
+		this.cubeXml = null;
+		this.cubeXml_m = false;
 		this.distinctFlag = null;
 		this.distinctFlag_m = false;
 		this.enableSubtotals = false;
 		this.enableSubtotals_m = false;
+		this.hideParents = false;
+		this.hideParents_m = false;
 		this.metadataDatasourceContainer = null;
 		this.metadataDatasourceContainer_m = false;
 		this.preFilter = null;
@@ -882,9 +1057,13 @@ abstract public class TableReportDto extends ReportDtoDec {
 			return true;
 		if(cube_m)
 			return true;
+		if(cubeXml_m)
+			return true;
 		if(distinctFlag_m)
 			return true;
 		if(enableSubtotals_m)
+			return true;
+		if(hideParents_m)
 			return true;
 		if(metadataDatasourceContainer_m)
 			return true;
@@ -900,8 +1079,10 @@ abstract public class TableReportDto extends ReportDtoDec {
 		list.add(allowCubification_pa);
 		list.add(columns_pa);
 		list.add(cube_pa);
+		list.add(cubeXml_pa);
 		list.add(distinctFlag_pa);
 		list.add(enableSubtotals_pa);
+		list.add(hideParents_pa);
 		list.add(metadataDatasourceContainer_pa);
 		list.add(preFilter_pa);
 		return list;
@@ -918,10 +1099,14 @@ abstract public class TableReportDto extends ReportDtoDec {
 			list.add(columns_pa);
 		if(cube_m)
 			list.add(cube_pa);
+		if(cubeXml_m)
+			list.add(cubeXml_pa);
 		if(distinctFlag_m)
 			list.add(distinctFlag_pa);
 		if(enableSubtotals_m)
 			list.add(enableSubtotals_pa);
+		if(hideParents_m)
+			list.add(hideParents_pa);
 		if(metadataDatasourceContainer_m)
 			list.add(metadataDatasourceContainer_pa);
 		if(preFilter_m)
@@ -939,8 +1124,10 @@ abstract public class TableReportDto extends ReportDtoDec {
 			list.add(additionalColumns_pa);
 			list.add(allowCubification_pa);
 			list.add(columns_pa);
+			list.add(cubeXml_pa);
 			list.add(distinctFlag_pa);
 			list.add(enableSubtotals_pa);
+			list.add(hideParents_pa);
 			list.add(metadataDatasourceContainer_pa);
 			list.add(preFilter_pa);
 		}

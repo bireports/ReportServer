@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,18 +25,22 @@ package net.datenwerke.rs.tsreportarea.client.tsreportarea;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
 
 import net.datenwerke.gxtdto.client.dtomanager.Dao;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.core.client.reportexecutor.hooks.PrepareReportModelForStorageOrExecutionHook;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.container.TsDiskItemList;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.rpc.TsDiskRpcServiceAsync;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
 
 /**
  * 
@@ -45,13 +49,16 @@ import com.google.inject.Inject;
 public class TsDiskDao extends Dao {
 
 	private final TsDiskRpcServiceAsync rpcService;
+	private final HookHandlerService hookHandler;
 	
 	@Inject
 	public TsDiskDao(
-		TsDiskRpcServiceAsync rpcservice	
+		TsDiskRpcServiceAsync rpcservice,
+		HookHandlerService hookHandler
 		){
 		/* store objects */
 		this.rpcService = rpcservice;
+		this.hookHandler = hookHandler;
 	}
 
 	public void getItemsIn(TeamSpaceDto teamSpace, TsDiskFolderDto folder,
@@ -104,18 +111,37 @@ public class TsDiskDao extends Dao {
 			AsyncCallback<List<TeamSpaceDto>> callback){
 		rpcService.getTeamSpacesWithReferenceTo(report, transformListCallback(callback));
 	}
+	
+	public void getTeamSpacesWithPathsThatLinkTo(ReportDto report, 
+			AsyncCallback<Map<TeamSpaceDto, List<List<AbstractTsDiskNodeDto>>>> callback) {
+		rpcService.getTeamSpacesWithPathsThatLinkTo(report, transformMapOfListListCallback(callback));
+	}
 
 	public void createAndImportVariant(TeamSpaceDto currentSpace,
 			TsDiskFolderDto currentFolder, ReportDto report,
 			String executeToken, String name, String desc,
 			RsAsyncCallback<TsDiskReportReferenceDto> callback) {
 		ReportDto reportVariantDto = unproxy(report);
+		
+		prepareForStorage(reportVariantDto, executeToken);
+		
 		rpcService.createAndImportVariant(currentSpace, currentFolder, reportVariantDto, executeToken, name, desc, transformDtoCallback(callback));
 	}
 
 	public void updateReferenceAndReport(TsDiskReportReferenceDto reference,
 			ReportDto report, String executeToken, String name, String description, RsAsyncCallback<TsDiskReportReferenceDto> callback) {
+		
+		prepareForStorage(report, executeToken);
+		
 		rpcService.updateReferenceAndReport(reference, report, executeToken, name, description, transformDtoCallback(callback));
+	}
+	
+	private void prepareForStorage(ReportDto reportDto, String executeToken) {
+		for(PrepareReportModelForStorageOrExecutionHook hooker : hookHandler.getHookers(PrepareReportModelForStorageOrExecutionHook.class)){
+			if(hooker.consumes(reportDto)){
+				hooker.prepareForExecutionOrStorage(reportDto, executeToken);
+			}
+		}
 	}
 }
 

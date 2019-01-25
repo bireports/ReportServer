@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -37,6 +37,8 @@ import com.sencha.gxt.data.shared.loader.ListLoadResult;
 public interface TeamSpaceRpcService extends RemoteService {
 
 	public TeamSpaceDto getPrimarySpace() throws ServerCallFailedException;
+	
+	public TeamSpaceDto getExplicitPrimarySpace() throws ServerCallFailedException;
 	
 	public void setPrimarySpace(TeamSpaceDto teamSpaceDto) throws ServerCallFailedException;
 

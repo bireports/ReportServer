@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -27,15 +27,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
+import com.google.inject.Inject;
+
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.base.client.reportengines.BaseReportEngineUiModule;
 import net.datenwerke.rs.core.client.reportexporter.exporter.ReportExporter;
 import net.datenwerke.rs.core.client.reportexporter.hooks.ReportExporterExportReportHook;
 import net.datenwerke.rs.core.client.reportexporter.hooks.ReportExporterProviderHook;
 import net.datenwerke.rs.core.client.reportexporter.hooks.VetoReportExporterHook;
+import net.datenwerke.rs.core.client.reportmanager.dto.interfaces.ReportVariantDto;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
-
-import com.google.gwt.core.client.GWT;
-import com.google.inject.Inject;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportPropertyDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportStringPropertyDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.decorator.ReportDtoDec;
 
 /**
  * 
@@ -85,10 +90,42 @@ public class ReportExporterUIServiceImpl implements ReportExporterUIService {
 				break;
 			}
 		}
+		
 		if(null != topExporter)
 			exporters.add(0, topExporter);
 		
+		/* is there a default exporter set? */
+		String defaultFormat = getDefaultOutputFormat(report);
+		if (null != getDefaultOutputFormat(report)) {
+			exporterIt = exporters.iterator();
+			while (exporterIt.hasNext()) {
+				ReportExporter exporter = exporterIt.next();
+				if(defaultFormat.trim().toUpperCase().equals(exporter.getOutputFormat().toUpperCase())){
+					exporterIt.remove();
+					exporters.add(0, exporter);
+					break;
+				}
+			}
+		}
+		
 		return exporters;
+	}
+	
+	private String getDefaultOutputFormat(ReportDto report) {
+		ReportDtoDec rep = (ReportDtoDec) report;
+		
+		ReportPropertyDto property = null;
+		if(report instanceof ReportVariantDto)
+			property = rep.getParentReportPropertyByName(BaseReportEngineUiModule.REPORT_PROPERTY_OUTPUT_FORMAT_DEFAULT);
+		else
+			property = rep.getReportPropertyByName(BaseReportEngineUiModule.REPORT_PROPERTY_OUTPUT_FORMAT_DEFAULT);
+		
+		if(null != property && property instanceof ReportStringPropertyDto){
+			String defaultFormatString = ((ReportStringPropertyDto) property).getStrValue();
+			return defaultFormatString;
+		}
+		
+		return null;
 	}
 	
 	@Override

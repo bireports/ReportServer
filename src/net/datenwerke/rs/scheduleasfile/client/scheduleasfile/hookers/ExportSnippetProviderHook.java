@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,9 +25,16 @@ package net.datenwerke.rs.scheduleasfile.client.scheduleasfile.hookers;
 
 import java.util.Collection;
 
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
+
+import net.datenwerke.gf.client.treedb.selection.SingleTreeSelectionField;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.forms.simpleform.actions.ShowHideFieldAction;
+import net.datenwerke.gxtdto.client.forms.simpleform.actions.SimpleFormAction;
 import net.datenwerke.gxtdto.client.forms.simpleform.conditions.FieldEquals;
+import net.datenwerke.gxtdto.client.forms.simpleform.conditions.SimpleFormCondition;
+import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHook;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCBoolean;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCTextAreaImpl;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
@@ -42,8 +49,6 @@ import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNode
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.helper.config.TeamSpaceViewConfig;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.helper.simpleform.SFFCTsTeamSpaceSelector;
-
-import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 
 public class ExportSnippetProviderHook implements
 		ScheduleExportSnippetProviderHook {
@@ -96,6 +101,39 @@ public class ExportSnippetProviderHook implements
 		xform.addCondition(isExportAsFileKey, new FieldEquals(true), new ShowHideFieldAction(teamSpaceKey));
 		xform.addCondition(isExportAsFileKey, new FieldEquals(true), new ShowHideFieldAction(nameKey));
 		xform.addCondition(isExportAsFileKey, new FieldEquals(true), new ShowHideFieldAction(descriptionKey));
+		
+		/* We set the folder to null when the teamspace changes. */
+		xform.addCondition(teamSpaceKey, new SimpleFormCondition() {
+			
+			/* 
+			 * We want the condition to met when the user changes the form value, NOT when the
+			 * form is first loaded.
+			 */
+			private boolean firstCall = true;
+			@Override
+			public boolean isMet(Widget formField, FormFieldProviderHook responsibleHook, SimpleForm form) {
+				if (firstCall) {
+					firstCall = false;
+					return false;
+				}
+				return true;
+			}
+		}, new SimpleFormAction() {
+			public void onSuccess(SimpleForm form) {
+				if (form.isFieldsLoaded()) {
+					
+				}
+				Widget widget = form.getField(folderKey);
+				if(widget instanceof SingleTreeSelectionField){
+					SingleTreeSelectionField stsf = (SingleTreeSelectionField)widget;
+					/* Set the folder to null when the teamspace changes. */
+					stsf.setValue(null);
+				}
+			}
+			
+			public void onFailure(SimpleForm form) {
+			}
+		});
 
 		TeamSpaceViewConfig config = getConfig(configs);
 		if(null != config)

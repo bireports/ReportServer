@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,11 +25,17 @@ package net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.hookers;
 
 import java.util.ArrayList;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+
 import net.datenwerke.gf.client.login.LoginService;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.forms.wizard.WizardDialog;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.resources.BaseResources;
 import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
 import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
@@ -41,20 +47,15 @@ import net.datenwerke.rs.scheduler.client.scheduler.locale.SchedulerMessages;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereport.ScheduleDialog;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereport.ScheduleDialog.DialogCallback;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.ScheduledReportListPanel;
+import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.SchedulerAdminModule;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.ReportScheduleJobInformation;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.ReportScheduleJobListInformation;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.hooks.ScheduledReportListDetailToolbarHook;
+import net.datenwerke.rs.scheduler.client.scheduler.security.SchedulingAdminViewGenericTargetIdentifier;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
+import net.datenwerke.security.client.security.SecurityUIService;
+import net.datenwerke.security.client.security.dto.ExecuteDto;
 import net.datenwerke.security.client.usermanager.dto.UserDto;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
-
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 public class EditScheduleEntryHooker implements ScheduledReportListDetailToolbarHook {
 
@@ -63,14 +64,17 @@ public class EditScheduleEntryHooker implements ScheduledReportListDetailToolbar
 	private final ToolbarService toolbarService;
 	private final Provider<ScheduleDialog> scheduleDialogProvider;
 	private final SendToDao sendToDao;
-
+	
+	private final SecurityUIService securityService;
+	
 	@Inject
 	public EditScheduleEntryHooker(
 		LoginService loginService,
 		SchedulerDao schedulerDao,
 		ToolbarService toolbarService,
 		Provider<ScheduleDialog> multiDialogProvider,
-		SendToDao sendToDao
+		SendToDao sendToDao,
+		final SecurityUIService securityService
 		) {
 		
 		/* store objects */
@@ -79,6 +83,7 @@ public class EditScheduleEntryHooker implements ScheduledReportListDetailToolbar
 		this.toolbarService = toolbarService;
 		this.scheduleDialogProvider = multiDialogProvider;
 		this.sendToDao = sendToDao;
+		this.securityService = securityService;
 	}
 
 	@Override
@@ -89,12 +94,20 @@ public class EditScheduleEntryHooker implements ScheduledReportListDetailToolbar
 		
 		/* only for selected user */
 		UserDto user = loginService.getCurrentUser();
-		if(! user.getId().equals(detailInfo.getOwnerId()) && ! user.isSuperUser())
-			return;
+		if(! user.getId().equals(detailInfo.getOwnerId()) && ! user.isSuperUser()) {
+			/* If we are in the admin-panel: we check for scheduling-admin rights. */
+			if (reportListPanel.getName().equals(SchedulerAdminModule.ADMIN_FILTER_PANEL)) {
+				if(! securityService.hasRight(SchedulingAdminViewGenericTargetIdentifier.class, ExecuteDto.class)) {
+					return;
+				}
+			} else {
+				/* We are not in the admin panel. */
+				return;
+			}
+		}
 
-		
-		DwTextButton removeBtn = toolbarService.createSmallButtonLeft(SchedulerMessages.INSTANCE.editScheduledJobLabel(), BaseIcon.CLOCK_EDIT);
-		removeBtn.addSelectHandler(new SelectHandler() {
+		DwTextButton editBtn = toolbarService.createSmallButtonLeft(SchedulerMessages.INSTANCE.editScheduledJobLabel(), BaseIcon.CLOCK_EDIT);
+		editBtn.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				reportListPanel.mask(BaseMessages.INSTANCE.loadingMsg());
@@ -146,7 +159,7 @@ public class EditScheduleEntryHooker implements ScheduledReportListDetailToolbar
 			}
 		});
 		
-		toolbar.add(removeBtn);
+		toolbar.add(editBtn);
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,19 +25,18 @@ package net.datenwerke.usermanager.ext.client.eximport.im.ui;
 
 import java.util.List;
 
+import com.google.gwt.resources.client.ImageResource;
+import com.google.inject.Inject;
+import com.sencha.gxt.data.shared.IconProvider;
+
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
-import net.datenwerke.gxtdto.client.resources.BaseResources;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.security.client.usermanager.dto.GroupDto;
-import net.datenwerke.security.client.usermanager.dto.UserDto;
+import net.datenwerke.security.client.usermanager.dto.decorator.UserDtoDec;
 import net.datenwerke.treedb.ext.client.eximport.im.dto.ImportTreeModel;
 import net.datenwerke.treedb.ext.client.eximport.im.ui.ImporterItemsPanel;
 import net.datenwerke.usermanager.ext.client.eximport.im.UserManagerImportDao;
 import net.datenwerke.usermanager.ext.client.eximport.im.dto.UserManagerImportConfigDto;
-
-import com.google.gwt.resources.client.ImageResource;
-import com.google.inject.Inject;
-import com.sencha.gxt.data.shared.IconProvider;
 
 
 public class UserManagerImporterItemsPanel extends ImporterItemsPanel<UserManagerImportConfigDto> {
@@ -73,7 +72,7 @@ public class UserManagerImporterItemsPanel extends ImporterItemsPanel<UserManage
 			public ImageResource getIcon(ImportTreeModel model) {
 				if(GroupDto.class.getName().equals(model.getType()))
 					return BaseIcon.GROUP.toImageResource();
-				if(UserDto.class.getName().equals(model.getType()))
+				if(UserDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.USER.toImageResource();
 				return BaseIcon.FOLDER_USER.toImageResource();
 			}

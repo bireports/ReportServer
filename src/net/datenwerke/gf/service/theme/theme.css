@@ -213,13 +213,16 @@ div.rs-login-flag {
 
 
 /* content panel */
-.rs-cp-header {
+.rs-cp-header,
+.rs-cp-header > div > div {
  background: none repeat scroll 0 0 #3E4059 /*col:hl.dark.bg*/ !important;
  color: #FFFFFF /*col:hl.dark.text*/ !important;
 }
 
 .rs-cp.rs-cp-ld .rs-cp-header,
-.rs-cp-header.rs-cp-lh {
+.rs-cp-header.rs-cp-lh,
+.rs-cp.rs-cp-ld .rs-cp-header > div > div,
+.rs-cp-header.rs-cp-lh > div > div {
   background: none repeat scroll 0 0 #DFE0EB /*col:hl.light.bg*/ !important;
   color: #000000 /*col:hl.light.text*/ !important;
 }
@@ -274,7 +277,8 @@ div.rs-login-flag {
    border-color: #3E4059 /*col:hl.dark.bg*/ !important;
 }
 
-.rs-w .rs-w-header {
+.rs-w .rs-w-header,
+.rs-w .rs-w-header > div > div {
     background: none repeat scroll 0 0 #3E4059 /*col:hl.dark.bg*/ !important;
 	color: #FFFFFF /*col:hl.dark.text*/ !important;
 }
@@ -355,7 +359,8 @@ div.rs-login-flag {
 }
 
 /* simple form */
-.rs-sf .rs-cp-header {
+.rs-sf .rs-cp-header,
+.rs-sf .rs-cp-header > div > div {
   background: none repeat scroll 0 0 #DFE0EB /*col:hl.light.bg*/ !important;
   color: #000000 /*col:hl.light.text*/ !important;
 }
@@ -1675,4 +1680,24 @@ body.rs-documentation {
 
 .rs-documentation .fetteLinie{
 	border-bottom: 5px solid #3E4059 /*col:hl.dark.bg*/;
+}
+
+/* Object info */
+.rs-objectinfo-infoblock  {
+	background: none repeat scroll 0 0 #EEEEEE;
+	margin: 5px;
+}
+
+.rs-objectinfo-infoblock .icon{
+	float:left;
+	margin-right: 5px;
+}
+
+.rs-objectinfo-infoblock .name{
+	font-weight: bold;
+}
+
+.rs-infopanel-reportinteamspace ul{
+	list-style: circle inside;
+	margin: 5px;	
 }

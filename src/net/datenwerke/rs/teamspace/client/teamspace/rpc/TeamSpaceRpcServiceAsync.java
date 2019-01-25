@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -34,6 +34,8 @@ import com.sencha.gxt.data.shared.loader.ListLoadResult;
 public interface TeamSpaceRpcServiceAsync {
 
 	void getPrimarySpace(AsyncCallback<TeamSpaceDto> callback);
+	
+	void getExplicitPrimarySpace(AsyncCallback<TeamSpaceDto> callback);
 
 	void setPrimarySpace(TeamSpaceDto teamSpaceDto, AsyncCallback<Void> callback);
 	

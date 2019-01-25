@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -63,36 +63,36 @@ public class EditTeamSpaceDialogCreator {
 	}
 
 	public void displayDialog(final TeamSpaceMainComponent teamSpaceMainComponent, final TeamSpaceDto currentSpace) {
-		final RpcPropertiesDialog dialog = propertiesDialogProvider.get();
-		
-		dialog.setPerformSubmitsConsecutively(true);
-		dialog.continueOnFailure(true);
-		dialog.setSize(640, 480);
-		dialog.setHeadingText(TeamSpaceMessages.INSTANCE.editTeamSpaceHeading(currentSpace.getName()));
-		dialog.setHeaderIcon(BaseIcon.GROUP_PROPERTIES);
-		dialog.setMaskOnSubmit(TeamSpaceMessages.INSTANCE.editTeamSpaceWindowServerRequestMask());
-		dialog.setModal(true);
-		dialog.setSubmitCompleteCallback(new SubmitCompleteCallback() {
-			
-			@Override
-			public void onSuccess() {
-				dialog.mask(BaseMessages.INSTANCE.storingMsg());
-				tsDao.reloadTeamSpace(currentSpace, new RsAsyncCallback<TeamSpaceDto>(){
-					@Override
-					public void onSuccess(TeamSpaceDto result) {
-						dialog.hide();
-						teamSpaceMainComponent.loadSpace(result);
-					}
-				});
-			}
-			@Override
-			public void onFailure(Throwable t) {
-			}			
-		});
-		
 		tsDao.reloadTeamSpaceForEdit(currentSpace, new RsAsyncCallback<TeamSpaceDto>(){
 			@Override
 			public void onSuccess(TeamSpaceDto result) {
+				final RpcPropertiesDialog dialog = propertiesDialogProvider.get();
+				
+				dialog.setPerformSubmitsConsecutively(true);
+				dialog.continueOnFailure(true);
+				dialog.setSize(640, 480);
+				dialog.setHeadingText(TeamSpaceMessages.INSTANCE.editTeamSpaceHeading(currentSpace.getName() + " (" + currentSpace.getId() + ") "));
+				dialog.setHeaderIcon(BaseIcon.GROUP_PROPERTIES);
+				dialog.setMaskOnSubmit(TeamSpaceMessages.INSTANCE.editTeamSpaceWindowServerRequestMask());
+				dialog.setModal(true);
+				dialog.setSubmitCompleteCallback(new SubmitCompleteCallback() {
+					
+					@Override
+					public void onSuccess() {
+						dialog.mask(BaseMessages.INSTANCE.storingMsg());
+						tsDao.reloadTeamSpace(currentSpace, new RsAsyncCallback<TeamSpaceDto>(){
+							@Override
+							public void onSuccess(TeamSpaceDto result) {
+								dialog.hide();
+								teamSpaceMainComponent.loadSpace(result);
+							}
+						});
+					}
+					@Override
+					public void onFailure(Throwable t) {
+					}			
+				});
+				
 				/* load cards */
 				final List<TeamSpaceEditDialogHook> cardProviders = hookHandler.getHookers(TeamSpaceEditDialogHook.class);
 				for(TeamSpaceEditDialogHook cardProvider : cardProviders){

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -143,26 +143,32 @@ public abstract class Birt2XTransformer<X> implements DataSourceDefinitionTransf
 		
 		ConnectionPoolConfig cpc = tempTableService.getConnectionConfig();
 		String helperId = String.valueOf(ds.getId())  + "_" + String.valueOf(dsc.getId()) + "_" + String.valueOf(dsc.getOldTransientId());
+
 		TempTableHelper tempTableHelper = tempTableService.getHelper(helperId);
-		String tableName = tempTableHelper.getTableName(cpc, TABLE_ALIAS);
-		
-		BirtReport report = dsc.getReport();
-		String target = dsc.getTarget();
-		BirtReportDatasourceTargetType targetType = dsc.getTargetType();
-		
-		if(null == report)
-			throw new DatabaseConnectionException("Unable to load data from BirtReport. Report was null.");
-		
 		try{
-			RSTableModel model = birtToTableProvider.get().asTableModel(containerProvider, report, parameters, target, targetType);
+			String tableName = tempTableHelper.getTableName(cpc, TABLE_ALIAS);
 			
-			tableModelDbHelper.writeRsTableModel(model, cpc, tableName);
-			String query = "select * from ${" + TABLE_ALIAS + "}";
+			BirtReport report = dsc.getReport();
+			String target = dsc.getTarget();
+			BirtReportDatasourceTargetType targetType = dsc.getTargetType();
 			
-			return new TempTableResult(tempTableHelper, cpc, query);
+			if(null == report)
+				throw new DatabaseConnectionException("Unable to load data from BirtReport. Report was null.");
 			
-		}catch(IOError | DatabaseException | SQLException | InterruptedException | ExecutionException e){
-			throw new RuntimeException(e);
+			try{
+				RSTableModel model = birtToTableProvider.get().asTableModel(containerProvider, report, parameters, target, targetType);
+				
+				tableModelDbHelper.writeRsTableModel(model, cpc, tableName);
+				
+				String query = "select * from ${" + TABLE_ALIAS + "}";
+				
+				return new TempTableResult(tempTableHelper, cpc, query);
+				
+			}catch(IOError | DatabaseException | SQLException | InterruptedException | ExecutionException e){
+				throw new RuntimeException(e);
+			}
+		} finally {
+			tempTableHelper.writeOperationCompleted();
 		}
 	}
 

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -42,4 +42,6 @@ public interface ReportExporterRpcServiceAsync {
 			List<ReportExecutionConfigDto> configs, String subject,
 			String message, List<StrippedDownUser> recipients,
 			AsyncCallback<Void> callback);
+	
+	void getExportDefaultSettingsAsJSON(String identifier, AsyncCallback<String> callback);
 }

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -35,6 +35,7 @@ import com.google.gwt.editor.client.EditorError;
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.PasswordField;
@@ -113,8 +114,14 @@ public class ChangePasswordDialog extends DwWindow {
 		return noNull(repeatPassword.getValue());
 	}
 	
-	public void addSubmitHandler(SelectHandler handler) {
-		submitBtn.addSelectHandler(handler);
+	public void addSubmitHandler(final SelectHandler handler) {
+		submitBtn.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				if(repeatPassword.isValid())
+					handler.onSelect(event);
+			}
+		});
 	}
 	
 	public void addCancelHandler(SelectHandler handler) {

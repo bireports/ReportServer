@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -29,7 +29,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.data.shared.loader.ListLoadResult;
 
+import net.datenwerke.gf.client.history.HistoryLocation;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardContainerDto;
@@ -37,7 +39,6 @@ import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardNodeDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardReferenceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.FavoriteListDto;
-import net.datenwerke.rs.dashboard.client.dashboard.dto.ReportDadgetDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 
 
@@ -49,6 +50,8 @@ public interface DashboardRpcServiceAsync {
 
 	void removeDashboard(DashboardDto dashboard,
 			AsyncCallback<Void> callback);
+	
+	void getExplicitPrimaryDashboard(AsyncCallback<DashboardDto> callback);
 
 	void reloadDashboard(DashboardDto dashboard, AsyncCallback<DashboardDto> callbar);
 	
@@ -91,5 +94,12 @@ public interface DashboardRpcServiceAsync {
 
 	void changeDashboardOrder(ArrayList<Long> dashboardIds, AsyncCallback<Void> callback);
 
+	void loadDashboardForDisplayFrom(HistoryLocation location, AsyncCallback<DashboardDto> callback);
+
+	void loadAllDashboards(AsyncCallback<ListLoadResult<DashboardDto>> callback);
+	
+	void loadDashboards(AsyncCallback<ListLoadResult<DashboardDto>> callback);
+	
+	void setPrimaryDashboard(DashboardDto dashboardDto, AsyncCallback<Void> callback);
 	
 }

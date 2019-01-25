@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -92,7 +92,8 @@ public class ApplicationPropertiesServiceImpl implements ApplicationPropertiesSe
 		} catch (ConfigurationException e) {
 		}
 
-		if(cc.getNumberOfConfigurations() == 0){
+		if(cc.getNumberOfConfigurations() == 1){
+			/* 1 is the in-memory configuration */
 			throw new RuntimeException("Could not load application properties");
 		}
 		return cc;

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -51,6 +51,10 @@ public class TeamSpaceDao extends Dao {
 		rpcService.getPrimarySpace(transformAndKeepCallback(callback));
 	}
 	
+	public void getExplicitPrimarySpace(AsyncCallback<TeamSpaceDto> callback){
+		rpcService.getExplicitPrimarySpace(transformAndKeepCallback(callback));
+	}
+	
 	public void setPrimarySpace(TeamSpaceDto teamSpaceDto, AsyncCallback<Void> callback){
 		rpcService.setPrimarySpace(teamSpaceDto, transformAndKeepCallback(callback));
 	}
@@ -68,7 +72,7 @@ public class TeamSpaceDao extends Dao {
 	}
 	
 	public void loadTeamSpaces(AsyncCallback<ListLoadResult<TeamSpaceDto>> callback){
-		rpcService.loadTeamSpaces(transformListLoadCallback(callback));
+		rpcService.loadTeamSpaces(transformAndKeepCallback(callback));
 	}
 	
 	public void removeTeamSpace(TeamSpaceDto teamSpace, AsyncCallback<Void> callback){
@@ -86,7 +90,7 @@ public class TeamSpaceDao extends Dao {
 	}
 	
 	public void loadAllTeamSpaces(AsyncCallback<ListLoadResult<TeamSpaceDto>> callback){
-		rpcService.loadAllTeamSpaces(transformListLoadCallback(callback));
+		rpcService.loadAllTeamSpaces(transformAndKeepCallback(callback));
 	}
 	
 	public void reloadTeamSpaceForEdit(TeamSpaceDto teamSpace, AsyncCallback<TeamSpaceDto> callback) {

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -29,11 +29,19 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.Component;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.container.Viewport;
+
 import net.datenwerke.gf.client.dispatcher.Dispatchable;
 import net.datenwerke.gf.client.dispatcher.hooks.DispatcherTakeOverHookImpl;
 import net.datenwerke.gf.client.history.HistoryLocation;
-import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
+import net.datenwerke.rs.base.client.reportengines.table.columnfilter.propertywidgets.FilterView;
+import net.datenwerke.rs.base.client.reportengines.table.prefilter.propertywidgets.PreFilterView;
+import net.datenwerke.rs.computedcolumns.client.computedcolumns.propertywidgets.ComputedColumnsView;
+import net.datenwerke.rs.core.client.parameters.propertywidgets.ParameterView;
 import net.datenwerke.rs.core.client.reportexecutor.ExecuteReportConfiguration;
 import net.datenwerke.rs.core.client.reportexecutor.ReportExecutorDao;
 import net.datenwerke.rs.core.client.reportexecutor.ReportExecutorUIService;
@@ -48,11 +56,6 @@ import net.datenwerke.rs.core.client.reportexecutor.variantstorer.NoVariantStore
 import net.datenwerke.rs.core.client.reportexecutor.variantstorer.VariantStorerConfig;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.Component;
-import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.container.Viewport;
-
 public class ReportExecutorInlineDispatcher extends DispatcherTakeOverHookImpl {
 
 	public static final String LOCATION = "inlinereport";
@@ -63,6 +66,10 @@ public class ReportExecutorInlineDispatcher extends DispatcherTakeOverHookImpl {
 	
 	public static final String TYPE_FULL = "full";
 	public static final String TYPE_PREVIEW = "preview";
+	public static final String TYPE_PARAMETER = "parameter";
+	public static final String TYPE_COMPUTED_COLUMS = "computedcolumns";
+	public static final String TYPE_PREFILTER = "prefilter";
+	public static final String TYPE_LIST_CONFIG = "listconfig";
 	
 	public static final String DEFAULT_VIEW = "defaultview";
 	public static final String VIEWS = "views";
@@ -97,6 +104,14 @@ public class ReportExecutorInlineDispatcher extends DispatcherTakeOverHookImpl {
 				String type = hLocation.getParameterValue("type");
 				if(TYPE_PREVIEW.equals(type))
 					displayPreview(result, vp);
+				else if (TYPE_PARAMETER.equals(type)) 
+					displayView(ParameterView.VIEW_ID, hLocation, result, vp);
+				else if (TYPE_COMPUTED_COLUMS.equals(type))
+					displayView(ComputedColumnsView.VIEW_ID, hLocation, result, vp);
+				else if (TYPE_PREFILTER.equals(type))
+					displayView(PreFilterView.VIEW_ID, hLocation, result, vp);
+				else if (TYPE_LIST_CONFIG.equals(type))
+					displayView(FilterView.VIEW_ID, hLocation, result, vp);
 				else
 					displayFull(hLocation, result, vp);
 			}
@@ -134,8 +149,57 @@ public class ReportExecutorInlineDispatcher extends DispatcherTakeOverHookImpl {
 		vp.add(component);
 		vp.forceLayout();
 	}
+	
+	
+	protected void displayView(final String viewId, HistoryLocation hLocation, final ReportDto result, Viewport vp) {
+		final Set<String> views = new HashSet<String>();
+		if(hLocation.hasParameter(VIEWS)){
+			String viewParam = hLocation.getParameterValue(VIEWS);
+			for(String view : viewParam.split("\\|")){
+				views.add(view.trim().toLowerCase());
+			}
+		}
+		
+		Component executeReportComponent = reportExecutorService.getExecuteReportComponent(
+				result,
+				new ExecutorEventHandler() {
+					@Override
+					public void handleEvent(ReportExecutorEvent event) {
+					}
+				}, new ExecuteReportConfiguration() {
+					@Override
+					public VariantStorerConfig getVariantStorerConfig() {
+						return new NoVariantStorerConfig();
+					}
 
-	protected void displayFull(HistoryLocation hLocation, ReportDto result, Viewport vp) {
+					@Override
+					public String getViewId() {
+						return viewId;
+					}
+
+					@Override
+					public boolean handleError(Throwable t) {
+						return false;
+					}
+					
+					@Override
+					public boolean acceptView(String viewId) {
+						if (result.isConfigurationProtected()) {
+							if (!viewId.equals(TYPE_PREVIEW)) 
+								return false;
+						}
+						return views.isEmpty() || null == viewId || views.contains(viewId.toLowerCase());
+					}
+				}, new InlineReportView()
+				);
+		if(executeReportComponent instanceof ContentPanel)
+			((ContentPanel) executeReportComponent).setHeaderVisible(false);
+
+		vp.add(executeReportComponent);
+		vp.forceLayout();
+	}
+	
+	protected void displayFull(HistoryLocation hLocation, final ReportDto result, Viewport vp) {
 		final String defaultView = hLocation.hasParameter(DEFAULT_VIEW) ? hLocation.getParameterValue(DEFAULT_VIEW) : AbstractReportPreviewView.VIEW_ID; 
 		
 		final Set<String> views = new HashSet<String>();
@@ -169,7 +233,11 @@ public class ReportExecutorInlineDispatcher extends DispatcherTakeOverHookImpl {
 					}
 					
 					@Override
-					public boolean accepctView(String viewId) {
+					public boolean acceptView(String viewId) {
+						if (result.isConfigurationProtected()) {
+							if (!viewId.equals(TYPE_PREVIEW))
+								return false;
+						}
 						return views.isEmpty() || null == viewId || views.contains(viewId.toLowerCase());
 					}
 				}, new InlineReportView()

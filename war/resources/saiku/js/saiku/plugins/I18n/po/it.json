@@ -34,6 +34,7 @@
    "Toggle sidebar":"Attiva/Disattiva barra laterale",
    "Hide Parents":"Nascondi Superiore",
    "Show Explain Plan":"Visualizza Spiagazione Piano",
+   "Drill across on cell": "Drill-Across sulla cella",
    "Drill through on cell":"Drill-Through sulla cella",
    "Export Drill-Through on cell to CSV":"Esporta Drill-Through su CSV",
    "EXPERIMENTAL: Export PDF":"Esporta PDF",
@@ -47,5 +48,17 @@
    "Tags":"Etichette",
    "You need to put at least one level or measure on Columns and Rows for a valid query.":"Immettere almeno un livello o misura sulle righe e colonne per avere una query valida",
    "Running query...":"Query in esecuzione...",
-   "Info:":"Informazioni:"
+   "Info:":"Informazioni:",
+   "Username":"Utente",
+   "Password":"Password",
+   "Administrator":"Aministratore",
+   "Username: admin":"Utente: admin",
+   "Password: admin":"Password:admin",
+   "New":"Nuovo",
+   "Duplicate":"Dupplicare",
+   "Close Others":"Chiudi Altre Finestre",
+   "Close This":"Chiudi Questo",
+   "You need to include at least one measure or a level on columns for a valid query.": "È necessario includere almeno una misura o un livello nelle colonne per una query valida.",
+   "You need to include at least one level on rows for a valid query.": "È necessario includere almeno un livello nelle righe per una query valida.",
+   "Reset Cube": "Reimposta cubo"
 }

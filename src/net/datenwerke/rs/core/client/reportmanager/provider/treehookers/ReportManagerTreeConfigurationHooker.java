@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -35,6 +35,7 @@ import net.datenwerke.gf.client.treedb.UITree;
 import net.datenwerke.gf.client.treedb.helper.menu.AvailabilityCallback;
 import net.datenwerke.gf.client.treedb.helper.menu.DeleteMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.DuplicateMenuItem;
+import net.datenwerke.gf.client.treedb.helper.menu.InfoMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.InsertMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.TreeDBUIMenuProvider;
 import net.datenwerke.gf.client.treedb.helper.menu.TreeMenuItem;
@@ -96,7 +97,8 @@ public class ReportManagerTreeConfigurationHooker implements
 		MenuItem insertItem = generateInsertMenu();
 		folderMenu.add(insertItem);
 		folderMenu.add(new DeleteMenuItem(treeHandler));
-//		folderMenu.add(new SeparatorMenuItem());
+		folderMenu.add(new SeparatorMenuItem());
+		folderMenu.add(new InfoMenuItem());
 		
 		/* Reports */
 		for(ReportTypeConfigHook config : hookHandler.getHookers(ReportTypeConfigHook.class)){
@@ -109,7 +111,8 @@ public class ReportManagerTreeConfigurationHooker implements
 			reportMenu.add(insertItem);
 			reportMenu.add(new DuplicateMenuItem(treeHandler));
 			reportMenu.add(new DeleteMenuItem(treeHandler));
-//			reportMenu.add(new SeparatorMenuItem());
+			reportMenu.add(new SeparatorMenuItem());
+			reportMenu.add(new InfoMenuItem());
 		}
 		
 		/* Report Variant */
@@ -122,7 +125,8 @@ public class ReportManagerTreeConfigurationHooker implements
 			reportVariantMenu.add(new SeparatorMenuItem());
 			reportVariantMenu.add(insertItem);
 			reportVariantMenu.add(new DeleteMenuItem(treeHandler));
-//			reportVariantMenu.add(new SeparatorMenuItem());
+			reportVariantMenu.add(new SeparatorMenuItem());
+			reportVariantMenu.add(new InfoMenuItem());
 		}
 	}
 

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -356,6 +356,9 @@ abstract public class DatabaseHelper {
 		case Types.NVARCHAR:
 		case Types.NCHAR:
 		case Types.LONGNVARCHAR:
+		case Types.SQLXML:
+			// we map everything not-known to a string
+		case Types.OTHER:
 			return String.class;
 		case Types.NUMERIC:
 		case Types.DECIMAL:

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -106,10 +106,12 @@ public class UserPropertiesRpcServiceImpl extends SecuredRemoteServiceServlet
 		/* add */
 		for(UserPropertyDto propertyDto : addedProperties){
 			UserProperty property = new UserProperty();
-			property.setKey(propertyDto.getKey());
-			property.setValue(propertyDto.getValue());
+			if ( null != propertyDto.getValue() ) 
+				property.setValue(propertyDto.getValue().trim());
 			if(null == propertyDto.getKey())
 				property.setKey(getUniqueKey(user));
+			if( null != propertyDto.getKey())
+				property.setKey(propertyDto.getKey().trim());
 			userPropertiesService.setProperty(user, property);
 		}
 		
@@ -123,7 +125,13 @@ public class UserPropertiesRpcServiceImpl extends SecuredRemoteServiceServlet
 				
 			if(null == userPropertiesService.getProperty(user, property.getKey()))
 				throw new ServerCallFailedException("User does not have property");
-				
+			
+			if( null != propertyDto.getKey())
+				propertyDto.setKey(propertyDto.getKey().trim());
+			if ( null != propertyDto.getValue() ) 
+				propertyDto.setValue(propertyDto.getValue().trim());
+			if(null == propertyDto.getKey())
+				propertyDto.setKey(getUniqueKey(user));
 			/* merge data and store user */
 			dtoService.mergePoso(propertyDto, property);
 		}

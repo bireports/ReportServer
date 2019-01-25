@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,12 +23,13 @@
  
 package net.datenwerke.gf.client.treedb;
 
-import net.datenwerke.gf.client.treedb.selection.SingleTreeSelectionField;
-import net.datenwerke.gf.client.treedb.selection.TreeSelectionPopup;
-
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 import com.google.inject.Singleton;
+
+import net.datenwerke.gf.client.treedb.helper.menu.InfoMenuItem;
+import net.datenwerke.gf.client.treedb.selection.SingleTreeSelectionField;
+import net.datenwerke.gf.client.treedb.selection.TreeSelectionPopup;
 
 public class DwGwtTreeDbUiModule extends AbstractGinModule {
 
@@ -43,6 +44,7 @@ public class DwGwtTreeDbUiModule extends AbstractGinModule {
 		
 		/* static injection */
 		requestStaticInjection(
+			InfoMenuItem.class,
 			TreeSelectionPopup.class,
 			SingleTreeSelectionField.class
 		);

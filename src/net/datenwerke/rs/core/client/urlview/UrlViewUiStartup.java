@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -26,6 +26,9 @@ package net.datenwerke.rs.core.client.urlview;
 import java.util.List;
 import java.util.Map;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.gf.client.homepage.hooks.ClientMainModuleProviderHook;
 import net.datenwerke.gf.client.login.LoginService;
 import net.datenwerke.gf.client.managerhelper.hooks.MainPanelViewProviderHook;
@@ -40,9 +43,6 @@ import net.datenwerke.rs.core.client.urlview.hooker.ViewProviderHooker;
 import net.datenwerke.rs.core.client.urlview.hooks.UrlViewClientHook;
 import net.datenwerke.rs.core.client.urlview.module.UrlViewClientMainModule;
 import net.datenwerke.security.client.security.SecurityUIService;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class UrlViewUiStartup {
 
@@ -75,13 +75,20 @@ public class UrlViewUiStartup {
 										continue;
 									
 									String[] values = v.get(0);
-									if(values.length != 2)
+									if(values.length < 2)
 										continue;
+									
+									int priority = HookHandlerService.PRIORITY_LOWER + 50 + module++;
+									if(values.length > 2){
+										try{
+											priority = Integer.parseInt(values[2]);
+										}catch(Exception e){}
+									}
 									
 									String name = values[0];
 									String url = values[1].replace("${username}", loginServiceProvider.get().getCurrentUser().getUsername());;
 									
-									hookHandler.attachHooker(ClientMainModuleProviderHook.class, new ClientMainModuleProviderHook(new UrlViewClientMainModule(hookHandler, name, url)), HookHandlerService.PRIORITY_LOWER + 50 + module++);
+									hookHandler.attachHooker(ClientMainModuleProviderHook.class, new ClientMainModuleProviderHook(new UrlViewClientMainModule(hookHandler, name, url)), priority);
 								}
 							}
 							

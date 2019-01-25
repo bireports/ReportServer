@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -58,6 +58,7 @@ public class SimpleMail extends MimeMessage implements SessionProvider {
 	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
 	protected static final String MIME_SUBTYPE_HTML = "html";
+	protected static final String MIME_SUBTYPE_PLAIN = "plain";
 	protected static final String CHARSET_UTF8 = "UTF-8";
 
 	@Inject
@@ -105,7 +106,7 @@ public class SimpleMail extends MimeMessage implements SessionProvider {
 	@Override
 	public void setText(String text){
 		try {
-			super.setText(text, CHARSET_UTF8);
+			super.setText(text, CHARSET_UTF8, MIME_SUBTYPE_PLAIN);
 		} catch (MessagingException e) {
 			logger.warn( e.getMessage(), e);
 		}
@@ -157,7 +158,7 @@ public class SimpleMail extends MimeMessage implements SessionProvider {
 		try {
 			/* create text */
 			MimeBodyPart textMBP = new MimeBodyPart();
-			textMBP.setText(text, CHARSET_UTF8);
+			textMBP.setText(text, CHARSET_UTF8, MIME_SUBTYPE_PLAIN);
 			multipart.addBodyPart(textMBP);
 			
 			/* create attachements */

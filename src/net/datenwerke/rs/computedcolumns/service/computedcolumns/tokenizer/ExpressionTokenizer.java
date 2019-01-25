@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -141,8 +141,9 @@ public class ExpressionTokenizer {
 					currentToken = newToken;
 					newStart = i+1;
 					
-					if(currentToken.isGreedy())
+					if(currentToken.isGreedy()) {
 						break;
+					}
 				}
 			}
 			

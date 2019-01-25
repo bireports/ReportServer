@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -37,7 +37,7 @@ import net.datenwerke.rs.base.service.dbhelper.querybuilder.QueryBuilder;
  */
 public class MsSQL extends DatabaseHelper {
 
-	public static final String DB_NAME = "MsSQL";
+	public static final String DB_NAME = "Microsoft SQL Server";
 	public static final String DB_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	public static final String DB_DESCRIPTOR = "DBHelper_MsSQL";
 

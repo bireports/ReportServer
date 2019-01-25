@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -32,6 +32,7 @@ import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.hooks.DadgetProcessorHook;
 import net.datenwerke.rs.dashboard.client.dashboard.hooks.DadgetProcessorHook.DadgetConfigureCallback;
 import net.datenwerke.rs.dashboard.client.dashboard.locale.DashboardMessages;
+import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardContainer.ConfigType;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
 import com.google.gwt.core.client.Scheduler;
@@ -168,7 +169,7 @@ public class DadgetPanel extends DwContentPanel {
 						getProcessor().displayConfigDialog(dadget, new DadgetConfigureCallback(){
 							@Override
 							public void configuringDone() {
-								view.dadgetConfigured(DadgetPanel.this);
+								view.dadgetConfigured(DadgetPanel.this, ConfigType.CONFIG);
 								
 								initReload();
 							}

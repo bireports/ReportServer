@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -46,6 +46,15 @@ public class RECCsv implements ReportExecutionConfig {
 	@ExposeToClient
 	private String quote = "\"";
 	
+	@ExposeToClient
+	private String lineSeparator = "\r\n";
+	
+	public String getLineSeparator() {
+		return lineSeparator;
+	}
+	public void setLineSeparator(String lineSeparator) {
+		this.lineSeparator = lineSeparator;
+	}
 	public boolean isPrintHeader() {
 		return printHeader;
 	}
@@ -75,7 +84,7 @@ public class RECCsv implements ReportExecutionConfig {
 		if(null == obj || ! (obj instanceof RECCsv))
 			return false;
 		
-		return printHeader == ((RECCsv)obj).printHeader && separator == ((RECCsv)obj).separator && quote == ((RECCsv)obj).quote;
+		return printHeader == ((RECCsv)obj).printHeader && separator == ((RECCsv)obj).separator && quote == ((RECCsv)obj).quote && lineSeparator == ((RECCsv)obj).lineSeparator;
 	}
 	
 }

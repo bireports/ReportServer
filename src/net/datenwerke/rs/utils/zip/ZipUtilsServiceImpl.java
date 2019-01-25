@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -71,7 +71,6 @@ public class ZipUtilsServiceImpl implements ZipUtilsService{
 	@Override
 	public void createZip(Map<String, ? extends Object> content, OutputStream os) throws IOException {
 		ZipOutputStream out = new ZipOutputStream(os); 
-		
 		for (String name : content.keySet()) {
 			if(DIRECTORY_MARKER == (content.get(name))){
 				out.putNextEntry(new ZipEntry(name.endsWith("/") ? name : name + "/"));

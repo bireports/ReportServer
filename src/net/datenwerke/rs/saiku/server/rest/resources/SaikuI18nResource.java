@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -26,6 +26,7 @@ package net.datenwerke.rs.saiku.server.rest.resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -41,6 +42,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import net.datenwerke.gf.service.localization.RemoteMessageService;
 import net.datenwerke.rs.saiku.client.saiku.locale.SaikuNativeMessages;
+import net.datenwerke.rs.utils.localization.LocalizationServiceImpl;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -66,12 +68,17 @@ public class SaikuI18nResource {
 	@GET
 	@Path("/{lang}")
 	@Produces({"application/json" })
-	public Map<String, String> getMapping(@PathParam("lang") String lang) throws JsonParseException, IOException {
+	public Map<String, String> getMapping() throws JsonParseException, IOException {
 		Map<String, String> mapping = new HashMap<String, String>();
 
+		Locale locale = LocalizationServiceImpl.getLocale();
+		String country = locale.getLanguage();
+		
 		/* try loading original json */
-		String esclang = lang.replaceAll("\\W", "");
-		InputStream originalMapping = servletContext.get().getResourceAsStream("/resources/saiku/js/saiku/plugins/I18n/po/" + esclang + ".json");
+		InputStream originalMapping = servletContext.get().getResourceAsStream("/resources/saiku/js/saiku/plugins/I18n/po/" + country + ".json");
+		if(null == originalMapping)
+			originalMapping = servletContext.get().getResourceAsStream("/resources/saiku/js/saiku/plugins/I18n/po/en.json");
+		
 		if(null != originalMapping){
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode jsonMapping = mapper.readTree(originalMapping);
@@ -83,7 +90,7 @@ public class SaikuI18nResource {
 		}
 		
 		/* overlay rs messages */
-		HashMap<String,HashMap<String,String>> messages = remoteMessageService.getMessages(lang);
+		HashMap<String,HashMap<String,String>> messages = remoteMessageService.getMessages(country);
 		if(null != messages){
 			HashMap<String,String> rsmap = messages.get(SaikuNativeMessages.class.getName());
 			mapping.putAll(rsmap);

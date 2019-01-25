@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -185,5 +185,12 @@ public interface UserManagerService extends TreeDBManager<AbstractUserManagerNod
 	 * @return
 	 */
 	Collection<Group> getReferencedGroups(User user);
+	
+	/**
+	 * Returns all users underneath the node.
+	 * @param node
+	 * @return
+	 */
+	Set<User> getAllTransitiveUsers(AbstractUserManagerNode node);
 	
 }

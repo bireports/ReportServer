@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -103,6 +103,7 @@ public abstract class AbstractNode<N extends AbstractNode<N>> implements Seriali
 	private static final long serialVersionUID = 2412084533298505334L;
 
 	public static final long FLAG_WRITE_PROTECTION = 1;
+	public static final long FLAG_CONFIGURATION_PROTECTION = 2;
 	
 	@Inject
 	protected static Provider<EntityManager> entityManagerProvider;
@@ -592,16 +593,29 @@ public abstract class AbstractNode<N extends AbstractNode<N>> implements Seriali
 	}
 	
 	public void addFlag(long bitfield){
+		if (wouldContainFlag(FLAG_CONFIGURATION_PROTECTION, this.flags | bitfield) && !wouldContainFlag(FLAG_WRITE_PROTECTION, this.flags | bitfield)) {
+			throw new IllegalArgumentException("Not allowed: Report would be config protected, but not write protected");
+		}
+		
 		this.flags |= bitfield;
 	}
 	
 	public void removeFlag(long bitfield){
-		if(hasFlag(bitfield))
+		if(hasFlag(bitfield)) {
+			if (wouldContainFlag(FLAG_CONFIGURATION_PROTECTION, this.flags ^ bitfield) && !wouldContainFlag(FLAG_WRITE_PROTECTION, this.flags ^ bitfield)) {
+				throw new IllegalArgumentException("Not allowed: Report would be config protected, but not write protected");
+			}
+			
 			this.flags ^= bitfield;
+		}
 	}
 	
 	public boolean hasFlag(long flag){
 		return (this.flags & flag) == flag;
+	}
+	
+	public boolean wouldContainFlag(long flag, long newFlag){
+		return (newFlag & flag) == flag;
 	}
 	
 	public void clearFlags() {
@@ -617,6 +631,17 @@ public abstract class AbstractNode<N extends AbstractNode<N>> implements Seriali
 			addFlag(FLAG_WRITE_PROTECTION);
 		else
 			removeFlag(FLAG_WRITE_PROTECTION);
+	}
+	
+	public boolean isConfigurationProtected(){
+		return hasFlag(FLAG_CONFIGURATION_PROTECTION);
+	}
+	
+	public void setConfigurationProtection(boolean w){
+		if(w)
+			addFlag(FLAG_CONFIGURATION_PROTECTION);
+		else
+			removeFlag(FLAG_CONFIGURATION_PROTECTION);
 	}
 	
 	public boolean isFolder(){

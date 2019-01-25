@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -27,11 +27,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.gxtdto.client.waitonevent.SynchronousCallbackOnEventTrigger;
 import net.datenwerke.gxtdto.client.waitonevent.WaitOnEventTicket;
 import net.datenwerke.gxtdto.client.waitonevent.WaitOnEventUIService;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.base.ext.client.dashboard.ReportDadgetExporter;
+import net.datenwerke.rs.base.ext.client.dashboardmanager.eximport.im.hookers.DashboardManagerUIImporterHooker;
 import net.datenwerke.rs.base.ext.client.datasourcemanager.eximport.im.hookers.DatasourceManagerUIImporterHooker;
 import net.datenwerke.rs.base.ext.client.parameters.fileselection.FileSelectionParameterConfigurator;
 import net.datenwerke.rs.base.ext.client.reportmanager.eximport.im.hookers.ReportManagerUIImporterHooker;
@@ -42,9 +46,6 @@ import net.datenwerke.rs.dashboard.client.dashboard.security.DashboardViewGeneri
 import net.datenwerke.rs.eximport.client.eximport.im.hooks.ImporterConfiguratorHook;
 import net.datenwerke.security.client.security.SecurityUIService;
 import net.datenwerke.security.client.security.dto.ReadDto;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class RsBaseExtUiStartup implements ParameterProviderHook {
 
@@ -57,6 +58,7 @@ public class RsBaseExtUiStartup implements ParameterProviderHook {
 		final WaitOnEventUIService waitOnEventService,
 		final SecurityUIService securityService,
 
+		final DashboardManagerUIImporterHooker dashboardImporterHooker,
 		final DatasourceManagerUIImporterHooker datasourceImporterHooker,
 		final ReportManagerUIImporterHooker reportmanagerImporterHooker,
 
@@ -71,6 +73,7 @@ public class RsBaseExtUiStartup implements ParameterProviderHook {
 		hookHandler.attachHooker(ParameterProviderHook.class, this);
 		
 		/* attach importer */
+		hookHandler.attachHooker(ImporterConfiguratorHook.class, dashboardImporterHooker);
 		hookHandler.attachHooker(ImporterConfiguratorHook.class, datasourceImporterHooker);
 		hookHandler.attachHooker(ImporterConfiguratorHook.class, reportmanagerImporterHooker);
 

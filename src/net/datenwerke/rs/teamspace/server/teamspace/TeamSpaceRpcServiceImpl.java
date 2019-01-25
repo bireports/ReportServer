@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -93,6 +93,14 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 	@Transactional(rollbackOn={Exception.class})
 	public TeamSpaceDto getPrimarySpace() throws ServerCallFailedException {
 		TeamSpace teamSpace = teamSpaceService.getPrimarySpace();
+		
+		return (TeamSpaceDto) dtoService.createDto(teamSpace);
+	}
+	
+	@Override
+	@Transactional(rollbackOn={Exception.class})
+	public TeamSpaceDto getExplicitPrimarySpace() throws ServerCallFailedException {
+		TeamSpace teamSpace = teamSpaceService.getExplicitPrimarySpace();
 		
 		return (TeamSpaceDto) dtoService.createDto(teamSpace);
 	}

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -68,14 +68,13 @@ public class TempTableServiceImpl implements TempTableService {
 	}
 	
 	@Override
-	public TempTableHelper getHelper(String requester) {
+	public synchronized TempTableHelper getHelper(String requester) {
 		TempTableHelper helper = helperCache.get(requester);
 		if(null == helper){
 			helper = new TempTableHelper(helpercount.incrementAndGet());
 			helperCache.put(requester, helper);
-			return helper;
 		}
-		helper.incrementRevision();
+		helper.incrementWriteRevision();
 		return helperCache.get(requester);
 	}
 	
@@ -113,6 +112,7 @@ public class TempTableServiceImpl implements TempTableService {
 		return getInternalDbDatasource().getConnectionConfig();
 	}
 
+	@Override
 	public DatabaseDatasource getInternalDbDatasource() {
 		String dsName = configService.getConfigFailsafe(InternalDbModule.CONFIG_FILE).getString(TempTableService.PROPERTY_KEY_DEFAULT_DATASOURCE, "ReportServer Data Source");
 		return ((DatabaseDatasource)datasourceService.getDatasourceByName(dsName));

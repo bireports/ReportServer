@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -43,6 +43,7 @@ public abstract class TableReport_ extends net.datenwerke.rs.core.service.report
 	public static volatile SingularAttribute<TableReport, DatasourceContainer> metadataDatasourceContainer;
 	public static volatile SingularAttribute<TableReport, Boolean> cube;
 	public static volatile ListAttribute<TableReport, AdditionalColumnSpec> additionalColumns;
+	public static volatile SingularAttribute<TableReport, Boolean> hideParents;
 
 }
 

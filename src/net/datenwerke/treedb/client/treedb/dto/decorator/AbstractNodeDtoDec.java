@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -24,7 +24,6 @@
 package net.datenwerke.treedb.client.treedb.dto.decorator;
 
 import net.datenwerke.gxtdto.client.dtomanager.stores.TreeDto;
-import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 
 /**
@@ -34,6 +33,7 @@ import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 abstract public class AbstractNodeDtoDec extends AbstractNodeDto implements TreeDto {
 
 	public static final long FLAG_WRITE_PROTECT = 1;
+	public static final long FLAG_CONFIGURATION_PROTECT = 2;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -52,6 +52,10 @@ abstract public class AbstractNodeDtoDec extends AbstractNodeDto implements Tree
 	
 	public boolean isWriteProtected(){
 		return testFlags(FLAG_WRITE_PROTECT);
+	}
+	
+	public boolean isConfigurationProtected() {
+		return testFlags(FLAG_CONFIGURATION_PROTECT);
 	}
 	
 	public String getDescription(){

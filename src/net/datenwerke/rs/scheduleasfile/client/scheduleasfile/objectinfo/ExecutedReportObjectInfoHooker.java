@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,13 +25,12 @@ package net.datenwerke.rs.scheduleasfile.client.scheduleasfile.objectinfo;
 
 import java.util.Date;
 
+import com.google.gwt.resources.client.ImageResource;
+
 import net.datenwerke.gxtdto.client.objectinformation.hooks.ObjectInfoKeyInfoProviderImpl;
 import net.datenwerke.rs.scheduleasfile.client.scheduleasfile.dto.ExecutedReportFileReferenceDto;
 import net.datenwerke.rs.scheduleasfile.client.scheduleasfile.dto.decorator.ExecutedReportFileReferenceDtoDec;
 import net.datenwerke.rs.scheduleasfile.client.scheduleasfile.locale.ScheduleAsFileMessages;
-
-import com.google.gwt.resources.client.ImageResource;
-import com.sencha.gxt.core.client.util.IconHelper;
 
 public class ExecutedReportObjectInfoHooker extends ObjectInfoKeyInfoProviderImpl<ExecutedReportFileReferenceDto> {
 	

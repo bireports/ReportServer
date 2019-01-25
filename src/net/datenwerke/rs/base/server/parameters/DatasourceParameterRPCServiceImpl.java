@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -155,8 +155,11 @@ public class DatasourceParameterRPCServiceImpl extends SecuredRemoteServiceServl
 					dependsOnParameter.setStillDefault(false);
 					
 					/* set correct definition */
-					ParameterInstance storedInstance = (ParameterInstance) dtoService.loadPoso(dependsOnParameterDTO);
-					dependsOnParameter.setDefinition(parameterService.getUnmanagedParameter(storedInstance.getDefinition()));
+					if (null != dependsOnParameterDTO.getDtoId()) {
+						/* In inline report execution: no stored instance. */
+						ParameterInstance storedInstance = (ParameterInstance) dtoService.loadPoso(dependsOnParameterDTO);
+						dependsOnParameter.setDefinition(parameterService.getUnmanagedParameter(storedInstance.getDefinition()));
+					}
 					
 					/* postprocess parameter instances */
 					for(ParameterInstanceCreatedFromDtoHook hook : hookHandler.getHookers(ParameterInstanceCreatedFromDtoHook.class)){

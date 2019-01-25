@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -81,14 +81,18 @@ public String getLocalText(key){
 def repId = Long.valueOf(parameterMap['reportId'])
 def revision = Long.valueOf(parameterMap['revId']).intValue()
 def repService = GLOBALS.getInstance(ReportService.class);
-//def report = repService.getReportById(repId)
+def reportForType = repService.getReportById(repId)
 
 VersioningService vService = GLOBALS.getInstance(VersioningService.class);
 EntityUtils entityUtils = GLOBALS.getInstance(EntityUtils.class); 
 
-def report = vService.getAtRevision(TableReport.class, repId, revision);
- 
 
+def reportType = reportForType.getClass();
+if(reportForType instanceof ReportVariant)
+	reportType = reportType.getSuperclass();
+	
+def report = vService.getAtRevision(reportType, repId, revision);
+ 
 def fitForPdf =  "pdf".equals(outputFormat)
 
 

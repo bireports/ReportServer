@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -41,7 +41,6 @@ import net.datenwerke.dbpool.config.predefined.StandardConnectionConfig;
 import net.datenwerke.dbpool.hooks.adapter.JdbcUrlAdapterHookAdapter;
 import net.datenwerke.gf.service.tempfile.annotations.TempDirLocation;
 import net.datenwerke.rs.base.service.dbhelper.DBHelperService;
-import net.datenwerke.rs.core.service.internaldb.MondrianLoader;
 import net.datenwerke.rs.core.service.internaldb.pool.DemoDbConnectionPool;
 import net.datenwerke.rs.utils.properties.ApplicationPropertiesService;
 
@@ -92,14 +91,17 @@ public class DemoDataJdbcUrlAdapter extends JdbcUrlAdapterHookAdapter {
 			connection.commit();
 
 			/* foodmart */
-			MondrianLoader ml = new MondrianLoader();
-			ml.setAggregates(true);
-			ml.setTables(true);
-			ml.setData(true);
-			ml.setIndexes(true);
-			ml.setJdbcOutput(true);
-			ml.setConnection(connection);
-			ml.load();
+//			MondrianLoader ml = new MondrianLoader();
+//			ml.setAggregates(true);
+//			ml.setTables(true);
+//			ml.setData(true);
+//			ml.setIndexes(true);
+//			ml.setJdbcOutput(true);
+//			ml.setConnection(connection);
+//			ml.load();
+			connection.prepareStatement("RUNSCRIPT FROM 'classpath:resources/demo/FoodMart.sql'").execute();
+			connection.commit();
+			
 		} catch (Exception e) {
 			logger.warn("Failed to load demodata", e);
 		}
@@ -124,6 +126,7 @@ public class DemoDataJdbcUrlAdapter extends JdbcUrlAdapterHookAdapter {
 		
 		url = propertiesService.getString("rs.install.demodata.url", null);
 		if(null != url){
+			url = url.replace("\\","/"); //Windows: RS-2780 https://stackoverflow.com/questions/5784895/java-properties-backslash
 			logger.info("Demodata URL: " + url);
 			return url;
 		}
@@ -147,7 +150,7 @@ public class DemoDataJdbcUrlAdapter extends JdbcUrlAdapterHookAdapter {
 				file.deleteOnExit();
 			}
 			
-			url = "jdbc:h2:file:" + tmpFile.getAbsoluteFile();
+			url = "jdbc:h2:file:" + tmpFile.getAbsoluteFile().toString().replace("\\","/"); //Windows: RS-2780 https://stackoverflow.com/questions/5784895/java-properties-backslash
 			logger.info("Demodata URL: " + url);
 			return url;
 		} catch(Exception e){

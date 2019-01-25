@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,18 +23,15 @@
  
 package net.datenwerke.gxtdto.client.dtomanager;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Map;
 
-import net.datenwerke.gxtdto.client.dtomanager.callback.DaoAsyncCallback;
-
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.sencha.gxt.data.shared.loader.ListLoadResult;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+
+import net.datenwerke.gxtdto.client.dtomanager.callback.DaoAsyncCallback;
 
 /**
  * 
@@ -109,7 +106,9 @@ abstract public class Dao {
 	protected <D extends Collection<? extends DtoContainer>> DaoAsyncCallback<D> transformListContainerCallback(final AsyncCallback<D> callback){
 		return new DaoAsyncCallback<D>(callback, this);
 	}
+	
+	protected <D extends Map<? extends Dto, ? extends Collection<? extends Collection<? extends Dto>>>> DaoAsyncCallback<D> transformMapOfListListCallback(final AsyncCallback<D> callback){
+		return new DaoAsyncCallback<D>(callback, this);
+	}
 
-	
-	
 }

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -61,7 +61,13 @@ public class GridEditorRecordEntryDtoDec extends GridEditorRecordEntryDto {
     	case SqlTypes.CLOB:
     	case SqlTypes.LONGVARCHAR:
     	case SqlTypes.VARCHAR:
+    	case SqlTypes.NVARCHAR:
+    	case SqlTypes.NCLOB:
+    	case SqlTypes.NCHAR:
+    	case SqlTypes.LONGNVARCHAR:
     	case SqlTypes.ROWID:
+    	case SqlTypes.SQLXML:
+    	case SqlTypes.OTHER:
     		return getStringValue();
     		
     	case SqlTypes.BIGINT:

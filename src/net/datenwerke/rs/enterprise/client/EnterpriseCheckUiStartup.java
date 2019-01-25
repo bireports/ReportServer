@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,6 +25,7 @@ package net.datenwerke.rs.enterprise.client;
 
 import com.google.inject.Inject;
 
+import net.datenwerke.gf.client.dispatcher.DispatcherService;
 import net.datenwerke.gf.client.login.LoginService;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.waitonevent.CallbackOnEventDone;
@@ -44,10 +45,8 @@ public class EnterpriseCheckUiStartup {
 		SynchronousCallbackOnEventTrigger entepriseCallbackBefore = createCallback(waitOnEventService, enterpriseDao, enterpriseService, EnterpriseCheckUiModule.REPORTSERVER_ENTERPRISE_DETERMINED_BEFORE_LOGIN);
 		SynchronousCallbackOnEventTrigger entepriseCallbackAfter = createCallback(waitOnEventService, enterpriseDao, enterpriseService, EnterpriseCheckUiModule.REPORTSERVER_ENTERPRISE_DETERMINED_AFTER_LOGIN);
 		
-		/* load generic rights after login */
-		waitOnEventService.callbackOnEvent(LoginService.REPORTSERVER_EVENT_AFTER_ANY_LOGIN, entepriseCallbackAfter);
+		waitOnEventService.callbackOnEvent(DispatcherService.REPORTSERVER_EVENT_USER_LOGGED_IN_APPLICATION_LOADED, entepriseCallbackAfter);
 		
-		/* load generic rights after login */
 		waitOnEventService.callbackOnEvent(LoginService.REPORTSERVER_EVENT_BEFORE_AUTH_WINDOW_LOAD, entepriseCallbackBefore);
 	}
 

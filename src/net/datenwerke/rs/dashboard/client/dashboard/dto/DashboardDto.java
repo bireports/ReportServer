@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -277,6 +277,42 @@ abstract public class DashboardDto extends RsDto implements IdedDto {
 		@Override
 		public boolean isModified(DashboardDto container) {
 			return container.isNameModified();
+		}
+	};
+
+	private boolean primary;
+	private  boolean primary_m;
+	public static final String PROPERTY_PRIMARY = "dpi-dashboard-primary";
+
+	private transient static PropertyAccessor<DashboardDto, Boolean> primary_pa = new PropertyAccessor<DashboardDto, Boolean>() {
+		@Override
+		public void setValue(DashboardDto container, Boolean object) {
+			container.setPrimary(object);
+		}
+
+		@Override
+		public Boolean getValue(DashboardDto container) {
+			return container.isPrimary();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return Boolean.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "primary";
+		}
+
+		@Override
+		public void setModified(DashboardDto container, boolean modified) {
+			container.primary_m = modified;
+		}
+
+		@Override
+		public boolean isModified(DashboardDto container) {
+			return container.isPrimaryModified();
 		}
 	};
 
@@ -601,6 +637,55 @@ abstract public class DashboardDto extends RsDto implements IdedDto {
 	}
 
 
+	public boolean isPrimary()  {
+		if(! isDtoProxy()){
+			return this.primary;
+		}
+
+		if(isPrimaryModified())
+			return this.primary;
+
+		if(! GWT.isClient())
+			return false;
+
+		boolean _value = dtoManager.getProperty(this, instantiatePropertyAccess().primary());
+
+		return _value;
+	}
+
+
+	public void setPrimary(boolean primary)  {
+		/* old value */
+		boolean oldValue = false;
+		if(GWT.isClient())
+			oldValue = isPrimary();
+
+		/* set new value */
+		this.primary = primary;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(primary_pa, oldValue, primary, this.primary_m));
+
+		/* set indicator */
+		this.primary_m = true;
+
+		this.fireObjectChangedEvent(DashboardDtoPA.INSTANCE.primary(), oldValue);
+	}
+
+
+	public boolean isPrimaryModified()  {
+		return primary_m;
+	}
+
+
+	public static PropertyAccessor<DashboardDto, Boolean> getPrimaryPropertyAccessor()  {
+		return primary_pa;
+	}
+
+
 	public boolean isSinglePage()  {
 		if(! isDtoProxy()){
 			return this.singlePage;
@@ -703,6 +788,8 @@ abstract public class DashboardDto extends RsDto implements IdedDto {
 		this.n_m = false;
 		this.name = null;
 		this.name_m = false;
+		this.primary = false;
+		this.primary_m = false;
 		this.singlePage = false;
 		this.singlePage_m = false;
 	}
@@ -723,6 +810,8 @@ abstract public class DashboardDto extends RsDto implements IdedDto {
 			return true;
 		if(name_m)
 			return true;
+		if(primary_m)
+			return true;
 		if(singlePage_m)
 			return true;
 		return false;
@@ -737,6 +826,7 @@ abstract public class DashboardDto extends RsDto implements IdedDto {
 		list.add(layout_pa);
 		list.add(n_pa);
 		list.add(name_pa);
+		list.add(primary_pa);
 		list.add(singlePage_pa);
 		return list;
 	}
@@ -756,6 +846,8 @@ abstract public class DashboardDto extends RsDto implements IdedDto {
 			list.add(n_pa);
 		if(name_m)
 			list.add(name_pa);
+		if(primary_m)
+			list.add(primary_pa);
 		if(singlePage_m)
 			list.add(singlePage_pa);
 		return list;
@@ -773,6 +865,7 @@ abstract public class DashboardDto extends RsDto implements IdedDto {
 			list.add(description_pa);
 			list.add(layout_pa);
 			list.add(n_pa);
+			list.add(primary_pa);
 			list.add(singlePage_pa);
 		}
 		return list;

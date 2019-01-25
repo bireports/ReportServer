@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -31,7 +31,7 @@ public interface OutputFormatAuthMessages extends Messages{
 
 	public final static OutputFormatAuthMessages INSTANCE = LocalizationServiceImpl.getMessages(OutputFormatAuthMessages.class);
 
-	String exceptionInvlaidFormat(String outputFormat);
+	String exceptionInvalidFormat(String outputFormat);
 	
 
 	

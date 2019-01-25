@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -38,7 +38,7 @@ public class ParameterViewFactory implements ReportViewFactory{
 	}
 
 	public boolean consumes(ReportDto report) {
-		if (null != report.getParameterDefinitions() && report.getParameterDefinitions().size() > 0){
+		if (null != report.getParameterDefinitions() && report.getParameterDefinitions().size() > 0 && !report.isConfigurationProtected()){
 			for(ParameterDefinitionDto def :report.getParameterDefinitions())
 				if(! def.isHidden())
 					return true;

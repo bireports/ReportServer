@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,14 +25,14 @@ package net.datenwerke.rs.base.client.reportengines.table.cubeconfig;
 
 import java.util.Collection;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.rs.base.client.reportengines.table.dto.TableReportDto;
 import net.datenwerke.rs.core.client.reportexecutor.ui.ReportViewConfiguration;
 import net.datenwerke.rs.core.client.reportexecutor.ui.ReportViewFactory;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.security.client.security.dto.ExecuteDto;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class CubeConfigViewFactory implements ReportViewFactory{
 	
@@ -54,7 +54,7 @@ public class CubeConfigViewFactory implements ReportViewFactory{
 	public boolean consumes(ReportDto report) {
 		return 
 			report instanceof TableReportDto &&
-			report.hasAccessRight(ExecuteDto.class) && ((TableReportDto)report).isCube();
+			report.hasAccessRight(ExecuteDto.class) && ((TableReportDto)report).isCube() && !report.isConfigurationProtected();
 	}
 	
 	@Override

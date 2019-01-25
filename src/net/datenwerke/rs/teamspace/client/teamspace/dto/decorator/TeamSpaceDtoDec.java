@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.datenwerke.gxtdto.client.dtomanager.IdedDto;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceApp;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceAppDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
@@ -82,6 +83,15 @@ public class TeamSpaceDtoDec extends TeamSpaceDto implements IdedDto {
 	}
 	public void setTeamSpaceOwner(boolean teamSpaceOwner) {
 		this.teamSpaceOwner = teamSpaceOwner;
+	}
+	
+	@Override
+	public String toDisplayTitle()  {
+		try{
+			return getName() + " (" + getId() + ")";
+		} catch(NullPointerException e){
+			return BaseMessages.INSTANCE.unnamed();
+		}
 	}
 
 	

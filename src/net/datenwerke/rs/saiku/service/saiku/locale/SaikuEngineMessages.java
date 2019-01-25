@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -32,6 +32,8 @@ public interface SaikuEngineMessages extends Messages{
 	public final static SaikuEngineMessages INSTANCE = LocalizationServiceImpl.getMessages(SaikuEngineMessages.class);
 	
 	String reportTypeName();
+
+	String errorUnableToFindMember(String member);
 	
 }
 

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -27,6 +27,8 @@ import java.security.KeyStore;
 
 import net.datenwerke.rs.utils.crypto.PasswordHasher;
 import net.datenwerke.rs.utils.properties.ApplicationPropertiesService;
+import net.datenwerke.security.ext.client.crypto.rpc.CryptoRpcService;
+import net.datenwerke.security.ext.server.crypto.CryptoRpcServiceImpl;
 import net.datenwerke.security.service.crypto.passwordhasher.HmacPassphrase;
 import net.datenwerke.security.service.crypto.passwordhasher.PasswordHasherImpl;
 import net.datenwerke.security.service.crypto.pbe.PbeModule;
@@ -159,6 +161,7 @@ public class CryptoModule extends AbstractModule{
 		bind(CryptoModuleStartup.class).asEagerSingleton();
 		bind(CryptoService.class).to(CryptoServiceImpl.class);
 		bind(PasswordHasher.class).to(PasswordHasherImpl.class);
+		bind(CryptoRpcService.class).to(CryptoRpcServiceImpl.class);
 		requestStaticInjection(CryptoServiceImpl.class);
 		
 		install(new PbeModule());

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -40,21 +40,22 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.rs.core.service.reportmanager.ReportExecutorService;
 import net.datenwerke.rs.core.service.reportmanager.engine.CompiledReport;
 import net.datenwerke.rs.core.service.reportmanager.engine.config.ReportExecutionConfig;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.core.service.reportmanager.exceptions.ReportExecutorException;
 import net.datenwerke.rs.scheduler.service.scheduler.jobs.ReportServerJob;
+import net.datenwerke.scheduler.service.scheduler.entities.AbstractJob;
 import net.datenwerke.scheduler.service.scheduler.entities.history.JobEntry;
 import net.datenwerke.scheduler.service.scheduler.exceptions.JobExecutionException;
 import net.datenwerke.scheduler.service.scheduler.jobs.BaseJob__;
 import net.datenwerke.security.service.authenticator.AuthenticatorService;
 import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
 import net.datenwerke.security.service.usermanager.entities.User;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 /**
  * 
@@ -87,6 +88,7 @@ public class ReportExecuteJob extends ReportServerJob {
 	
 	
 	public void setRecipients(List<User> recipients){
+		rcptIDs.clear();
 		for(AbstractUserManagerNode recipient : recipients){
 			if(recipient instanceof User)
 				rcptIDs.add(recipient.getId());
@@ -172,5 +174,9 @@ public class ReportExecuteJob extends ReportServerJob {
 		return null != report ? report.getId() : null;
 	}
 
-
+	@Override
+	public void copyTransientFieldsFrom(AbstractJob job) {
+		if(job instanceof ReportExecuteJob)
+			this.executedReport = ((ReportExecuteJob) job).executedReport;
+	}
 }

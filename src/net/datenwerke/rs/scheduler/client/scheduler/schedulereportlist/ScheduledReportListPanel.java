@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -47,6 +47,9 @@ import com.sencha.gxt.core.client.util.IconHelper;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.SortInfo;
+import com.sencha.gxt.data.shared.SortInfoBean;
 import com.sencha.gxt.data.shared.loader.LoadResultListStoreBinding;
 import com.sencha.gxt.data.shared.loader.PagingLoadConfig;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
@@ -184,6 +187,8 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 	private final SecurityUIService securityService;
 
 	private ReportScheduleJobListInformation selected;
+	
+	private String name;
 
 	private FormatUiHelper formatUiHelper;
 
@@ -221,6 +226,7 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 		
 		this.displayJobColumn = true;
 		this.displayOwnerColumn = displayOwnerColumn;
+		this.name = name;
 		
 		tbFilters = new ArrayList<ScheduledReportToolbarListFilter>();
 		for(ScheduledReportToolbarListFilter filter : hookHandler.getHookers(ScheduledReportToolbarListFilter.class))
@@ -269,6 +275,8 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 		
 		setCenterWidget(detailPanel);
 	}
+	
+	
 	
 	public void load(){
 		/* load */
@@ -336,6 +344,10 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 			}
 		});
 	}
+	
+	public String getName() {
+		return name;
+	}
 
 	private void createStore() {
 		/* init filter */
@@ -369,6 +381,13 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 		
 		/* create loader and bind it */
 		loader = new PagingLoader<PagingLoadConfig, PagingLoadResult<ReportScheduleJobListInformation>>(proxy);
+		if(loader.getSortInfo().isEmpty()){
+			SortInfo sortInfo = new SortInfoBean();
+			sortInfo.setSortDir(SortDir.DESC);
+			sortInfo.setSortField("jobId");
+			loader.addSortInfo(sortInfo);
+		}
+		
 		loader.setRemoteSort(true);
 		resetConfig();
 		
@@ -478,6 +497,13 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 			public void onSuccess(ReportScheduleJobInformation result) {
 				unmask();
 				displayDetail(selected, result);
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				unmask();
+				detailPanelNsContainer.clear();
+				detailToolbar.clear();
 			}
 
 		});

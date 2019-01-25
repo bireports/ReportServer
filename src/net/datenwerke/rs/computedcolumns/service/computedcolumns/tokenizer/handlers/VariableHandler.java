@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -40,7 +40,7 @@ public class VariableHandler implements ExpressionTokenHandlerHook{
 		strToken = strToken.trim();
 		
 		for(String variable : variables)
-			if(strToken.equals(variable))
+			if(strToken.equalsIgnoreCase(variable))
 				return new VariableExpressionToken(variable, greedy);
 			
 		return null;

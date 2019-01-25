@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -61,7 +61,7 @@ import net.datenwerke.rs.tsreportarea.client.tsreportarea.hookers.TsUrlViewObjec
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hooks.GeneralReferenceHandlerHook;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hooks.TsFavoriteListViewHook;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hooks.TsFavoriteMenuHook;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.objectinfo.ReportInTeamSpaceObejctInfo;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.objectinfo.ReportInTeamSpaceObjectInfo;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.objectinfo.TsFavoriteReferenceObjectInfo;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.ui.TsDiskMainComponent;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.ui.listviews.TsDiskGridListView;
@@ -105,7 +105,7 @@ public class TsDiskUIStartup {
 		
 		EventBus eventBus,
 		
-		final ReportInTeamSpaceObejctInfo reportInTeamspaceInfo,
+		final ReportInTeamSpaceObjectInfo reportInTeamspaceInfo,
 		
 		HistoryUiService historyService, 
 		final EventBus eventbus,

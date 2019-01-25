@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -76,7 +76,7 @@ public class YearlyAtDateTrigger extends DateTrigger<YearlyAtDateConfig> {
 		if(null != last)
 			return last;
 		
-		throw new IllegalArgumentException("The first fire time comes before the submitted date ... this is your problem!"); //$NON-NLS-1$
+		throw new IllegalArgumentException("The first fire time comes before the submitted date"); //$NON-NLS-1$
 	}
 	
 	@Override

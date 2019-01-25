@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,12 +23,16 @@
  
 package net.datenwerke.rs.saiku.client.saiku;
 
+import javax.inject.Singleton;
+
 import com.google.gwt.inject.client.AbstractGinModule;
 
 public class SaikuUiModule extends AbstractGinModule {
 
 	@Override
 	protected void configure() {
+		bind(SaikuUiService.class).to(SaikuUiServiceImpl.class).in(Singleton.class);
+		
 		bind(SaikuUiStartup.class).asEagerSingleton();
 	}
 

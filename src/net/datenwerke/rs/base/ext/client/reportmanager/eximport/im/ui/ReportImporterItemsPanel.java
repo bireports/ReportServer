@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -30,23 +30,25 @@ import com.google.inject.Inject;
 import com.sencha.gxt.data.shared.IconProvider;
 
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
-import net.datenwerke.rs.base.client.reportengines.jasper.dto.JasperReportDto;
-import net.datenwerke.rs.base.client.reportengines.jasper.dto.JasperReportVariantDto;
-import net.datenwerke.rs.base.client.reportengines.table.dto.TableReportDto;
-import net.datenwerke.rs.base.client.reportengines.table.dto.TableReportVariantDto;
+import net.datenwerke.rs.base.client.reportengines.jasper.dto.decorator.JasperReportDtoDec;
+import net.datenwerke.rs.base.client.reportengines.jasper.dto.decorator.JasperReportVariantDtoDec;
+import net.datenwerke.rs.base.client.reportengines.table.dto.decorator.TableReportDtoDec;
+import net.datenwerke.rs.base.client.reportengines.table.dto.decorator.TableReportVariantDtoDec;
 import net.datenwerke.rs.base.ext.client.reportmanager.eximport.im.ReportManagerImportDao;
 import net.datenwerke.rs.base.ext.client.reportmanager.eximport.im.dto.ReportManagerImportConfigDto;
-import net.datenwerke.rs.birt.client.reportengines.dto.BirtReportDto;
-import net.datenwerke.rs.birt.client.reportengines.dto.BirtReportVariantDto;
+import net.datenwerke.rs.birt.client.reportengines.dto.decorator.BirtReportDtoDec;
+import net.datenwerke.rs.birt.client.reportengines.dto.decorator.BirtReportVariantDtoDec;
 import net.datenwerke.rs.core.client.reportmanager.dto.ReportFolderDto;
-import net.datenwerke.rs.crystal.client.crystal.dto.CrystalReportDto;
-import net.datenwerke.rs.crystal.client.crystal.dto.CrystalReportVariantDto;
-import net.datenwerke.rs.grideditor.client.grideditor.dto.GridEditorReportDto;
-import net.datenwerke.rs.grideditor.client.grideditor.dto.GridEditorReportVariantDto;
-import net.datenwerke.rs.jxlsreport.client.jxlsreport.dto.JxlsReportDto;
-import net.datenwerke.rs.jxlsreport.client.jxlsreport.dto.JxlsReportVariantDto;
-import net.datenwerke.rs.scriptreport.client.scriptreport.dto.ScriptReportDto;
-import net.datenwerke.rs.scriptreport.client.scriptreport.dto.ScriptReportVariantDto;
+import net.datenwerke.rs.crystal.client.crystal.dto.decorator.CrystalReportDtoDec;
+import net.datenwerke.rs.crystal.client.crystal.dto.decorator.CrystalReportVariantDtoDec;
+import net.datenwerke.rs.grideditor.client.grideditor.dto.decorator.GridEditorReportDtoDec;
+import net.datenwerke.rs.grideditor.client.grideditor.dto.decorator.GridEditorReportVariantDtoDec;
+import net.datenwerke.rs.jxlsreport.client.jxlsreport.dto.decorator.JxlsReportDtoDec;
+import net.datenwerke.rs.jxlsreport.client.jxlsreport.dto.decorator.JxlsReportVariantDtoDec;
+import net.datenwerke.rs.saiku.client.saiku.dto.decorator.SaikuReportDtoDec;
+import net.datenwerke.rs.saiku.client.saiku.dto.decorator.SaikuReportVariantDtoDec;
+import net.datenwerke.rs.scriptreport.client.scriptreport.dto.decorator.ScriptReportDtoDec;
+import net.datenwerke.rs.scriptreport.client.scriptreport.dto.decorator.ScriptReportVariantDtoDec;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.treedb.ext.client.eximport.im.dto.ImportTreeModel;
 import net.datenwerke.treedb.ext.client.eximport.im.ui.ImporterItemsPanel;
@@ -82,34 +84,46 @@ public class ReportImporterItemsPanel extends ImporterItemsPanel<ReportManagerIm
 		tree.setIconProvider(new IconProvider<ImportTreeModel>() {
 			@Override
 			public ImageResource getIcon(ImportTreeModel model) {
-				if(TableReportDto.class.getName().equals(model.getType()))
+				if(TableReportDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_DL.toImageResource();
-				if(TableReportVariantDto.class.getName().equals(model.getType()))
+				if(TableReportVariantDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_DL.toImageResource();
-				if(JasperReportDto.class.getName().equals(model.getType()))
+				
+				if(JasperReportDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_JASPER.toImageResource();
-				if(JasperReportVariantDto.class.getName().equals(model.getType()))
+				if(JasperReportVariantDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_JASPER.toImageResource();
-				if(BirtReportDto.class.getName().equals(model.getType()))
+				
+				if(BirtReportDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_BIRT.toImageResource();
-				if(BirtReportVariantDto.class.getName().equals(model.getType()))
+				if(BirtReportVariantDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_BIRT.toImageResource();
-				if(CrystalReportDto.class.getName().equals(model.getType()))
+				
+				if(CrystalReportDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_CRYSTAL.toImageResource();
-				if(CrystalReportVariantDto.class.getName().equals(model.getType()))
+				if(CrystalReportVariantDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_CRYSTAL.toImageResource();
-				if(GridEditorReportDto.class.getName().equals(model.getType()))
+				
+				if(GridEditorReportDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_GE.toImageResource();
-				if(GridEditorReportVariantDto.class.getName().equals(model.getType()))
+				if(GridEditorReportVariantDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_GE.toImageResource();
-				if(JxlsReportDto.class.getName().equals(model.getType()))
+				
+				if(JxlsReportDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_JXLS.toImageResource();
-				if(JxlsReportVariantDto.class.getName().equals(model.getType()))
+				if(JxlsReportVariantDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.REPORT_JXLS.toImageResource();
-				if(ScriptReportDto.class.getName().equals(model.getType()))
+				
+				if(ScriptReportDtoDec.class.getName().equals(model.getType()))
 					return BaseIcon.SCRIPT.toImageResource();
-				if(ScriptReportVariantDto.class.getName().equals(model.getType()))
-					return BaseIcon.SCRIPT.toImageResource();				
+				if(ScriptReportVariantDtoDec.class.getName().equals(model.getType()))
+					return BaseIcon.SCRIPT.toImageResource();
+				
+				if (SaikuReportDtoDec.class.getName().equals(model.getType()))
+					return BaseIcon.CUBE.toImageResource();
+				if (SaikuReportVariantDtoDec.class.getName().equals(model.getType()))
+					return BaseIcon.FILE.toImageResource();
+				
 				if(ReportFolderDto.class.getName().equals(model.getType()))
 					return BaseIcon.FOLDER_O.toImageResource();
 				return null;

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -79,7 +79,7 @@ public class MenuExportHooker implements TsFavoriteMenuHook {
 			final TsDiskMainComponent mainComponent) {
 		if(null == items || items.isEmpty() || items.size() > 1)
 			return false;
-		if(! teamSpaceService.isUser(mainComponent.getCurrentSpace()))
+		if(! teamSpaceService.isGuest(mainComponent.getCurrentSpace()))
 			return false;
 		if(! (items.get(0) instanceof TsDiskReportReferenceDto))
 			return false;
@@ -94,7 +94,7 @@ public class MenuExportHooker implements TsFavoriteMenuHook {
 			exportItem.disable();
 			exportItem.setSubMenu(subMenu);
 			
-			/* load reference to ensure we have proeprties */
+			/* load reference to ensure we have properties */
 			reportLoaderDao.loadNode(reference.getReport(), new RsAsyncCallback<AbstractNodeDto>(){
 				@Override
 				public void onSuccess(AbstractNodeDto result) {

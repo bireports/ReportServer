@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -45,9 +45,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SelectionListRestObject {
+class SelectionListRestObject {
 	
-	private List<SelectionRestObject> selections = new ArrayList<SelectionRestObject>();
+	private List<SelectionRestObject> selections = new ArrayList<>();
 
 	public SelectionListRestObject() {
 	}

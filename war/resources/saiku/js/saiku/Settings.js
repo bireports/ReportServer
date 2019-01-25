@@ -1,4 +1,4 @@
-/*  
+/*
  *   Copyright 2012 OSBI Ltd
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,27 +13,39 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
- 
+
 /**
  * Change settings here
  */
 var Settings = {
-    VERSION: "Saiku 2.5",
+    VERSION: "Saiku-${version}",
+    LICENSE: {},
     BIPLUGIN: false,
-    BASE_URL: "",
+    BIPLUGIN5: false,
+    BASE_URL: "", //window.location.origin,
     TOMCAT_WEBAPP: "",
     REST_MOUNT_POINT: "../../reportserver/rest/saiku/",
-    DIMENSION_PREFETCH: false,
+    DIMENSION_PREFETCH: true,
+    DIMENSION_SHOW_ALL: true,
+    DIMENSION_SHOW_REDUCED: false,
     ERROR_LOGGING: false,
+    I18N_LOCALE: "en",
     // number of erroneous ajax calls in a row before UI cant recover
     ERROR_TOLERANCE: 3,
     QUERY_PROPERTIES: {
-        'saiku.olap.query.automatic_execution': 'true',
-        'saiku.olap.query.nonempty': 'true',
-        'saiku.olap.query.nonempty.rows': 'true',
-        'saiku.olap.query.nonempty.columns': 'true',
-        'saiku.ui.render.mode' : 'table'
+        'saiku.olap.query.automatic_execution': true,
+        'saiku.olap.query.nonempty': true,
+        'saiku.olap.query.nonempty.rows': true,
+        'saiku.olap.query.nonempty.columns': true,
+        'saiku.ui.render.mode' : 'table',
+        'saiku.olap.query.filter' : true,
+        'saiku.olap.result.formatter' : "flattened"
     },
+    REPOSITORY_LAZY: false,
+    TABLE_LAZY: true,          // Turn lazy loading off / on
+    TABLE_LAZY_SIZE: 1000,     // Initial number of items to be rendered
+    TABLE_LAZY_LOAD_ITEMS: 20,       // Additional item per scroll
+    TABLE_LAZY_LOAD_TIME: 20,  // throttling call of lazy loading items
     /* Valid values for CELLSET_FORMATTER:
      * 1) flattened
      * 2) flat
@@ -43,12 +55,34 @@ var Settings = {
     // 0 - no limit
     RESULT_LIMIT: 0,
     MEMBERS_FROM_RESULT: true,
+    MEMBERS_LIMIT: 3000,
+    MEMBERS_SEARCH_LIMIT: 75,
+    ALLOW_IMPORT_EXPORT: false,
+    ALLOW_PARAMETERS: true,
     PLUGINS: [
-        "Chart", "ReportServer"
+        "Chart", "ReportServer", "Statistics"
     ],
-    //TELEMETRY_SERVER: 'http://telemetry.analytical-labs.com:7000',
+    DEFAULT_VIEW_STATE: 'edit', // could be 'edit' as well
+    DEMO: false,
     TELEMETRY_SERVER: '',
-    LOCALSTORAGE_EXPIRATION: 10 * 60 * 60 * 1000 /* 10 hours, in ms */
+    LOCALSTORAGE_EXPIRATION: 10 * 60 * 60 * 1000 /* 10 hours, in ms */,
+    UPGRADE: true,
+    EVALUATION_PANEL_LOGIN: false,
+    QUERY_OVERWRITE_WARNING: false,
+    MAPS: false,
+    MAPS_TYPE: 'OSM', // OSM || GMAPS
+    MAPS_TILE_LAYER: {},
+    MAPS_OPTIONS: {},
+    MAPS_OSM_NOMINATIM: '', // http://wiki.openstreetmap.org/wiki/Nominatim
+    DATA_SOURCES_LOOKUP: false,
+    DEFAULT_REPORT_SHOW: false, // true/false
+    DEFAULT_REPORTS: {},
+    PARENT_MEMBER_DIMENSION: false,
+    EXT_DATASOURCE_PROPERTIES: false,
+    SHOW_USER_MANAGEMENT: false,
+    RS_SHOW_RESET: false,
+    RS_COLLAPSE_MEASURES: false,
+    RS_CONFIGURATION_PROTECTED: false
 };
 
 /**
@@ -61,22 +95,37 @@ Settings.GET = function () {
         tokens,
         re = /[?&]?([^=]+)=([^&]*)/g;
 
-    while (tokens = re.exec(qs)) {
+    tokens = re.exec(qs);
+    while (tokens) {
         var value = decodeURIComponent(tokens[2]);
         if (! isNaN(value)) value = parseInt(value);
         if (value === "true") value = true;
         if (value === "false") value = false;
-        params[decodeURIComponent(tokens[1]).toUpperCase()]
-            = value;
+		if(decodeURIComponent(tokens[1].toUpperCase()).substring(0,5)==="PARAM"){
+			params["PARAM"+decodeURIComponent(tokens[1]).substring(5,decodeURIComponent(tokens[1]).length)] = value;
+		}
+		else{
+			params[decodeURIComponent(tokens[1]).toUpperCase()] = value;
+		}
+
+        tokens = re.exec(qs);
     }
 
     return params;
 }();
 _.extend(Settings, Settings.GET);
 
-Settings.REST_URL = Settings.BASE_URL
-    + Settings.TOMCAT_WEBAPP 
-    + Settings.REST_MOUNT_POINT;
+Settings.PARAMS = (function() {
+    var p = {};
+    for (var key in Settings) {
+        if (key.match("^PARAM")=="PARAM") {
+            p[key] = Settings[key];
+        }
+    }
+    return p;
+}());
+
+Settings.REST_URL = Settings.TOMCAT_WEBAPP + Settings.REST_MOUNT_POINT;
 
 // lets assume we dont need a min width/height for table mode
 if (Settings.MODE == "table") {
@@ -85,7 +134,23 @@ if (Settings.MODE == "table") {
     $('body, html').css('min-width',0);
 
 }
+if (Settings.BIPLUGIN5) {
+    Settings.BIPLUGIN = true;
+}
 
+Settings.INITIAL_QUERY = false;
+//if (document.location.hash) {
+//    var hash = document.location.hash;
+//    if (hash.length > 11 && hash.substring(1, 11) == "query/open") {
+//        Settings.INITIAL_QUERY = true;
+//    }
+//}
+
+Settings.MONDRIAN_LOCALES = {
+    "English": "en_US",
+    "Dutch": "nl_BE",
+    "French": "fr_FR"
+};
 
 /**
  * < IE9 doesn't support Array.indexOf
@@ -97,9 +162,7 @@ if (!Array.prototype.indexOf)
     var len = this.length >>> 0;
 
     var from = Number(arguments[1]) || 0;
-    from = (from < 0)
-         ? Math.ceil(from)
-         : Math.floor(from);
+    from = (from < 0) ? Math.ceil(from) : Math.floor(from);
     if (from < 0)
       from += len;
 
@@ -111,6 +174,15 @@ if (!Array.prototype.indexOf)
     }
     return -1;
   };
+}
+
+/**
+ * IE9, 10 and 11 doesn't have window.location.origin
+ */
+if (!window.location.origin) {
+    window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+    // force update
+    Settings.BASE_URL = window.location.origin;
 }
 
 var tagsToReplace = {
@@ -137,18 +209,34 @@ if ($.blockUI) {
 
 }
 
-if (window.location.hostname && (window.location.hostname == "dev.analytical-labs.com" || window.location.hostname == "demo.analytical-labs.com" )) {
-    Settings.USERNAME = "admin";
-    Settings.PASSWORD = "admin";
-}
+//if (window.location.hostname && (window.location.hostname == "try.meteorite.bi" )) {
+//    Settings.USERNAME = "admin";
+//    Settings.PASSWORD = "admin";
+//    Settings.DEMO = true;
+//    Settings.UPGRADE = false;
+//}
 
 var isIE = (function(){
-    var undef, v = 3, div = document.createElement('div');
+    var undef, v = 3;
 
-    while (
-        div.innerHTML = '<!--[if gt IE '+(++v)+']><i></i><![endif]-->',
-        div.getElementsByTagName('i')[0]
-    );
+    var dav = navigator.appVersion;
 
-    return v> 4 ? v : false;
+    if(dav.indexOf('MSIE') != -1) {
+        v  = parseFloat(dav.split('MSIE ')[1]);
+        return v> 4 ? v : false;
+    }
+    return false;
+
 }());
+
+var isFF = (function(userAgent) {
+    'use strict';
+
+    return !!userAgent.match(/Firefox/);
+}(navigator.userAgent));
+
+var isMobile = (function(userAgent) {
+  'use strict';
+
+  return !!userAgent.match(/android|webos|ip(hone|ad|od)|opera (mini|mobi|tablet)|iemobile|windows.+(phone|touch)|mobile|fennec|kindle (Fire)|Silk|maemo|blackberry|playbook|bb10\; (touch|kbd)|Symbian(OS)|Ubuntu Touch/i);
+}(navigator.userAgent));

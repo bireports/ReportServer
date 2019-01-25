@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -32,6 +32,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 public abstract class MailReportAction_ extends net.datenwerke.scheduler.service.scheduler.entities.AbstractAction_ {
 
 	public static volatile SingularAttribute<MailReportAction, String> subject;
+	public static volatile SingularAttribute<MailReportAction, Boolean> compressed;
 	public static volatile SingularAttribute<MailReportAction, String> message;
 
 }

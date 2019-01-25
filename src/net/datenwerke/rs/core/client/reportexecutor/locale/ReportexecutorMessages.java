@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -39,6 +39,7 @@ public interface ReportexecutorMessages extends Messages {
 	String csvConfigPrintHeader();
 	String csvConfigQuote();
 	String csvConfigSeparator();
+	String csvConfigLineSeparator();
 	String editVariant();
 	String executeDuration(double executeDuration, double serverCall);
 	String executing();
@@ -52,6 +53,7 @@ public interface ReportexecutorMessages extends Messages {
 	String loadingNumPages();
 	String loadingNumRecords();
 	String noColumnsSelected();
+	String noAggregationSelected();
 	String pages();
 	String parameterWidgetHeader();
 	String preview();
@@ -82,7 +84,4 @@ public interface ReportexecutorMessages extends Messages {
 	String countRecords();
 	String loadingDataTitle();
 	String loadingDataMsg();
-	
-
-
 }

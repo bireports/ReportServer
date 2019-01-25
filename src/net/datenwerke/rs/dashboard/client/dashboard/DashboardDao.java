@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -30,8 +30,11 @@ import java.util.Set;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import com.sencha.gxt.data.shared.loader.ListLoadResult;
 
+import net.datenwerke.gf.client.history.HistoryLocation;
 import net.datenwerke.gxtdto.client.dtomanager.Dao;
+import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardContainerDto;
@@ -39,7 +42,6 @@ import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardNodeDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardReferenceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.FavoriteListDto;
-import net.datenwerke.rs.dashboard.client.dashboard.dto.ReportDadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.rpc.DashboardRpcServiceAsync;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 
@@ -54,6 +56,10 @@ public class DashboardDao extends Dao {
 	
 	public void getDashboardForUser(AsyncCallback<DashboardContainerDto> callback){
 		asyncService.getDashboardForUser(transformAndKeepCallback(callback));
+	}
+	
+	public void getExplicitPrimaryDashboard(AsyncCallback<DashboardDto> callback){
+		asyncService.getExplicitPrimaryDashboard(transformAndKeepCallback(callback));
 	}
 	
 	public void createDashboardForUser(AsyncCallback<DashboardDto> callback){
@@ -135,8 +141,24 @@ public class DashboardDao extends Dao {
 		asyncService.loadDashboardForDisplay(dashboard, transformAndKeepCallback(callback));
 	}
 	
+	public void loadDashboardForDisplayFrom(HistoryLocation location, AsyncCallback<DashboardDto> callback) {
+		asyncService.loadDashboardForDisplayFrom(location, transformAndKeepCallback(callback));
+	}
+	
 	public void changeDashboardOrder(ArrayList<Long> dashboardIds, AsyncCallback<Void> callback) {
 		asyncService.changeDashboardOrder(dashboardIds, callback);
 	}
 	
+	public void loadAllDashboards(AsyncCallback<ListLoadResult<DashboardDto>> callback) {
+		asyncService.loadAllDashboards(transformAndKeepCallback(callback));
+	}
+	
+	public void loadDashboards(AsyncCallback<ListLoadResult<DashboardDto>> callback) {
+		asyncService.loadDashboards(transformAndKeepCallback(callback));
+	}
+	
+	public void setPrimaryDashboard(DashboardDto dashboardDto, RsAsyncCallback<Void> callback) {
+		asyncService.setPrimaryDashboard(dashboardDto, transformAndKeepCallback(callback));
+	}
+
 }

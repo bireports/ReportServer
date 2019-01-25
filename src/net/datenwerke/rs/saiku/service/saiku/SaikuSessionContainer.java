@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,20 +25,21 @@ package net.datenwerke.rs.saiku.service.saiku;
 
 import java.util.HashMap;
 
-import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReport;
-
 import org.saiku.olap.query.IQuery;
+import org.saiku.olap.query2.ThinQuery;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.inject.servlet.SessionScoped;
 
+import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReport;
+
 @SessionScoped
 public class SaikuSessionContainer {
 
 	private HashMap<String, SaikuReport> saikureports = new HashMap<String, SaikuReport>();
-	private HashMap<String, IQuery> queries = new HashMap<String, IQuery>();
-	private BiMap<SaikuReport, IQuery> reportQueryMap = HashBiMap.create();
+	private HashMap<String, ThinQuery> queries = new HashMap<String, ThinQuery>();
+	private BiMap<SaikuReport, ThinQuery> reportQueryMap = HashBiMap.create();
 	
 	public void putReport(String token, SaikuReport report){
 		saikureports.put(token, report);
@@ -48,35 +49,45 @@ public class SaikuSessionContainer {
 		return saikureports.get(token);
 	}
 	
-	public void putQuery(String queryName, SaikuReport report, IQuery query) {
+	private void putQuery(String queryName, SaikuReport report, ThinQuery query) {
+		if(null == queryName)
+			throw new RuntimeException("Cannot create query. No query name assigned.");
+		
 		queries.put(queryName, query);
 		reportQueryMap.put(report, query);
 	}
 	
-	public IQuery getQuery(String queryName) {
+	public ThinQuery getQuery(String queryName) {
 		return queries.get(queryName);
 	}
 
-	public HashMap<String, IQuery> getQueries() {
+	public HashMap<String, ThinQuery> getQueries() {
 		return queries;
 	}
 	
-	public void removeQuery(String queryName) {
+	public ThinQuery removeQuery(String queryName) {
 		if (queries.containsKey(queryName)) {
-			IQuery q = queries.remove(queryName);
+			ThinQuery q = queries.remove(queryName);
 			reportQueryMap.inverse().remove(q);
-			try {
-				q.cancel();
-			} catch (Exception e) {}
-			q = null;
+			return q;
 		}
+		return null;
 	}
 
-	public IQuery getQueryForReport(SaikuReport report) {
+	public ThinQuery getQueryForReport(SaikuReport report) {
 		return reportQueryMap.get(report);
 	}
 	
-	public void putQuery(String queryName, IQuery query) {
+	public void putQuery(ThinQuery query, SaikuReport report) {
+		String queryName = query.getName();
+		putQuery(queryName, report, query);
+	}
+	
+	public void putQuery(ThinQuery query) {
+		String queryName = query.getName();
+		if(null == queryName)
+			throw new RuntimeException("Cannot create query. No query name assigned.");
+		
 		SaikuReport report = reportQueryMap.inverse().get(getQuery(queryName));
 		if(null == report)
 			throw new RuntimeException("Cannot create query " + queryName + ". No report assigned.");

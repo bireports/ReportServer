@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -414,16 +414,18 @@ public class StringStatement implements PreparedStatement {
 
 	@Override
 	public void setDate(int parameterIndex, Date x) throws SQLException {
+		replace(parameterIndex,  "'" + x.toString() + "'" );
 	}
 
 	@Override
 	public void setTime(int parameterIndex, Time x) throws SQLException {
+		replace(parameterIndex,  "'" + x.toString() + "'" );
 	}
 
 	@Override
 	public void setTimestamp(int parameterIndex, Timestamp x)
 			throws SQLException {
-		
+		replace(parameterIndex,  "'" + x.toString() + "'" );
 	}
 
 	@Override

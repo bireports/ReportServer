@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -87,7 +87,7 @@ public class BsiPasswordPolicyPostAuthenticateHook implements PostAuthenticateHo
 			/* Check if account is locked */
 			if(data.getFailedLoginCount() > bsiPasswordPolicy.getAccountLockoutThreshold()){
 				authRes.setAllowed(false);
-				authRes.addInfo(new AccountLockedAuthenticateResultInfo(new Date(data.getLastFailedLogin().getTime() + (bsiPasswordPolicy.getAccountLockoutAutoResetTimeout() * MILLISECONDS_PER_MINUTE))));
+				authRes.addInfo(new AccountLockedAuthenticateResultInfo(new Date((long)data.getLastFailedLogin().getTime() + ((long)bsiPasswordPolicy.getAccountLockoutAutoResetTimeout() * (long)MILLISECONDS_PER_MINUTE))));
 				return;
 			}
 			

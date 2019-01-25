@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -62,6 +62,7 @@ public class PasswordHasherImpl implements PasswordHasher {
 		return hashPassword(password, generateSalt());
 	}
 	
+	@Override
 	public String hashPassword(String password, String salt){
 		if(null == password)
 			return ""; //$NON-NLS-1$

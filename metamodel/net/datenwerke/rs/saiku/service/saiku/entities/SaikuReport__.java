@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -32,6 +32,7 @@ import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
 public class SaikuReport__ extends net.datenwerke.rs.core.service.reportmanager.entities.reports.Report__ implements net.datenwerke.entityservices.metadatagenerator.interfaces.EntityMetadataProvider {
 
 	public static final String allowMdx = "allowMdx";
+	public static final String hideParents = "hideParents";
 	public static final String queryXml = "queryXml";
 	public static final String serialVersionUID = "serialVersionUID";
 

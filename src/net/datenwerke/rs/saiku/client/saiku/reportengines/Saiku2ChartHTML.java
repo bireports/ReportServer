@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -57,7 +57,9 @@ public class Saiku2ChartHTML extends ReportExporterImpl {
 		multiplebar("Multiple Bar", BaseResources.INSTANCE.saikuChartMultiple()), 
 		line("Line", BaseResources.INSTANCE.saikuChartLine()), 
 		area("Area", BaseResources.INSTANCE.saikuChartArea()),
-		heatgrid("Heat Grid", BaseResources.INSTANCE.saikuChartHeat()), 
+		heatgrid("Heat Grid", BaseResources.INSTANCE.saikuChartHeat()),
+		sunburst("Sunburst", BaseResources.INSTANCE.saikuChartSunburst()),
+		multiplesunburst("Multiple Sunburst", BaseResources.INSTANCE.saikuChartMultiSunburst()),
 		dot("Dot", BaseResources.INSTANCE.saikuChartDot()), 
 		waterfall("Waterfall", BaseResources.INSTANCE.saikuChartWaterfall()), 
 		pie("Pie", BaseResources.INSTANCE.saikuChartPie());
@@ -74,6 +76,11 @@ public class Saiku2ChartHTML extends ReportExporterImpl {
 
 	@Override
 	public boolean consumesConfiguration(ReportDto report) {
+		return true;
+	}
+	
+	@Override
+	public boolean canBeScheduled() {
 		return true;
 	}
 
@@ -95,7 +102,7 @@ public class Saiku2ChartHTML extends ReportExporterImpl {
 		final DwWindow window = new DwWindow();
 		window.setHeadingText(getExportTitle());
 		window.getHeader().setIcon(getIcon());
-		window.setSize(420, 250);
+		window.setSize(250, 180	);
 		window.setModal(true);
 		
 		final SimpleForm form = SimpleForm.getInlineInstance();

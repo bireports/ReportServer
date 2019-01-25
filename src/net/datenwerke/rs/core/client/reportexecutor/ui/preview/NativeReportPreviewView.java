@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -27,6 +27,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
+import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.info.InfoConfig;
+
 import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
 import net.datenwerke.gxtdto.client.baseex.widget.layout.DwBorderContainer;
 import net.datenwerke.gxtdto.client.model.DwModel;
@@ -36,13 +45,8 @@ import net.datenwerke.rs.core.client.reportexecutor.ReportExecutorDao;
 import net.datenwerke.rs.core.client.reportexporter.ReportExporterUIService;
 import net.datenwerke.rs.core.client.reportexporter.exporter.ReportExporter;
 import net.datenwerke.rs.core.client.reportexporter.exporter.generic.Export2PDF;
+import net.datenwerke.rs.core.client.reportexporter.locale.ReportExporterMessages;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
-
-import com.google.gwt.http.client.Request;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Frame;
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.container.MarginData;
 
 public class NativeReportPreviewView extends AbstractReportPreviewView {
 
@@ -65,6 +69,14 @@ public class NativeReportPreviewView extends AbstractReportPreviewView {
 	@Override
 	protected void doLoadReport(DwModel reportExecutionResult) {
 		if(((SuccessIndicatorBaseModel)reportExecutionResult).isSuccess()){
+			
+			try{
+				InfoConfig infoConfig = new DefaultInfoConfig(ReportExporterMessages.INSTANCE.reportIsBeingExportedTitle(), ReportExporterMessages.INSTANCE.reportLoadingWait());
+				infoConfig.setWidth(350);
+				infoConfig.setDisplay(3500);
+				Info.display(infoConfig);
+			}catch(Exception e){}
+			
 			wrapper.clear();
 
 			DwContentPanel frame = new DwContentPanel();

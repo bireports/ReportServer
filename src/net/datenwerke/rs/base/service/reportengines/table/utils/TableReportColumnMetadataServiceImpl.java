@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.NonFatalException;
 import net.datenwerke.rs.base.service.reportengines.table.SimpleDataSupplier;
 import net.datenwerke.rs.base.service.reportengines.table.entities.Column;
@@ -36,9 +39,7 @@ import net.datenwerke.rs.base.service.reportengines.table.output.object.RSTableR
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceContainerProvider;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceContainerProviderImpl;
 import net.datenwerke.rs.core.service.reportmanager.exceptions.ReportExecutorException;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import net.datenwerke.security.service.usermanager.entities.User;
 
 @Singleton
 public class TableReportColumnMetadataServiceImpl implements TableReportColumnMetadataService {
@@ -54,14 +55,14 @@ public class TableReportColumnMetadataServiceImpl implements TableReportColumnMe
 	}
 
 	@Override
-	public void augmentWithMetadata(TableReport report)
+	public void augmentWithMetadata(TableReport report, User user)
 			throws NonFatalException {
-		augmentWithMetadata(report.getColumns(), report);
+		augmentWithMetadata(report.getColumns(), report, user);
 	}
 
 
-	public void augmentWithMetadata(Collection<Column> columns, TableReport report) throws NonFatalException{
-		Map<String, ColumnMetadata> columnMetadataMap = createColumnMetadataMap((TableReport) report);
+	public void augmentWithMetadata(Collection<Column> columns, TableReport report, User user) throws NonFatalException{
+		Map<String, ColumnMetadata> columnMetadataMap = createColumnMetadataMap((TableReport) report, user);
 
 		for(Column col : columns){
 			if(columnMetadataMap.containsKey(col.getName())){
@@ -76,14 +77,14 @@ public class TableReportColumnMetadataServiceImpl implements TableReportColumnMe
 
 
 
-	public Map<String, ColumnMetadata> createColumnMetadataMap(TableReport report) throws NonFatalException{
+	public Map<String, ColumnMetadata> createColumnMetadataMap(TableReport report, User user) throws NonFatalException{
 		Map<String, ColumnMetadata> columnMetadataMap = new HashMap<String, ColumnMetadata>();
 
 		if(null == report.getMetadataDatasourceContainer() || null == report.getMetadataDatasourceContainer().getDatasource())
 			return columnMetadataMap;
 
 		try {
-			RSTableModel res = simpleDataSupplyer.getData(createMetadataDataSourceContainer(report));
+			RSTableModel res = simpleDataSupplyer.getData(createMetadataDataSourceContainer(report), user);
 			if(res.getColumnCount() < 3)
 				throw new IllegalArgumentException("Expected Metadata Query to return at least 3 columns.");
 			

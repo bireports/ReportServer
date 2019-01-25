@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -84,6 +84,7 @@ public class UserManagerTreeHandlerImpl extends TreeDBManagerTreeHandler<Abstrac
 		if(inserted instanceof User){
 			((User)inserted).setFirstname(DwSecurityMessages.INSTANCE.firstname());
 			((User)inserted).setLastname(DwSecurityMessages.INSTANCE.lastname());
+			((User)inserted).setUsername(DwSecurityMessages.INSTANCE.username());
 		} else if(inserted instanceof Group){
 			((Group)inserted).setName(DwSecurityMessages.INSTANCE.unnamed()); 
 		} else if(inserted instanceof OrganisationalUnit){

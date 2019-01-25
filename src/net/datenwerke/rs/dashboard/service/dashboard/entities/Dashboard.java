@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -40,7 +40,11 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.Version;
+
+import org.hibernate.annotations.Type;
+import org.hibernate.envers.Audited;
 
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
@@ -48,9 +52,6 @@ import net.datenwerke.gxtdto.client.dtomanager.DtoView;
 import net.datenwerke.rs.utils.entitycloner.annotation.EnclosedEntity;
 import net.datenwerke.rs.utils.instancedescription.annotations.Description;
 import net.datenwerke.rs.utils.instancedescription.annotations.Title;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
@@ -100,6 +101,18 @@ public class Dashboard implements Serializable {
 	
 	@ExposeToClient
 	private boolean singlePage = true;
+	
+	@ExposeToClient
+	@Transient
+	private boolean primary = false;
+
+	public boolean isPrimary() {
+		return primary;
+	}
+
+	public void setPrimary(boolean primary) {
+		this.primary = primary;
+	}
 
 	public Long getId() {
 		return id;

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -334,7 +334,7 @@ public class ReportExecutorMainPanel extends DwContentPanel implements Closeable
 		/* load panels */
 		for(ReportViewHook hooker : hookHandler.getHookers(ReportViewHook.class)){
 			ReportViewFactory fact = hooker.getViewFactory();
-			if(fact.consumes(report) && config.accepctView(fact.getViewId())){
+			if(fact.consumes(report) && config.acceptView(fact.getViewId())){
 				reportViewCount++;
 				
 				ReportExecutorMainPanelView view = fact.newInstance(report, viewConfigs);

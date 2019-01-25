@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -24,6 +24,7 @@
 package net.datenwerke.rs.tsreportarea.service.tsreportarea;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
@@ -92,6 +93,24 @@ public interface TsDiskService extends TreeDBManager<AbstractTsDiskNode> {
 	 * @return A {@link Set} of {@link TeamSpace}s
 	 */
 	public Set<TeamSpace> getTeamSpacesThatLinkTo(Report report);
+	
+	/**
+	 * Retuns a {@link Map} of {@link TeamSpace}s which contain a link to the given 
+	 * {@link Report} mapped to their paths in the respective {@link TeamSpace}. The path is returned as a 
+	 * list of {@link AbstractTsDiskNode}s.
+	 * 
+	 * @param report The {@link Report}
+	 * @return The mapping between {@link TeamSpace}s and paths for the given report.
+	 */
+	Map<TeamSpace, List<List<AbstractTsDiskNode>>> getTeamSpacesWithPathsThatLinkTo(Report report);
+	
+	/**
+	 * Returns the path which contains the given {@link AbstractTsDiskNode} as a list of {@link AbstractTsDiskNode}s.
+	 * 
+	 * @param node The {@link AbstractTsDiskNode}
+	 * @return The corresponding path as a list of {@link AbstractTsDiskNode}s
+	 */
+	List<AbstractTsDiskNode> getPathFor(AbstractTsDiskNode node);
 
 	List<TsDiskReportReference> getReferencesTo(Report report);
 

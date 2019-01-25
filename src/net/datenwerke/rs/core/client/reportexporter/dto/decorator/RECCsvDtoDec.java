@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -32,7 +32,6 @@ import net.datenwerke.rs.core.client.reportexporter.dto.ReportExecutionConfigDto
  */
 public class RECCsvDtoDec extends RECCsvDto implements ReportExecutionConfigDto {
 
-
 	private static final long serialVersionUID = 1L;
 
 	public RECCsvDtoDec() {
@@ -41,7 +40,7 @@ public class RECCsvDtoDec extends RECCsvDto implements ReportExecutionConfigDto 
 		setPrintHeader(true);
 		setQuote("\"");
 		setSeparator(";");
+		setLineSeparator("\\r\\n");
 	}
-
 
 }

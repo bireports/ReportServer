@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -1001,7 +1001,7 @@ public class GridEditorReportPreviewView extends AbstractReportPreviewView imple
 	protected void configureEditor(GridEditorColumnConfigDto colConfigDef,
 			ColumnConfig<GridEditorRecordDto, ?> columnConfig,
 			GridEditing<GridEditorRecordDto> editing, boolean forRowEditor) {
-		if(!colConfigDef.isEditable())
+		if(!colConfigDef.isEditable() || colConfigDef.isHidden())
 			return;
 
 		Field field = null;
@@ -1017,9 +1017,15 @@ public class GridEditorReportPreviewView extends AbstractReportPreviewView imple
 				editing.addEditor((ColumnConfig<GridEditorRecordDto, Boolean>)columnConfig, field);
 				break;
 			case SqlTypes.CHAR:
-			case SqlTypes.CLOB:
-			case SqlTypes.LONGVARCHAR:
-			case SqlTypes.VARCHAR:
+	    	case SqlTypes.CLOB:
+	    	case SqlTypes.LONGVARCHAR:
+	    	case SqlTypes.VARCHAR:
+	    	case SqlTypes.NVARCHAR:
+	    	case SqlTypes.NCLOB:
+	    	case SqlTypes.NCHAR:
+	    	case SqlTypes.LONGNVARCHAR:
+	    	case SqlTypes.SQLXML:
+	    	case SqlTypes.OTHER:
 				field = new TextField();
 				editing.addEditor((ColumnConfig<GridEditorRecordDto, String>)columnConfig, field);
 				break;
@@ -1127,9 +1133,15 @@ public class GridEditorReportPreviewView extends AbstractReportPreviewView imple
 			columnConfig = new ColumnConfig<GridEditorRecordDto, Boolean>(new RowValueProviderBoolean(i), colConfigDef.getWidth(), header.toSafeHtml());
 			break;
 		case SqlTypes.CHAR:
-		case SqlTypes.CLOB:
-		case SqlTypes.LONGVARCHAR:
-		case SqlTypes.VARCHAR:
+    	case SqlTypes.CLOB:
+    	case SqlTypes.LONGVARCHAR:
+    	case SqlTypes.VARCHAR:
+    	case SqlTypes.NVARCHAR:
+    	case SqlTypes.NCLOB:
+    	case SqlTypes.NCHAR:
+    	case SqlTypes.LONGNVARCHAR:
+    	case SqlTypes.SQLXML:
+    	case SqlTypes.OTHER:
 		case SqlTypes.ROWID:
 			columnConfig = new ColumnConfig<GridEditorRecordDto, String>(new RowValueProviderString(i), colConfigDef.getWidth(), header.toSafeHtml());
 			break;

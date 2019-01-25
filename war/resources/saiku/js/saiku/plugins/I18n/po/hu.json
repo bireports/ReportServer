@@ -41,6 +41,7 @@
    "Loading...":"Betöltés...",
    "Measure":"Adattag",
    "Refresh Cubes (Clear Cache)":"Adatkockák frissítése (átmeneti tár törlése)",
+   "Drill across on cell": "Fúrás a cellán",
    "Drill through on cell":"Cella lefúrása",
    "Export Drill-Through on cell to CSV":"Cella átfúrásnak listája CSV-be mentése",
    "Search: &nbsp;":"Keresés: &nbsp;",
@@ -92,5 +93,16 @@
    "Clear Axis":"Tengelyek törlése",
    "New":"Új",
    "Close This":"Aktuális bezárása",
-   "Close Others":"Többi bezárása"
+   "Close Others":"Többi bezárása",
+   "Table Mode":"Tábla beállítás",
+   "Chart Mode":"Diagram beállítás",
+   "Treemap ":"Fa-struktúra",
+   "Tree Map":"Fa-struktúra",
+   "Sunburst":"Torta",
+   "Edit query":"Lekérdezés szerkesztése",
+   "Show MDX":"MDX megjelenítése",
+   "Zoom into table":"Tábla nagyítása",
+   "You need to include at least one measure or a level on columns for a valid query.": "Az érvényes lekérdezéshez legalább egy intézkedést vagy szintet kell tartalmaznia az oszlopokban.",
+   "You need to include at least one level on rows for a valid query.": "Egy érvényes lekérdezéshez legalább egy szintet kell feltöltenie a sorokra.",
+   "Reset Cube": "Reset Cube"
 }

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -109,6 +109,12 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 	}
 	
 	@Override
+	@QueryByAttribute(where=TeamSpace__.name)
+	public Collection<TeamSpace> getTeamSpacesByName(String name) {
+		return null; // by magic
+	}
+	
+	@Override
 	public void provideAccess(TeamSpace teamSpace, User user, TeamSpaceRole role){
 		if(! mayAccess(user, teamSpace)){
 			TeamSpaceMember member = new TeamSpaceMember();
@@ -125,6 +131,24 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 	public TeamSpace getPrimarySpace(){
 		User currentUser = authenticatorServiceProvider.get().getCurrentUser();
 		return getPrimarySpace(currentUser);
+	}
+	
+	@Override
+	public TeamSpace getExplicitPrimarySpace(){
+		User currentUser = authenticatorServiceProvider.get().getCurrentUser();
+		UserProperty property = userPropertiesService.getProperty(currentUser, USER_PROPERTY_PRIMARY_TEAMSPACE);
+		if(null != property){
+			try{
+				long id = Long.valueOf(property.getValue());
+				TeamSpace teamSpace = getTeamSpaceById(id);
+				if(null != teamSpace && mayAccess(currentUser, teamSpace))
+					return teamSpace;
+			} catch(NumberFormatException e){
+			} catch(NoResultException e){
+			}
+		}
+		
+		return null;
 	}
 
 	@Override
@@ -430,6 +454,7 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 	
 	@Override
 	public boolean hasRole(TeamSpace teamSpace, TeamSpaceRole roleToHave) {
+		if (null == teamSpace) return true;
 		if(isGlobalTsAdmin() || isOwner(teamSpace))
 			return true;
 		

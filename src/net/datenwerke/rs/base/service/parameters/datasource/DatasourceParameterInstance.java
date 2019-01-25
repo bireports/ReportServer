@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -158,7 +158,7 @@ public class DatasourceParameterInstance extends ParameterInstance<DatasourcePar
 	protected void doParseStringValue(String value){
 		if(((DatasourceParameterDefinition)getDefinition()).getMode() == Mode.Single){
 			DatasourceParameterData data = new DatasourceParameterData();
-			data.setKey("tmp"); //$NON-NLS-1$
+			data.setKey(value); //$NON-NLS-1$
 			data.setValue(value);
 			setSingleValue(data);
 		} else {
@@ -166,7 +166,7 @@ public class DatasourceParameterInstance extends ParameterInstance<DatasourcePar
 			if(null != value && ! "".equals(value.trim())){
 				for(String dataValue : value.split("\\|")){ //$NON-NLS-1$
 					DatasourceParameterData data = new DatasourceParameterData();
-					data.setKey("tmp"); //$NON-NLS-1$
+					data.setKey(value); //$NON-NLS-1$
 					data.setValue(dataValue);
 					dataList.add(data);
 				}

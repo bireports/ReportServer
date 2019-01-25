@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -135,21 +135,25 @@ public abstract class Csv2XTransformer<X> implements DataSourceDefinitionTransfo
 		ConnectionPoolConfig cpc = tempTableService.getConnectionConfig();
 		String helperId = String.valueOf(ds.getId())  + "_" + String.valueOf(dsConfig.getId()) + "_" + String.valueOf(dsConfig.getOldTransientId());
 		TempTableHelper tempTableHelper = tempTableService.getHelper(helperId);
-		String tableName = tempTableHelper.getTableName(cpc, TABLE_ALIAS);
-		
 		try{
-			CsvToTableModelHelper csvToTableModelHelper = new CsvToTableModelHelper();
-			csvToTableModelHelper.setPreferences(ds.getQuote().charAt(0), ds.getSeparator().charAt(0), "\n");
-			CsvCellProcessorGuesser guessDatatypes = csvToTableModelHelper.guessDatatypes(ds.getDataStream(dsConfig), 100);
-			RSTableModel rsTableModel = csvToTableModelHelper.processCSV(ds.getDataStream(dsConfig), guessDatatypes);
+			String tableName = tempTableHelper.getTableName(cpc, TABLE_ALIAS);
 			
-			tableModelDbHelper.writeRsTableModel(rsTableModel, cpc, tableName);
-			String query = "select * from ${" + TABLE_ALIAS + "}";
-			
-			return new TempTableResult(tempTableHelper, cpc, query);
-			
-		}catch(IOError | IOException | DatabaseException | SQLException | InterruptedException | ExecutionException e){
-			throw new RuntimeException(e);
+			try{
+				CsvToTableModelHelper csvToTableModelHelper = new CsvToTableModelHelper();
+				csvToTableModelHelper.setPreferences(ds.getQuote().charAt(0), ds.getSeparator().charAt(0), "\n");
+				CsvCellProcessorGuesser guessDatatypes = csvToTableModelHelper.guessDatatypes(ds.getDataStream(dsConfig), 100);
+				RSTableModel rsTableModel = csvToTableModelHelper.processCSV(ds.getDataStream(dsConfig), guessDatatypes);
+				
+				tableModelDbHelper.writeRsTableModel(rsTableModel, cpc, tableName);
+				String query = "select * from ${" + TABLE_ALIAS + "}";
+				
+				return new TempTableResult(tempTableHelper, cpc, query);
+				
+			}catch(IOError | IOException | DatabaseException | SQLException | InterruptedException | ExecutionException e){
+				throw new RuntimeException(e);
+			}
+		} finally {
+			tempTableHelper.writeOperationCompleted();
 		}
 	}
 

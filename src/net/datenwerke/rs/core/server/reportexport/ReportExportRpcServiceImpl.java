@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -56,6 +56,7 @@ import net.datenwerke.rs.core.service.reportmanager.engine.config.RECReportExecu
 import net.datenwerke.rs.core.service.reportmanager.engine.config.ReportExecutionConfig;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.core.service.reportmanager.interfaces.ReportVariant;
+import net.datenwerke.rs.utils.config.ConfigService;
 import net.datenwerke.rs.utils.eventbus.EventBus;
 import net.datenwerke.rs.utils.filename.FileNameService;
 import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownUser;
@@ -79,6 +80,8 @@ public class ReportExportRpcServiceImpl extends SecuredRemoteServiceServlet
 	 * 
 	 */
 	private static final long serialVersionUID = -7487071865510613059L;
+	
+	private static final String configPath = "exportfilemd/";
 
 	private final Provider<AuthenticatorService> authenticatorServiceProvider;
 	private final DtoService dtoService;
@@ -92,7 +95,7 @@ public class ReportExportRpcServiceImpl extends SecuredRemoteServiceServlet
 	private final ReportService reportService;
 	private final FileNameService fileNameService;
 	private final Provider<ReportSessionCache> sessionCacheProvider;
-
+	private final ConfigService configService;
 
 	
 	@Inject
@@ -108,7 +111,8 @@ public class ReportExportRpcServiceImpl extends SecuredRemoteServiceServlet
 		ReportService reportService,
 		EventBus eventBus,
 		FileNameService fileNameService,
-		Provider<ReportSessionCache> sessionCacheProvider
+		Provider<ReportSessionCache> sessionCacheProvider,
+		ConfigService configService
 		){
 		
 		this.authenticatorServiceProvider = authenticatorServiceProvider;
@@ -123,6 +127,7 @@ public class ReportExportRpcServiceImpl extends SecuredRemoteServiceServlet
 		this.eventBus = eventBus;
 		this.fileNameService = fileNameService;
 		this.sessionCacheProvider = sessionCacheProvider;
+		this.configService = configService;
 	}
 	
 	@Override
@@ -193,6 +198,10 @@ public class ReportExportRpcServiceImpl extends SecuredRemoteServiceServlet
 		/* create variant */
 		Report adjustedReport = (Report) dtoService.createUnmanagedPoso(reportDto);
 		final Report toExecute = orgReport.createTemporaryVariant(adjustedReport);
+		
+		for(ReportExportViaSessionHook hooker : hookHandlerService.getHookers(ReportExportViaSessionHook.class)){
+			hooker.adjustReport(toExecute, configArray);
+		}
 	
 		CompiledReport cReport;
 		try {
@@ -252,6 +261,11 @@ public class ReportExportRpcServiceImpl extends SecuredRemoteServiceServlet
 		}
 		
 		return fileNameService.sanitizeFileName(reportName);
+	}
+
+	@Override
+	public String getExportDefaultSettingsAsJSON(String identifier) {
+		return configService.getConfigAsJsonFailsafe(configPath + identifier);
 	}
 
 

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -58,6 +58,7 @@ public class UrlViewModule extends AbstractModule {
 	public static final String VIEW_TYPES = "types";
 	public static final String VIEW_URL = "url";
 	public static final String VIEW_NAME = "name";
+	public static final String VIEW_PRIORITY = "priority";
 
 	
 	@Override
@@ -140,13 +141,17 @@ public class UrlViewModule extends AbstractModule {
 			    try{
 				    String url = sub.getString(VIEW_URL);
 				    String name = sub.getString(VIEW_NAME);
+				    String priority = sub.getString(VIEW_PRIORITY);
 				    
 				    url = url == null ? "" : url;
 				    name = parseName(name, simpleJuelNameParser);
 				    name = name == null ? "" : name;
 				    
 				    ArrayList<String[]> l = new ArrayList<String[]>();
-				    l.add(new String[]{name, url});
+				    if(null != priority)
+				    	l.add(new String[]{name, url, priority});
+				    else
+				    	l.add(new String[]{name, url});
 			    	innerMap.put("" + module++, l);
 			    }catch(Exception e){//swallow
 			    }

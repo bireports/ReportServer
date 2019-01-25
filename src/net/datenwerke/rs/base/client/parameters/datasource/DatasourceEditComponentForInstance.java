@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -41,6 +41,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.util.ToggleGroup;
 import com.sencha.gxt.data.client.loader.RpcProxy;
@@ -393,13 +394,32 @@ public class DatasourceEditComponentForInstance {
 		final ListLoader<ListLoadConfig, ListLoadResult<DatasourceParameterDataDto>> loader = getLoader(definition, relevantInstances);
 	    loader.addLoadHandler(new LoadResultListStoreBinding<ListLoadConfig, DatasourceParameterDataDto, ListLoadResult<DatasourceParameterDataDto>>(store));
 		
-		/* create combo box */
-		final ComboBox<DatasourceParameterDataDto> comboBox = new ComboBox<DatasourceParameterDataDto>(store, new LabelProvider<DatasourceParameterDataDto>() {
+	    
+	    ComboBoxCell<DatasourceParameterDataDto> cell = new ComboBoxCell<DatasourceParameterDataDto>(store, new LabelProvider<DatasourceParameterDataDto>() {
 			@Override
 			public String getLabel(DatasourceParameterDataDto item) {
 				return item.getKey();
 			}
-		});
+		}) {
+	        // ~~~ workaround for "contains query" using contains for comboboxcell (adding something easier in 4.0.3)
+	        @Override
+	        protected boolean itemMatchesQuery(DatasourceParameterDataDto item, String query) {
+	          String value = getRenderedValue(item);
+	          if (value != null) {
+	            return value.toLowerCase().contains(query.toLowerCase());
+	          }
+	          return false;
+	        }
+	        
+	        // ~~~ future visibility change in 4.0.3
+	        private String getRenderedValue(DatasourceParameterDataDto item) {
+	          return getPropertyEditor().render(item);
+	        }
+	      };
+	    
+		/* create combo box */
+		final ComboBox<DatasourceParameterDataDto> comboBox = new ComboBox<DatasourceParameterDataDto>(cell); 
+		comboBox.setStore(store);
 		comboBox.setForceSelection(true);
 		comboBox.setTypeAhead(true);
 		comboBox.setEditable(true);

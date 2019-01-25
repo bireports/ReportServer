@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -31,6 +31,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.sencha.gxt.core.client.util.Margins;
@@ -38,12 +39,16 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 
 import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.model.DwModel;
+import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.gxtdto.client.utilityservices.UtilsUIService;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.base.client.reportengines.table.dto.ColumnDto;
 import net.datenwerke.rs.base.client.reportengines.table.dto.TableReportDto;
 import net.datenwerke.rs.core.client.reportexecutor.ReportExecutorDao;
+import net.datenwerke.rs.core.client.reportexecutor.locale.ReportexecutorMessages;
 import net.datenwerke.rs.core.client.reportexecutor.ui.preview.AbstractReportPreviewView;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.saiku.client.saiku.locale.SaikuMessages;
@@ -56,6 +61,7 @@ public class SaikuTableReportPreviewView extends AbstractReportPreviewView {
 	private boolean hasBeenExecuted;
 	private HandlerRegistration loadHandler;
 	private Frame iframe;
+	private boolean hadExecutionError;
 	
 	@Inject
 	public SaikuTableReportPreviewView(
@@ -80,8 +86,12 @@ public class SaikuTableReportPreviewView extends AbstractReportPreviewView {
 		wrapper.clear();
 		VerticalLayoutContainer container = new VerticalLayoutContainer();
 		wrapper.setWidget(container);
+		
+		boolean isConfigurationProtected = report.isConfigurationProtected();
 
-		iframe = new Frame("resources/saiku/index.html?username=" + getExecuteReportToken() + "&password=none");
+		iframe= new NamedFrame("rs-saiku-" + getExecuteReportToken());
+		iframe.getElement().setAttribute("id", "rs-saiku-" + getExecuteReportToken());
+		iframe.setUrl("resources/saiku/index.html?username=" + getExecuteReportToken() + "&password=none&RS_SHOW_RESET=true&RS_CONFIGURATION_PROTECTED=" + isConfigurationProtected);
 		iframe.setHeight("100%");
 		iframe.setWidth("100%");
 		iframe.getElement().setAttribute("width", "100%");
@@ -131,6 +141,7 @@ public class SaikuTableReportPreviewView extends AbstractReportPreviewView {
 			
 			@Override
 			public void onFailure(Throwable caught) {
+				hadExecutionError = true;
 				callback.onFailure(caught);
 			}
 		});
@@ -147,7 +158,33 @@ public class SaikuTableReportPreviewView extends AbstractReportPreviewView {
 	}
 
 	public void makeAwareOfSelection() {
-		if(!hasBeenExecuted || hadSaikuError())
+		if(report instanceof TableReportDto){
+			
+			if(((TableReportDto) report).getColumns().isEmpty()){
+				hadExecutionError = true;
+				new DwAlertMessageBox(ReportexecutorMessages.INSTANCE.failed(), ReportexecutorMessages.INSTANCE.noColumnsSelected()).show();
+				if(null != container)
+					container.disable();
+				return;
+			}
+			
+			boolean aggregationFound = false;
+			for (ColumnDto column: ((TableReportDto) report).getColumns()) {
+				if (null != column.getAggregateFunction()) {
+					aggregationFound = true;
+					break;
+				}
+			}
+			if (!aggregationFound) {
+				hadExecutionError = true;
+				new DwAlertMessageBox(ReportexecutorMessages.INSTANCE.failed(), ReportexecutorMessages.INSTANCE.noAggregationSelected()).show();
+				if(null != container)
+					container.disable();
+				return;
+			}
+		}
+		
+		if(!hasBeenExecuted || hadExecutionError() || hadSaikuError() )
 			super.makeAwareOfSelection();
 		hasBeenExecuted = true;
 		report.fireObjectChangedEvent();
@@ -155,9 +192,15 @@ public class SaikuTableReportPreviewView extends AbstractReportPreviewView {
 	
 	
 	public boolean hadSaikuError() {
-		boolean b = "true".equals(iframe.getElement().getAttribute("data-rspivoterror"));
-		iframe.getElement().setAttribute("data-rspivoterror", "false");
-		return b;
+//		boolean b = "true".equals(iframe.getElement().getAttribute("data-rspivoterror"));
+//		iframe.getElement().setAttribute("data-rspivoterror", "false");
+//		return b;
+		return false;
 	}
 	
+	public boolean hadExecutionError() {
+		boolean execError = hadExecutionError;
+		hadExecutionError = false;
+		return execError;
+	}
 }

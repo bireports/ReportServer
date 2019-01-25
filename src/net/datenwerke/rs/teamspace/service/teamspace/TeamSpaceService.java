@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -44,9 +44,16 @@ public interface TeamSpaceService {
 	/**
 	 * Retrieves the primary {@link TeamSpace} of the current user.
 	 * 
-	 * @return The primary {@link TeamSpace} of the current user
+	 * @return The primary {@link TeamSpace} of the current user.
 	 */
 	TeamSpace getPrimarySpace();
+	
+	/**
+	 * Retrieves the primary {@link TeamSpace} of the current user if this is explicitely set.
+	 * 
+	 * @return The primary {@link TeamSpace} of the current user if this is explicitely set.
+	 */
+	TeamSpace getExplicitPrimarySpace();
 	
 	/**
 	 * Retrieves the primary {@link TeamSpace} of the given {@link User}.
@@ -321,6 +328,8 @@ public interface TeamSpaceService {
 	boolean mayAccess(User user, TeamSpace teamSpace);
 
 	TeamSpace getTeamSpaceByName(String name);
+	
+	Collection<TeamSpace> getTeamSpacesByName(String name);
 
 	void provideAccess(TeamSpace teamSpace, User user, TeamSpaceRole role);
 

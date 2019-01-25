@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -24,21 +24,23 @@
 package net.datenwerke.rs.tsreportarea.client.tsreportarea.rpc;
 
 import java.util.List;
+import java.util.Map;
+
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import net.datenwerke.gxtdto.client.dtomanager.Dto;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.NeedForcefulDeleteClientException;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.container.TsDiskItemList;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 import net.datenwerke.treedb.client.treedb.rpc.RPCTreeLoader;
 import net.datenwerke.treedb.client.treedb.rpc.RPCTreeManager;
-
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * 
@@ -62,6 +64,8 @@ public interface TsDiskRpcService extends RemoteService, RPCTreeLoader, RPCTreeM
 	public void sendUserViewChangedNotice(String viewId) throws ServerCallFailedException;
 	
 	public List<TeamSpaceDto> getTeamSpacesWithReferenceTo(ReportDto report) throws ServerCallFailedException;
+	
+	public Map<TeamSpaceDto, List<List<AbstractTsDiskNodeDto>>> getTeamSpacesWithPathsThatLinkTo(ReportDto report) throws ServerCallFailedException;
 	
 	AbstractNodeDto updateNode(AbstractNodeDto nodeDto,
 			boolean changeUnderlyingReport, String name, String description,

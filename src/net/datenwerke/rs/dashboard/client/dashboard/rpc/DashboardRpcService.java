@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -30,7 +30,9 @@ import java.util.Set;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.sencha.gxt.data.shared.loader.ListLoadResult;
 
+import net.datenwerke.gf.client.history.HistoryLocation;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
@@ -62,7 +64,7 @@ public interface DashboardRpcService extends RemoteService {
 	
 	public DashboardDto removeDadgetFromDashboard(DashboardDto dashboard, DadgetDto dadget) throws ServerCallFailedException;
 	
-	
+	public DashboardDto getExplicitPrimaryDashboard() throws ServerCallFailedException;
 	
 	public void addToFavorites(AbstractTsDiskNodeDto node) throws ServerCallFailedException;
 	
@@ -87,4 +89,12 @@ public interface DashboardRpcService extends RemoteService {
 	
 	public void changeDashboardOrder(ArrayList<Long> dashboardIds) throws ServerCallFailedException;
 
+	DashboardDto loadDashboardForDisplayFrom(HistoryLocation location);
+	
+	public ListLoadResult<DashboardDto> loadAllDashboards() throws ServerCallFailedException;
+	
+	public ListLoadResult<DashboardDto> loadDashboards() throws ServerCallFailedException;
+	
+	public void setPrimaryDashboard(DashboardDto dashboardDto) throws ServerCallFailedException;
+	
 }

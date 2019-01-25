@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -38,6 +38,8 @@ import net.datenwerke.rs.saiku.service.saiku.reportengine.output.object.Compiled
 import org.olap4j.CellSet;
 import org.saiku.olap.dto.SaikuDimensionSelection;
 import org.saiku.olap.dto.resultset.CellDataSet;
+import org.saiku.olap.query2.ThinHierarchy;
+import org.saiku.olap.util.formatter.ICellSetFormatter;
 import org.saiku.service.util.export.ExcelExporter;
 
 public class SaikuXLSOutputGenerator extends SaikuOutputGeneratorImpl {
@@ -62,11 +64,11 @@ public class SaikuXLSOutputGenerator extends SaikuOutputGeneratorImpl {
 
 	@Override
 	public CompiledRSSaikuReport exportReport(CellDataSet cellDataSet,
-			CellSet cellset, List<SaikuDimensionSelection> filters,
+			CellSet cellset, List<ThinHierarchy> filters, ICellSetFormatter formatter,
 			String outputFormat, ReportExecutionConfig... configs)
 			throws ReportExecutorException {
 
-		byte[] excel = ExcelExporter.exportExcel(cellset, getCellSetFormatter(), filters);
+		byte[] excel = ExcelExporter.exportExcel(cellDataSet, formatter, filters);
 		return new CompiledXLSSaikuReport(excel);
 	}
 

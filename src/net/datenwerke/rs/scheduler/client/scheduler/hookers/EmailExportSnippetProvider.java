@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -45,6 +45,7 @@ public class EmailExportSnippetProvider implements
 	private String isEmailKey;
 	private String subjectKey;
 	private String messageKey;
+	private String compressedKey;
 	
 	@Override
 	public void configureSimpleForm(SimpleForm xform, ReportDto report, Collection<ReportViewConfiguration> configs) {
@@ -64,14 +65,23 @@ public class EmailExportSnippetProvider implements
 		xform.setLabelAlign(LabelAlign.TOP);
 		messageKey = xform.addField(String.class, SchedulerMessages.INSTANCE.message(), new SFFCTextAreaImpl());
 		
+		xform.setLabelAlign(LabelAlign.LEFT);
+		compressedKey = xform.addField(Boolean.class, "", new SFFCBoolean() {
+			@Override
+			public String getBoxLabel() {
+				return SchedulerMessages.INSTANCE.reportCompress();
+			}
+		});
+		
 		xform.addCondition(isEmailKey, new FieldEquals(true), new ShowHideFieldAction(subjectKey));
 		xform.addCondition(isEmailKey, new FieldEquals(true), new ShowHideFieldAction(messageKey));
+		xform.addCondition(isEmailKey, new FieldEquals(true), new ShowHideFieldAction(compressedKey));
+		
 	}
 
 	@Override
 	public boolean isValid(SimpleForm simpleForm) {
 		String subject = (String) simpleForm.getValue(subjectKey);
-		String message = (String) simpleForm.getValue(messageKey);
 		
 		return (null != subject && !subject.isEmpty());
 		
@@ -86,6 +96,7 @@ public class EmailExportSnippetProvider implements
 			EmailInformation info = definition.getAdditionalInfo(EmailInformation.class);
 			if(null != info){
 				form.setValue(isEmailKey, true);
+				form.setValue(compressedKey, info.isCompressed());
 				form.setValue(subjectKey, info.getSubject());
 				form.setValue(messageKey, info.getMessage());
 			}
@@ -105,6 +116,7 @@ public class EmailExportSnippetProvider implements
 		
 		emailInfo.setSubject((String) simpleForm.getValue(subjectKey));
 		emailInfo.setMessage((String) simpleForm.getValue(messageKey));
+		emailInfo.setCompressed((Boolean) simpleForm.getValue(compressedKey));
 		
 		configDto.addAdditionalInfo(emailInfo);
 	}

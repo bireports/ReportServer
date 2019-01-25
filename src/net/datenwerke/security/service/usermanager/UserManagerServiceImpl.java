@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -387,6 +387,43 @@ public class UserManagerServiceImpl extends SecuredTreeDBManagerImpl<AbstractUse
 	@QueryById
 	public AbstractUserManagerNode getNodeById(long id) {
 		return null; // magic
+	}
+	
+	@Override
+	public Set<User> getAllTransitiveUsers(AbstractUserManagerNode node) {
+		Set<User> ulist = new HashSet<User>();
+		
+		if(node instanceof User){
+			ulist.add((User)node);
+			return ulist;
+		}
+
+		if (node instanceof Group) {
+			// process inherited groups
+			for (Group g : ((Group) node).getReferencedGroups())
+				ulist.addAll(getAllTransitiveUsers(g));
+
+			// process inherited OUs
+			for (OrganisationalUnit ou : ((Group) node).getOus())
+				ulist.addAll(getAllTransitiveUsers(ou));
+
+			// add users of current node
+			for (User user : ((Group) node).getUsers())
+				ulist.addAll(getAllTransitiveUsers(user));
+			
+		} else if (node instanceof OrganisationalUnit) {
+			for (AbstractUserManagerNode child : node.getChildren()) {
+				if (child instanceof User)
+					ulist.addAll(getAllTransitiveUsers(child));
+				
+				if (child instanceof Group)
+					ulist.addAll(getAllTransitiveUsers((Group) child));
+				
+				if (child instanceof OrganisationalUnit)
+					ulist.addAll(getAllTransitiveUsers((OrganisationalUnit) child));
+			}
+		}
+		return ulist;
 	}
 
 }

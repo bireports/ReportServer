@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -147,8 +147,14 @@ public class GridEditorRecordEntry {
 		case SqlTypes.CHAR:
     	case SqlTypes.CLOB:
     	case SqlTypes.LONGVARCHAR:
+    	case SqlTypes.LONGNVARCHAR:
     	case SqlTypes.VARCHAR:
     	case SqlTypes.ROWID:
+    	case SqlTypes.NVARCHAR:
+    	case SqlTypes.NCHAR:
+    	case SqlTypes.NCLOB:
+    	case SqlTypes.SQLXML:
+    	case SqlTypes.OTHER:
     		stringValue = String.valueOf(value);
     		break;
     		
@@ -156,9 +162,11 @@ public class GridEditorRecordEntry {
     		longValue = (long) value;
     		break;
     	case SqlTypes.INTEGER:
+    		intValue = (Integer) value;
+    		break;
     	case SqlTypes.SMALLINT:
     	case SqlTypes.TINYINT:
-    		intValue = (int) value;
+    		intValue = new Integer((Short)value);
     		break;
     	case SqlTypes.NUMERIC:
     	case SqlTypes.DECIMAL:

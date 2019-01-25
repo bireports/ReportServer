@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -38,6 +38,7 @@ public class TableReport__ extends net.datenwerke.rs.core.service.reportmanager.
 	public static final String cubeXml = "cubeXml";
 	public static final String distinctFlag = "distinctFlag";
 	public static final String enableSubtotals = "enableSubtotals";
+	public static final String hideParents = "hideParents";
 	public static final String metadataDatasourceContainer = "metadataDatasourceContainer";
 	public static final String preFilter = "preFilter";
 	public static final String serialVersionUID = "serialVersionUID";

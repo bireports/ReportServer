@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -24,10 +24,9 @@
 package net.datenwerke.rs.saiku.service.hooker;
 
 import net.datenwerke.rs.base.service.reportengines.table.entities.TableReport;
-import net.datenwerke.rs.base.service.reportengines.table.entities.TableReportVariant;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.core.service.reportmanager.hooks.VariantCreatorHook;
-import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReportVariant;
+import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReport;
 
 public class VariantCreatedAdjustSaikuQueryHooker implements VariantCreatorHook {
 
@@ -38,19 +37,33 @@ public class VariantCreatedAdjustSaikuQueryHooker implements VariantCreatorHook 
 
 	@Override
 	public void temporaryVariantCreated(Report referenceReport, Report adjustedReport, Report variant) {
-		if(variant instanceof SaikuReportVariant) {
-			if(adjustedReport instanceof SaikuReportVariant && ((SaikuReportVariant) adjustedReport).getQueryXml() != null) {
-				((SaikuReportVariant) variant).setQueryXml(((SaikuReportVariant) adjustedReport).getQueryXml());
-			}else if(referenceReport instanceof SaikuReportVariant){
-				((SaikuReportVariant) variant).setQueryXml(((SaikuReportVariant) referenceReport).getQueryXml());
+
+		if (referenceReport instanceof SaikuReport && adjustedReport instanceof SaikuReport
+				&& variant instanceof SaikuReport) {
+			if (((SaikuReport) adjustedReport).getQueryXml() != null) {
+				((SaikuReport) variant).setQueryXml(((SaikuReport) adjustedReport).getQueryXml());
+				((SaikuReport) variant).setHideParents(((SaikuReport) adjustedReport).isHideParents());
+			} else {
+				((SaikuReport) variant).setQueryXml(((SaikuReport) referenceReport).getQueryXml());
+				((SaikuReport) variant).setHideParents(((SaikuReport) referenceReport).isHideParents());
 			}
-		} else if(variant instanceof TableReport && ((TableReport)variant).isCube()){
-			if(adjustedReport instanceof TableReport && ((TableReport) adjustedReport).getCubeXml() != null) {
-				((TableReportVariant) variant).setCubeXml(((TableReport) adjustedReport).getCubeXml());
-			}else if(referenceReport instanceof TableReport){
-				((TableReportVariant) variant).setCubeXml(((TableReport) referenceReport).getCubeXml());
+		} else if (referenceReport instanceof TableReport && adjustedReport instanceof TableReport
+				&& variant instanceof TableReport) {
+
+			if (((TableReport) variant).isCube()) {
+
+				if (((TableReport) adjustedReport).getCubeXml() != null) {
+					((TableReport) variant).setCubeXml(((TableReport) adjustedReport).getCubeXml());
+					((TableReport) variant).setHideParents(((TableReport) adjustedReport).isHideParents());
+				} else {
+					((TableReport) variant).setCubeXml(((TableReport) referenceReport).getCubeXml());
+					((TableReport) variant).setHideParents(((TableReport) referenceReport).isHideParents());
+				}
+
 			}
+
 		}
+
 	}
 
 }

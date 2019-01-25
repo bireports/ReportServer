@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,16 +23,24 @@
  
 package net.datenwerke.rs.dashboard.service.dashboard;
 
+import java.util.Collection;
+
+import net.datenwerke.rs.dashboard.service.dashboard.entities.AbstractDashboardManagerNode;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.Dadget;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.Dashboard;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardContainer;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardNode;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.UserDashboard;
 import net.datenwerke.security.service.usermanager.entities.User;
+import net.datenwerke.treedb.service.treedb.TreeDBManager;
 
-public interface DashboardService {
+public interface DashboardService extends TreeDBManager<AbstractDashboardManagerNode> {
+	
+	public static final String USER_PROPERTY_PRIMARY_DASHBOARD = "dashboard:primaryDashboard";
 
 	void removeDashboardFor(User user);
+	
+	Dashboard getExplicitPrimaryDashboard(User user);
 
 	UserDashboard getUserDashboard(User user);
 
@@ -61,5 +69,13 @@ public interface DashboardService {
 	Dashboard getDashboardFor(Dadget dadget);
 
 	DashboardNode getNodeFor(Dashboard dashboard);
+	
+	boolean isOwner(User user, Dashboard dashboard);
+
+	Collection<Dashboard> getAllDashboards();
+
+	Collection<Dashboard> getDashboards();
+
+	void setPrimaryDashboard(Dashboard dashboard);
 
 }

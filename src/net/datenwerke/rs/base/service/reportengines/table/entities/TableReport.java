@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -161,6 +161,7 @@ public class TableReport extends Report {
 	
 	@Lob
 	@Type(type = "net.datenwerke.rs.utils.hibernate.RsClobType")
+	@ExposeToClient(allowArbitraryLobSize=true,disableHtmlEncode=true,exposeValueToClient=false)
 	private String cubeXml;
 	
 	@ExposeToClient(view=DtoView.FTO)
@@ -168,7 +169,10 @@ public class TableReport extends Report {
 
 	@ExposeToClient
 	private boolean allowCubification = true;
-
+	
+	@ExposeToClient
+	@Deprecated
+	private boolean hideParents = true;
 	
 	@Override
 	protected void doPrePersist() {
@@ -253,6 +257,7 @@ public class TableReport extends Report {
 		variant.setCube(((TableReport) adjustedReport).isCube());
 		if (((TableReport) adjustedReport).isCube())
 			variant.setCubeXml(((TableReport)adjustedReport).getCubeXml());
+		variant.setHideParents(((TableReport) adjustedReport).isHideParents());
 		
 		return variant;
 	}
@@ -283,6 +288,15 @@ public class TableReport extends Report {
 				}
 			}
 		}
+	}
+	
+	@Deprecated
+	public void setHideParents(boolean hideParents) {
+		this.hideParents = hideParents;
+	}
+	@Deprecated
+	public boolean isHideParents() {
+		return hideParents;
 	}
 
 	public List<Column> getColumns() {

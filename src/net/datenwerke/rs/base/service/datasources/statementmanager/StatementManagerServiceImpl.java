@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -80,15 +80,22 @@ public class StatementManagerServiceImpl implements StatementManagerService {
 			if(null != userStatementMap){
 				userStatementMap.remove(statementId.substring(1 + statementId.indexOf(":")));
 				if(userStatementMap.isEmpty()){
+					getUserStatementMap().remove(statementId.substring(statementId.indexOf(":")));
 					unregisterStatement(statementId.substring(0, statementId.indexOf(":")));
 				}
 			}
 		}else{
 			Map<String,Map<String,StatementContainer>> userStatementMap = getUserStatementMap();
 			if(null != userStatementMap){
-				if(userStatementMap.isEmpty())
-					statementMap.remove(statementId);
+				userStatementMap.remove(statementId);
+				if (userStatementMap.isEmpty()) {
+					getUserStatementMap().remove(statementId);
+				}
 			}
+		}
+		
+		if (getUserStatementMap().isEmpty()) {
+			statementMap.remove(getCurrentUserId());
 		}
 	}
 	
@@ -177,6 +184,11 @@ public class StatementManagerServiceImpl implements StatementManagerService {
 					statementContainer.getStatement().cancel();
 				} catch (SQLException e) { }
 			}
+		}
+		
+		getUserStatementMap().remove(statementId);
+		if (getUserStatementMap().isEmpty()) {
+			statementMap.remove(getCurrentUserId());
 		}
 	}
 	

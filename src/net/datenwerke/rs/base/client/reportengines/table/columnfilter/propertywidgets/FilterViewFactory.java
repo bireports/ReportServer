@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -54,7 +54,7 @@ public class FilterViewFactory implements ReportViewFactory{
 	public boolean consumes(ReportDto report) {
 		return 
 			report instanceof TableReportDto &&
-			report.hasAccessRight(ExecuteDto.class) && ! ((TableReportDto)report).isCube();
+			report.hasAccessRight(ExecuteDto.class) && ! ((TableReportDto)report).isCube() && !report.isConfigurationProtected();
 	}
 	
 	@Override

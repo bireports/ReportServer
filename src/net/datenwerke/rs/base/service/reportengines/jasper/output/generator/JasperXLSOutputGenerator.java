@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,24 +25,27 @@ package net.datenwerke.rs.base.service.reportengines.jasper.output.generator;
 
 import java.io.ByteArrayOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
+
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.base.service.reportengines.jasper.entities.JasperReport;
 import net.datenwerke.rs.base.service.reportengines.jasper.output.object.CompiledRSJasperReport;
 import net.datenwerke.rs.base.service.reportengines.jasper.output.object.CompiledXLSJasperReport;
+import net.datenwerke.rs.base.service.reportengines.jasper.output.object.CompiledXLSXJasperReport;
 import net.datenwerke.rs.core.service.reportmanager.ReportExecutorService;
 import net.datenwerke.rs.core.service.reportmanager.engine.CompiledReport;
 import net.datenwerke.rs.core.service.reportmanager.engine.config.ReportExecutionConfig;
+import net.datenwerke.rs.utils.config.ConfigService;
 import net.datenwerke.security.service.usermanager.entities.User;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.inject.Inject;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 
 /**
  * Exports a jasper report to PDF.
@@ -51,12 +54,21 @@ import com.google.inject.Inject;
 public class JasperXLSOutputGenerator extends JasperOutputGeneratorImpl {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
+	
+	public static final String CONFIG_FILE = "exportfilemd/excelexport.cf";
+	public static final String XLS_EXPORT_FORMAT_PROPERTY = "xls.format";
+	
+	private final ConfigService configService; 
 
 	@Inject
 	public JasperXLSOutputGenerator(
-		HookHandlerService hookHandler	
+		HookHandlerService hookHandler,
+		ConfigService configService
 		){
 		super(hookHandler);
+		
+		/* store objects */
+		this.configService = configService;
 	}
 	
 	public String[] getFormats() {
@@ -67,7 +79,12 @@ public class JasperXLSOutputGenerator extends JasperOutputGeneratorImpl {
 	public CompiledRSJasperReport exportReport(JasperPrint jasperPrint, String outputFormat, JasperReport report,  User user, ReportExecutionConfig... configs) {
 		JRAbstractExporter exporter;
 		
-		exporter = new JRXlsExporter();
+		String excelFormat = getExportFormat();
+		if("xls".equals(excelFormat)){
+			exporter = new JRXlsExporter();
+		} else {
+			exporter = new JRXlsxExporter();
+		}
 		
 		/* create buffer for output */
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -86,7 +103,13 @@ public class JasperXLSOutputGenerator extends JasperOutputGeneratorImpl {
 		}
 		
 		/* create return object */
-		CompiledRSJasperReport cjrReport = new CompiledXLSJasperReport();
+		CompiledRSJasperReport cjrReport = null;
+		if("xls".equals(excelFormat)){
+			cjrReport = new CompiledXLSJasperReport();
+		} else {
+			cjrReport = new CompiledXLSXJasperReport();
+		}
+		
 		cjrReport.setData(jasperPrint);
 		
 		/* add report to object */
@@ -97,6 +120,10 @@ public class JasperXLSOutputGenerator extends JasperOutputGeneratorImpl {
 		/* return compiled report */
 		return cjrReport;
 	}
+	
+	protected String getExportFormat(){
+		return configService.getConfigFailsafe(CONFIG_FILE).getString(XLS_EXPORT_FORMAT_PROPERTY, "xlsx");
+	}	
 
 	@Override
 	public CompiledReport getFormatInfo() {

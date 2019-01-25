@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -52,6 +52,7 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 import com.google.inject.Inject;
 
@@ -121,13 +122,14 @@ public class JasperPNGOutputGenerator extends JasperOutputGeneratorImpl {
 		PDDocument document;
 		try {
 			document = PDDocument.load(is);
-			List pages = document.getDocumentCatalog().getAllPages();
-			PDPage page = (PDPage)pages.get(0);
-			BufferedImage image = page.convertToImage(BufferedImage.TYPE_INT_RGB, 72);
+			
+			BufferedImage o = new PDFRenderer(document).renderImage(0);
+			images[0] = o;
+
 			document.close();
-			images[0] = image;
 
 			return images;
+
 		} catch (IOException e) {
 			throw new ReportExecutorRuntimeException(e);
 		} 

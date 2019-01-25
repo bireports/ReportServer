@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -387,14 +387,17 @@ public abstract class TreeDBManagerTreeHandler<A extends AbstractNode<A>>
 		)
 		@Override
 		@Transactional(rollbackOn={Exception.class})
-	public AbstractNodeDto setFlag(@Named("node") AbstractNodeDto node, long flag, boolean set){
+	public AbstractNodeDto setFlag(@Named("node") AbstractNodeDto node, long flagToSet, long flagToUnset){
 		/* get real report */
 		A realNode = treeDBManager.getNodeById(node.getId());
 		
-		if(set)
-			realNode.addFlag(flag);
-		else
-			realNode.removeFlag(flag);
+		realNode.addFlag(flagToSet);
+		
+		realNode.removeFlag(flagToUnset);
+		
+		if (realNode.isConfigurationProtected() && !realNode.isWriteProtected()) {
+			throw new IllegalArgumentException("Report is config protected, but not write protected");
+		}
 		
 		treeDBManager.updateFlags(realNode, realNode.getFlags());
 		
@@ -608,7 +611,7 @@ public abstract class TreeDBManagerTreeHandler<A extends AbstractNode<A>>
 		/* get object */
 		A realNode = treeDBManager.getNodeById(nodeDto.getId());
 
-		if(! realNode.isWriteProtected()){
+		if(! realNode.isWriteProtected() && ! realNode.isConfigurationProtected()){
 			/* copy values */
 			dtoService.mergePoso(nodeDto, realNode);
 			

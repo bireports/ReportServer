@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,9 +23,15 @@
  
 package net.datenwerke.rs.base.ext.service;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.eximport.hooks.ExporterProviderHook;
 import net.datenwerke.eximport.hooks.ImporterProviderHook;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.base.ext.service.dashboardmanager.eximport.DashboardManagerExporter;
+import net.datenwerke.rs.base.ext.service.dashboardmanager.eximport.DashboardManagerImporter;
+import net.datenwerke.rs.base.ext.service.dashboardmanager.eximport.HttpDashboardManagerImportConfigurationHooker;
 import net.datenwerke.rs.base.ext.service.datasourcemanager.eximport.DatasourceManagerExporter;
 import net.datenwerke.rs.base.ext.service.datasourcemanager.eximport.DatasourceManagerImporter;
 import net.datenwerke.rs.base.ext.service.datasourcemanager.eximport.HttpDatasourceManagerImportConfigurationHooker;
@@ -52,14 +58,15 @@ import net.datenwerke.rs.eximport.service.eximport.hooks.ImportAllHook;
 import net.datenwerke.rs.eximport.service.eximport.im.http.hooks.HttpImportConfigurationProviderHook;
 import net.datenwerke.rs.terminal.service.terminal.hooks.TerminalCommandHook;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
 public class RsBaseExtStartup {
 
 	@Inject
 	public RsBaseExtStartup(
 		HookHandlerService hookHandler,
+		
+		Provider<DashboardManagerExporter> dashboardExporterProvider,
+		Provider<DashboardManagerImporter> dashboardImporterProvider,
+		Provider<HttpDashboardManagerImportConfigurationHooker> dashboardHttpImportConfigHookerProvider,
 
 		Provider<DatasourceManagerExporter> datasourceExporterProvider,
 		Provider<DatasourceManagerImporter> datasourceImporterProvider,
@@ -89,6 +96,10 @@ public class RsBaseExtStartup {
 		Provider<ListPropertyCommand> listPropertyCommand
 		
 		){
+		
+		hookHandler.attachHooker(ExporterProviderHook.class, new ExporterProviderHook(dashboardExporterProvider));
+		hookHandler.attachHooker(ImporterProviderHook.class, new ImporterProviderHook(dashboardImporterProvider));
+		hookHandler.attachHooker(HttpImportConfigurationProviderHook.class, dashboardHttpImportConfigHookerProvider);
 
 		hookHandler.attachHooker(ExporterProviderHook.class, new ExporterProviderHook(datasourceExporterProvider));
 		hookHandler.attachHooker(ImporterProviderHook.class, new ImporterProviderHook(datasourceImporterProvider));

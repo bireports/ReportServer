@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -120,7 +120,7 @@ public class TreeDBServiceImpl implements TreeDBService {
 		N pNode = (N) em.find(proxyUtils.getUnproxiedClass(node.getClass()), node.getId());
 		if(null == node)
 			throw new IllegalArgumentException();
-		if(pNode.isWriteProtected())
+		if(pNode.isWriteProtected() || pNode.isConfigurationProtected())
 			throw new IllegalArgumentException(TreeDbMessages.INSTANCE.exceptionNodeIsWriteProtected());
 		
 		node = enitityManagerProvider.get().merge(node);
@@ -152,7 +152,7 @@ public class TreeDBServiceImpl implements TreeDBService {
 		node = (N) em.find(node.getClass(), node.getId());
 		if(null == node)
 			return;
-		if(node.isWriteProtected())
+		if(node.isWriteProtected() || node.isConfigurationProtected())
 			throw new IllegalArgumentException(TreeDbMessages.INSTANCE.exceptionNodeIsWriteProtected());
 		
 		while(node.hasChildren()){

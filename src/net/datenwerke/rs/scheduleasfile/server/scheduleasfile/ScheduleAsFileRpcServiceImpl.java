@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -30,10 +30,12 @@ import javax.inject.Singleton;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
 import net.datenwerke.gxtdto.server.dtomanager.DtoService;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.compiledreportstore.CompiledReportStoreService;
 import net.datenwerke.rs.compiledreportstore.entities.PersistentCompiledReport;
 import net.datenwerke.rs.core.client.reportexporter.dto.ReportExecutionConfigDto;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
+import net.datenwerke.rs.core.server.reportexport.hooks.ReportExportViaSessionHook;
 import net.datenwerke.rs.core.service.reportmanager.ReportDtoService;
 import net.datenwerke.rs.core.service.reportmanager.ReportExecutorService;
 import net.datenwerke.rs.core.service.reportmanager.ReportService;
@@ -81,6 +83,7 @@ public class ScheduleAsFileRpcServiceImpl extends SecuredRemoteServiceServlet
 	private final CompiledReportStoreService compiledReportService;
 	private final TeamSpaceService teamSpaceService;
 	private final ReportDtoService reportDtoService;
+	private final HookHandlerService hookHandlerService;
 
 	private final SecurityService securityService;
 	
@@ -94,6 +97,7 @@ public class ScheduleAsFileRpcServiceImpl extends SecuredRemoteServiceServlet
 		TsDiskService tsService,
 		SecurityService securityService,
 		CompiledReportStoreService compiledReportService,
+		HookHandlerService hookHandlerService,
 		TeamSpaceService teamSpaceService
 		){
 		
@@ -105,6 +109,7 @@ public class ScheduleAsFileRpcServiceImpl extends SecuredRemoteServiceServlet
 		this.tsService = tsService;
 		this.securityService = securityService;
 		this.compiledReportService = compiledReportService;
+		this.hookHandlerService = hookHandlerService;
 		this.teamSpaceService = teamSpaceService;
 	}
 	
@@ -126,6 +131,10 @@ public class ScheduleAsFileRpcServiceImpl extends SecuredRemoteServiceServlet
 		/* get variant from orginal report to execute */
 		Report adjustedReport = (Report) dtoService.createUnmanagedPoso(reportDto);
 		final Report toExecute = orgReport.createTemporaryVariant(adjustedReport);
+		
+		for(ReportExportViaSessionHook hooker : hookHandlerService.getHookers(ReportExportViaSessionHook.class)){
+			hooker.adjustReport(toExecute, configArray);
+		}
 		
 		try {
 			CompiledReport cReport = reportExecutorService.execute(toExecute, format, configArray);

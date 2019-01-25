@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -57,13 +57,14 @@ public class InfoWindow extends DwWindow {
 	protected void initializeUI() {
 		setClosable(true);
 		setAnimCollapse(true);
-		setWidth(300);
-		setHeight(330);
+		setWidth(500);
+		setHeight(530);
 		
 		BorderLayoutContainer borderContainer = new BorderLayoutContainer();
 		add(borderContainer);
 		
 		infoPanelContainer = new DwFlowContainer();
+		infoPanelContainer.getElement().getStyle().setBackgroundColor("#EEEEEE");
 		
 		pluggableInfoPanel = DwContentPanel.newInlineInstance();
 		accordionContainer = new AccordionLayoutContainer();
@@ -100,7 +101,7 @@ public class InfoWindow extends DwWindow {
 		
 		for(Entry<String, String> entry : data.entrySet()){
 			FieldLabel field = new FieldLabel(new Label(entry.getValue()), entry.getKey());
-			field.setWidth(120);
+			//field.setWidth(250);
 			fieldWrapper.add(field);
 		}
 		

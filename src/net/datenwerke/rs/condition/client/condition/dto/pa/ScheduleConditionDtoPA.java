@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,15 +23,17 @@
  
 package net.datenwerke.rs.condition.client.condition.dto.pa;
 
-import net.datenwerke.rs.condition.client.condition.dto.ConditionDto;
-import net.datenwerke.rs.condition.client.condition.dto.ScheduleConditionDto;
-
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
+import net.datenwerke.rs.condition.client.condition.dto.ConditionDto;
+import net.datenwerke.rs.condition.client.condition.dto.ScheduleConditionDto;
+
 public interface ScheduleConditionDtoPA extends PropertyAccess<ScheduleConditionDto> {
 
+	public static final ScheduleConditionDtoPA INSTANCE = GWT.create(ScheduleConditionDtoPA.class);
 
 	/* Properties */
 	public ValueProvider<ScheduleConditionDto,String> expression();

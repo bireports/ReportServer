@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,6 +25,7 @@ package net.datenwerke.rs.saiku.client.saiku.dto;
 
 import com.google.gwt.core.client.GWT;
 import java.lang.NullPointerException;
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -90,6 +91,42 @@ abstract public class SaikuReportDto extends ReportDtoDec {
 		}
 	};
 
+	private String queryXml;
+	private  boolean queryXml_m;
+	public static final String PROPERTY_QUERY_XML = "dpi-saikureport-queryxml";
+
+	private transient static PropertyAccessor<SaikuReportDto, String> queryXml_pa = new PropertyAccessor<SaikuReportDto, String>() {
+		@Override
+		public void setValue(SaikuReportDto container, String object) {
+			container.setQueryXml(object);
+		}
+
+		@Override
+		public String getValue(SaikuReportDto container) {
+			return container.getQueryXml();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return String.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "queryXml";
+		}
+
+		@Override
+		public void setModified(SaikuReportDto container, boolean modified) {
+			container.queryXml_m = modified;
+		}
+
+		@Override
+		public boolean isModified(SaikuReportDto container) {
+			return container.isQueryXmlModified();
+		}
+	};
+
 
 	public SaikuReportDto() {
 		super();
@@ -141,6 +178,55 @@ abstract public class SaikuReportDto extends ReportDtoDec {
 
 	public static PropertyAccessor<SaikuReportDto, Boolean> getAllowMdxPropertyAccessor()  {
 		return allowMdx_pa;
+	}
+
+
+	public String getQueryXml()  {
+		if(! isDtoProxy()){
+			return this.queryXml;
+		}
+
+		if(isQueryXmlModified())
+			return this.queryXml;
+
+		if(! GWT.isClient())
+			return null;
+
+		String _value = dtoManager.getProperty(this, instantiatePropertyAccess().queryXml());
+
+		return _value;
+	}
+
+
+	public void setQueryXml(String queryXml)  {
+		/* old value */
+		String oldValue = null;
+		if(GWT.isClient())
+			oldValue = getQueryXml();
+
+		/* set new value */
+		this.queryXml = queryXml;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(queryXml_pa, oldValue, queryXml, this.queryXml_m));
+
+		/* set indicator */
+		this.queryXml_m = true;
+
+		this.fireObjectChangedEvent(SaikuReportDtoPA.INSTANCE.queryXml(), oldValue);
+	}
+
+
+	public boolean isQueryXmlModified()  {
+		return queryXml_m;
+	}
+
+
+	public static PropertyAccessor<SaikuReportDto, String> getQueryXmlPropertyAccessor()  {
+		return queryXml_pa;
 	}
 
 
@@ -198,6 +284,8 @@ abstract public class SaikuReportDto extends ReportDtoDec {
 	public void clearModified()  {
 		this.allowMdx = false;
 		this.allowMdx_m = false;
+		this.queryXml = null;
+		this.queryXml_m = false;
 	}
 
 
@@ -206,6 +294,8 @@ abstract public class SaikuReportDto extends ReportDtoDec {
 			return true;
 		if(allowMdx_m)
 			return true;
+		if(queryXml_m)
+			return true;
 		return false;
 	}
 
@@ -213,6 +303,7 @@ abstract public class SaikuReportDto extends ReportDtoDec {
 	public List<PropertyAccessor> getPropertyAccessors()  {
 		List<PropertyAccessor> list = super.getPropertyAccessors();
 		list.add(allowMdx_pa);
+		list.add(queryXml_pa);
 		return list;
 	}
 
@@ -221,6 +312,8 @@ abstract public class SaikuReportDto extends ReportDtoDec {
 		List<PropertyAccessor> list = super.getModifiedPropertyAccessors();
 		if(allowMdx_m)
 			list.add(allowMdx_pa);
+		if(queryXml_m)
+			list.add(queryXml_pa);
 		return list;
 	}
 
@@ -229,6 +322,7 @@ abstract public class SaikuReportDto extends ReportDtoDec {
 		List<PropertyAccessor> list = super.getPropertyAccessorsByView(view);
 		if(view.compareTo(DtoView.NORMAL) >= 0){
 			list.add(allowMdx_pa);
+			list.add(queryXml_pa);
 		}
 		return list;
 	}

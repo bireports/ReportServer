@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,6 +23,10 @@
  
 package net.datenwerke.rs.scheduleasfile.service.scheduleasfile.hooker;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
+import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.gxtdto.server.dtomanager.DtoService;
 import net.datenwerke.rs.scheduleasfile.client.scheduleasfile.dto.ScheduleAsFileInformation;
 import net.datenwerke.rs.scheduleasfile.service.scheduleasfile.action.ScheduleAsFileAction;
@@ -40,9 +44,6 @@ import net.datenwerke.rs.tsreportarea.service.tsreportarea.entities.AbstractTsDi
 import net.datenwerke.rs.tsreportarea.service.tsreportarea.entities.TsDiskFolder;
 import net.datenwerke.rs.tsreportarea.service.tsreportarea.entities.TsDiskRoot;
 import net.datenwerke.scheduler.service.scheduler.exceptions.ActionNotSupportedException;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class ScheduleConfigAsFileHooker implements ScheduleConfigProviderHook {
 
@@ -104,7 +105,7 @@ public class ScheduleConfigAsFileHooker implements ScheduleConfigProviderHook {
 
 	@Override
 	public void adaptScheduleDefinition(ReportScheduleDefinition rsd,
-			ReportExecuteJob job) {
+			ReportExecuteJob job) throws ExpectedException {
 		ScheduleAsFileAction action = job.getAction(ScheduleAsFileAction.class);
 		if(null == action)
 			return;
@@ -117,7 +118,7 @@ public class ScheduleConfigAsFileHooker implements ScheduleConfigProviderHook {
 		AbstractTsDiskNode node = tsService.getNodeById(action.getFolderId());
 		TeamSpace teamSpace = tsService.getTeamSpaceFor(node);
 		if(! teamSpaceService.hasRole(teamSpace, TeamSpaceRole.USER))
-			throw new IllegalArgumentException("Insufficient TeamSpace rights");
+			throw new ExpectedException("Insufficient TeamSpace rights: " + teamSpace.getName());
 		
 		if(null != node && ! (node instanceof TsDiskFolder) && !(node instanceof TsDiskRoot))
 			throw new IllegalArgumentException("Expected Folder or Root.");

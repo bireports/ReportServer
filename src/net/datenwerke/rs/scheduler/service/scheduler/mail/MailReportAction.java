@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,12 +23,25 @@
  
 package net.datenwerke.rs.scheduler.service.scheduler.mail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import net.datenwerke.gf.service.localization.RemoteMessageService;
 import net.datenwerke.rs.core.service.mail.MailService;
@@ -42,19 +55,14 @@ import net.datenwerke.rs.scheduler.service.scheduler.annotations.SchedulerModule
 import net.datenwerke.rs.scheduler.service.scheduler.annotations.SchedulerModuleEmailSubject;
 import net.datenwerke.rs.scheduler.service.scheduler.annotations.SchedulerModuleEmailText;
 import net.datenwerke.rs.scheduler.service.scheduler.jobs.report.ReportExecuteJob;
+import net.datenwerke.rs.terminal.service.terminal.exceptions.TerminalException;
 import net.datenwerke.rs.utils.juel.SimpleJuel;
 import net.datenwerke.rs.utils.localization.LocalizationServiceImpl;
+import net.datenwerke.rs.utils.zip.ZipUtilsService;
 import net.datenwerke.scheduler.service.scheduler.entities.AbstractAction;
 import net.datenwerke.scheduler.service.scheduler.entities.AbstractJob;
 import net.datenwerke.scheduler.service.scheduler.entities.history.ActionEntry;
 import net.datenwerke.scheduler.service.scheduler.exceptions.ActionExecutionException;
-
-import org.hibernate.annotations.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 /**
  * 
@@ -80,6 +88,7 @@ public class MailReportAction extends AbstractAction {
 	@Transient @Inject private Provider<SimpleJuel> simpleJuelProvider;
 	@Transient @Inject private SchedulerMailHelper mailHelper;
 	@Transient @Inject private RemoteMessageService remoteMessageService;
+	@Transient @Inject private ZipUtilsService zipUtilsService;
 	
 	
 	@SchedulerModuleEmailSubject @Transient @Inject private String subjectTemplate;
@@ -95,7 +104,15 @@ public class MailReportAction extends AbstractAction {
 	@Transient
 	private String smptTrace;
 
+	private boolean compressed = false;
 	
+	public void setCompressed(boolean compressed) {
+		this.compressed = compressed;
+	}
+	
+	public boolean isCompressed() {
+		return compressed;
+	}
 	
 	public void setSubject(String subject){
 		this.subject = subject;
@@ -131,11 +148,7 @@ public class MailReportAction extends AbstractAction {
 		
 		/* prepare attechement */
 		String filenamePrefix = juel.parse(attachementNameTemplate);
-		SimpleAttachement attachement =	new SimpleAttachement(
-				job.getExecutedReport().getReport(), 
-				job.getExecutedReport().getMimeType(),
-				filenamePrefix + "." + job.getExecutedReport().getFileExtension() //$NON-NLS-1$
-				);
+		SimpleAttachement attachement =	prepareAttachment(job, filenamePrefix);
 		
 		/* set content */		
 		if(mailHelper.isHTML()){
@@ -156,6 +169,33 @@ public class MailReportAction extends AbstractAction {
 				throw new RuntimeException(e);
 			}
 		});
+	}
+	
+	private SimpleAttachement prepareAttachment(ReportExecuteJob job, String filenamePrefix) throws ActionExecutionException {
+		if (compressed) {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			Object reportObj = job.getExecutedReport().getReport();
+			String reportFileExtension = job.getExecutedReport().getFileExtension();
+			try {
+				zipUtilsService.createZip(Collections.singletonMap(filenamePrefix
+							.replace(":", "_").replace("/", "_").replace("\\", "_").replace(" ", "_") 
+							+ "." + reportFileExtension, reportObj), os);
+			} catch (IOException e) {
+				throw new ActionExecutionException(e.getMessage());
+			}
+			
+			return new SimpleAttachement(
+					os.toByteArray(), 
+					"application/zip",
+					filenamePrefix + ".zip" //$NON-NLS-1$
+					);
+		} else {
+			return new SimpleAttachement(
+					job.getExecutedReport().getReport(), 
+					job.getExecutedReport().getMimeType(),
+					filenamePrefix + "." + job.getExecutedReport().getFileExtension() //$NON-NLS-1$
+					);
+		}
 	}
 
 

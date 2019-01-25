@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,6 +25,7 @@ package net.datenwerke.rs.core.service.reportmanager.engine.hooks;
 
 import java.io.OutputStream;
 
+import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.hookhandler.shared.hookhandler.interfaces.Hook;
 import net.datenwerke.hookservices.annotations.HookConfig;
 import net.datenwerke.rs.core.service.reportmanager.engine.CompiledReport;
@@ -65,10 +66,11 @@ public interface ReportEngineTakeOverExecutionHook extends Hook {
 	 * @param configs
 	 * @return
 	 * @throws ReportExecutorException
+	 * @throws ExpectedException 
 	 */
 	CompiledReport executeReport(ReportEngine engine, OutputStream os, Report report,
 			ParameterSet additionalParameters, User user, String outputFormat,
-			ReportExecutionConfig[] configs) throws ReportExecutorException;
+			ReportExecutionConfig[] configs) throws ReportExecutorException, ExpectedException;
 	
 	/**
 	 * Return an empty CompiledReport object to specify mime type and extension.
@@ -81,10 +83,11 @@ public interface ReportEngineTakeOverExecutionHook extends Hook {
 	 * @param configs
 	 * @return
 	 * @throws ReportExecutorException
+	 * @throws ExpectedException 
 	 */
 	CompiledReport executeReportDry(ReportEngine engine, Report report,
 			ParameterSet additionalParameters, User user, String outputFormat,
-			ReportExecutionConfig[] configs) throws ReportExecutorException;
+			ReportExecutionConfig[] configs) throws ReportExecutorException, ExpectedException;
 
 	boolean supportsStreaming(ReportEngine reportEngine,
 			Report report, ParameterSet parameterSet, User user,

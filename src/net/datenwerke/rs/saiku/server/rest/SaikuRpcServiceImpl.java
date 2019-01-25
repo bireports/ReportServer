@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -28,6 +28,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.name.Named;
 import com.sencha.gxt.data.shared.loader.ListLoadResult;
@@ -57,6 +60,8 @@ import net.datenwerke.security.service.security.rights.Read;
 @Singleton
 public class SaikuRpcServiceImpl extends SecuredRemoteServiceServlet implements SaikuRpcService {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
+	
 	private static final long serialVersionUID = -4933426943425132953L;
 	
 	private final Provider<SecurityService> securityService;

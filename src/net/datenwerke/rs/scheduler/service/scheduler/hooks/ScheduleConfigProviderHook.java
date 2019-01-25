@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,6 +23,7 @@
  
 package net.datenwerke.rs.scheduler.service.scheduler.hooks;
 
+import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.hookhandler.shared.hookhandler.interfaces.Hook;
 import net.datenwerke.rs.scheduler.client.scheduler.dto.ReportScheduleDefinition;
 import net.datenwerke.rs.scheduler.service.scheduler.exceptions.InvalidConfigurationException;
@@ -33,6 +34,6 @@ public interface ScheduleConfigProviderHook extends Hook {
 	void adaptJob(ReportExecuteJob job, ReportScheduleDefinition scheduleDTO) throws InvalidConfigurationException;
 
 	void adaptScheduleDefinition(ReportScheduleDefinition rsd,
-			ReportExecuteJob job);
+			ReportExecuteJob job) throws ExpectedException;
 
 }

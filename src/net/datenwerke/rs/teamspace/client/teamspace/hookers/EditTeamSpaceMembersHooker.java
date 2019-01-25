@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -28,30 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwSplitButton;
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
-import net.datenwerke.gxtdto.client.forms.selection.SelectionMode;
-import net.datenwerke.gxtdto.client.forms.selection.SelectionPopup;
-import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
-import net.datenwerke.gxtdto.client.utilityservices.grid.GridHelperService;
-import net.datenwerke.gxtdto.client.utilityservices.grid.GridHelperService.CCContainer;
-import net.datenwerke.gxtdto.client.utilityservices.submittracker.SubmitTrackerToken;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
-import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceDao;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.StrippedDownTeamSpaceMemberDto;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceMemberDto;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.StrippedDownTeamSpaceMemberDtoPa;
-import net.datenwerke.rs.teamspace.client.teamspace.hooks.TeamSpaceEditDialogHookImpl;
-import net.datenwerke.rs.teamspace.client.teamspace.locale.TeamSpaceMessages;
-import net.datenwerke.rs.theme.client.icon.BaseIcon;
-import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownUser;
-import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownUserPA;
-import net.datenwerke.security.ext.client.usermanager.UserManagerUIService;
-
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -70,6 +46,7 @@ import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -77,9 +54,34 @@ import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.menu.Menu;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwSplitButton;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
+import net.datenwerke.gxtdto.client.forms.selection.SelectionMode;
+import net.datenwerke.gxtdto.client.forms.selection.SelectionPopup;
+import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
+import net.datenwerke.gxtdto.client.utilityservices.grid.GridHelperService;
+import net.datenwerke.gxtdto.client.utilityservices.grid.GridHelperService.CCContainer;
+import net.datenwerke.gxtdto.client.utilityservices.submittracker.SubmitTrackerToken;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
+import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceDao;
+import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceUIService;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.StrippedDownTeamSpaceMemberDto;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceMemberDto;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.StrippedDownTeamSpaceMemberDtoPa;
+import net.datenwerke.rs.teamspace.client.teamspace.hooks.TeamSpaceEditDialogHookImpl;
+import net.datenwerke.rs.teamspace.client.teamspace.locale.TeamSpaceMessages;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
+import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownUser;
+import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownUserPA;
+import net.datenwerke.security.ext.client.usermanager.UserManagerUIService;
 
 /**
  * 
@@ -95,7 +97,7 @@ public class EditTeamSpaceMembersHooker extends
 	private final ToolbarService toolbarService;
 	private final UserManagerUIService userManagerService;
 	private final TeamSpaceDao tsDao;
-	
+	private final TeamSpaceUIService teamSpaceService;
 	
 	private ListStore<StrippedDownUser> allUsersStore;
 	private ListStore<StrippedDownTeamSpaceMemberDto> memberStore;
@@ -106,7 +108,8 @@ public class EditTeamSpaceMembersHooker extends
 		GridHelperService gridHelperService,
 		ToolbarService toolbarService,
 		UserManagerUIService userManagerService,
-		TeamSpaceDao tsDao
+		TeamSpaceDao tsDao,
+		TeamSpaceUIService teamSpaceService
 		){
 		
 		/* store objects */
@@ -114,6 +117,7 @@ public class EditTeamSpaceMembersHooker extends
 		this.toolbarService = toolbarService;
 		this.userManagerService = userManagerService;
 		this.tsDao = tsDao;
+		this.teamSpaceService = teamSpaceService;
 	}
 	
 	@Override
@@ -143,7 +147,8 @@ public class EditTeamSpaceMembersHooker extends
 		memberStore.setAutoCommit(true);
 		
 		/* fill member store */
-		memberStore.add(StrippedDownTeamSpaceMemberDto.createForOwner(teamSpace.getOwner()));
+		if(null != teamSpace.getOwner())
+			memberStore.add(StrippedDownTeamSpaceMemberDto.createForOwner(teamSpace.getOwner()));
 		
 		for(TeamSpaceMemberDto member : teamSpace.getMembers())
 			memberStore.add(StrippedDownTeamSpaceMemberDto.createFrom(member));
@@ -254,6 +259,8 @@ public class EditTeamSpaceMembersHooker extends
 		removeMenu.add(removeAllMenuItem);
 		removeButton.setMenu(removeMenu);
 		
+		nsContainer.setHeight(280);
+		
 		return nsContainer;
 	}
 
@@ -279,19 +286,27 @@ public class EditTeamSpaceMembersHooker extends
 		ColumnConfig<StrippedDownTeamSpaceMemberDto,String> ccLast = new ColumnConfig<StrippedDownTeamSpaceMemberDto,String>(memberPa.lastname(), 150, TeamSpaceMessages.INSTANCE.editTeamSpaceMembersGridLastnameColumn());
 		configs.add(ccLast);
 		
-		CCContainer<StrippedDownTeamSpaceMemberDto, TeamSpaceRoleDto> cccRole = gridHelperService.createComboBoxColumnConfig(TeamSpaceRoleDto.values(), memberPa.role(), false, null, 150);
+		final CCContainer<StrippedDownTeamSpaceMemberDto, TeamSpaceRoleDto> cccRole = gridHelperService.createComboBoxColumnConfig(TeamSpaceRoleDto.values(), memberPa.role(), false, null, 150);
 		ColumnConfig<StrippedDownTeamSpaceMemberDto,TeamSpaceRoleDto> roleConfig = cccRole.getConfig();
 		roleConfig.setHeader( TeamSpaceMessages.INSTANCE.editTeamSpaceMembersGridRoleColumn());
 		configs.add(roleConfig);
 		
 		/* create gride */
-		Grid<StrippedDownTeamSpaceMemberDto> grid = new Grid<StrippedDownTeamSpaceMemberDto>(memberStore, new ColumnModel<StrippedDownTeamSpaceMemberDto>(configs));
+		final Grid<StrippedDownTeamSpaceMemberDto> grid = new Grid<StrippedDownTeamSpaceMemberDto>(memberStore, new ColumnModel<StrippedDownTeamSpaceMemberDto>(configs));
 		
 		/* create editing */
-		GridEditing<StrippedDownTeamSpaceMemberDto> editing = new GridInlineEditing<StrippedDownTeamSpaceMemberDto>(grid);
+		final GridEditing<StrippedDownTeamSpaceMemberDto> editing = new GridInlineEditing<StrippedDownTeamSpaceMemberDto>(grid);
 		
-		editing.addEditor(cccRole.getConfig(), cccRole.getConverter(), cccRole.getCombo());
-				
+		
+		if (teamSpaceService.isAdmin(teamSpace)) {
+			editing.addEditor(cccRole.getConfig(), cccRole.getConverter(), cccRole.getCombo());
+		} else {
+			SimpleComboBox<Object> rolesComboBox = cccRole.getCombo();
+			// only ADMIN users should see the ADMIN role in the combobox
+			rolesComboBox.remove(TeamSpaceRoleDto.ADMIN);
+			editing.addEditor(cccRole.getConfig(), cccRole.getConverter(), rolesComboBox);
+		}
+		
 		editing.addCompleteEditHandler(new CompleteEditHandler<StrippedDownTeamSpaceMemberDto>() {
 			@Override
 			public void onCompleteEdit(

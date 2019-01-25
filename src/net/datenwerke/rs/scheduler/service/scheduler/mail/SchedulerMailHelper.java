@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -32,20 +32,20 @@ import javax.inject.Provider;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.Transient;
 
+import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.datenwerke.rs.base.service.parameterreplacements.provider.ReportForJuel;
 import net.datenwerke.rs.base.service.parameterreplacements.provider.UserForJuel;
 import net.datenwerke.rs.core.service.mail.MailService;
 import net.datenwerke.rs.core.service.mail.SimpleMail;
-import net.datenwerke.rs.core.service.mail.annotations.MailModuleProperties;
 import net.datenwerke.rs.core.service.reportmanager.ReportExecutorService;
 import net.datenwerke.rs.core.service.reportmanager.exceptions.ReportExecutorException;
+import net.datenwerke.rs.scheduler.service.scheduler.annotations.SchedulerModuleProperties;
 import net.datenwerke.rs.scheduler.service.scheduler.jobs.report.ReportExecuteJob;
 import net.datenwerke.rs.utils.juel.SimpleJuel;
 import net.datenwerke.security.service.usermanager.entities.User;
-
-import org.apache.commons.configuration.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SchedulerMailHelper {
 	
@@ -69,7 +69,7 @@ public class SchedulerMailHelper {
 			MailService mailService, 
 			Provider<SimpleJuel> simpleJuelProvider, 
 			ReportExecutorService reportExecutorService,
-			@MailModuleProperties Provider<Configuration> config
+			@SchedulerModuleProperties Provider<Configuration> config
 		) {
 		this.mailService = mailService;
 		this.simpleJuelProvider = simpleJuelProvider;

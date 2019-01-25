@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -83,19 +83,9 @@ public class JuelServiceImpl implements JuelService {
 	}
 	
 	@Override
-	public ELContext provideBasicContext(
-		ExpressionFactory factory) {
-		return provideBasicContext(factory, new ContextConfig());
-	}
-	
-	@Override
-	public ELContext provideBasicContext(ExpressionFactory factory, ContextConfig config) {
-		ELResolver resolver;
-		if(config.ignorePropertyNotFoundException())
-			resolver = new PropertyNotFoundIgnoringResolver();
-		else
-			resolver = new SimpleResolver();
+	public ELContext provideBasicContext(ExpressionFactory factory) {
 		
+		ELResolver resolver = new SimpleResolver();
 		SimpleContext context = new SimpleContext(resolver);
 
 		/* add functions */

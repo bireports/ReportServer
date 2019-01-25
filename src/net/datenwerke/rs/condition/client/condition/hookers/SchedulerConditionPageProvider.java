@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -351,6 +351,14 @@ public class SchedulerConditionPageProvider implements ScheduleConfigWizardPageP
 		grid.getView().setAutoExpandColumn(ccName);
 		grid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		
+		grid.addRowDoubleClickHandler(new RowDoubleClickHandler() {
+			
+			@Override
+			public void onRowDoubleClick(RowDoubleClickEvent event) {
+				onConditionSubmitButtonClick(grid, window);
+			}
+		});
+		
 		VerticalLayoutContainer wrapper = new VerticalLayoutContainer();
 		wrapper.setScrollMode(ScrollMode.AUTOY);
 		
@@ -389,24 +397,28 @@ public class SchedulerConditionPageProvider implements ScheduleConfigWizardPageP
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				ConditionDto condition = grid.getSelectionModel().getSelectedItem();
-				if(null == condition)
-					return;
-				
-				ScheduleConditionDto scheduleCondition = new ScheduleConditionDto();
-				scheduleCondition.setCondition(condition);
-				scheduleCondition.setExpression("");
-				
-				store.add(scheduleCondition);
-				
-				window.hide();
-				
-				displayEditScheduleCondition(scheduleCondition);
+				onConditionSubmitButtonClick(grid, window);
 			}
 		});
 	
 		
 		window.show();
+	}
+	
+	private void onConditionSubmitButtonClick(Grid<ConditionDto> grid, DwWindow window) {
+		ConditionDto condition = grid.getSelectionModel().getSelectedItem();
+		if(null == condition)
+			return;
+		
+		ScheduleConditionDto scheduleCondition = new ScheduleConditionDto();
+		scheduleCondition.setCondition(condition);
+		scheduleCondition.setExpression("");
+		
+		store.add(scheduleCondition);
+		
+		window.hide();
+		
+		displayEditScheduleCondition(scheduleCondition);
 	}
 
 	protected void displayEditScheduleCondition(final ScheduleConditionDto scheduleCondition) {
@@ -418,7 +430,7 @@ public class SchedulerConditionPageProvider implements ScheduleConfigWizardPageP
 		
 		final SimpleForm form = SimpleForm.getInlineLabelessInstance();
 
-		final String taKey = form.addField(String.class, "expression", new SFFCTextArea() {
+		final String taKey = form.addField(String.class, ScheduleConditionDtoPA.INSTANCE.expression(), new SFFCTextArea() {
 			
 			@Override
 			public int getWidth() {

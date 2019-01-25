@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -61,17 +61,22 @@ public class PreviewEnhancerHook implements TableReportPreviewCellEnhancerHook {
 
 	@Override
 	public boolean enhanceMenu(final TableReportPreviewView view, Menu menu, TableReportDto report, final ColumnDto column, final String value, String rawValue) {
-		/* sorting */
-		addSortMenu(view, menu, column);
 		
-		/* filter */
-		if(! report.isEnableSubtotals())
-			addFilterMenu(view, menu, column, rawValue);
+		if (!report.isConfigurationProtected()) {
+			/* sorting */
+			addSortMenu(view, menu, column);
+			
+			/* filter */
+			if(! report.isEnableSubtotals())
+				addFilterMenu(view, menu, column, rawValue);
+			
+			/* format */
+			addFormatMenu(view, menu, column);
 		
-		/* format */
-		addFormatMenu(view, menu, column);
+			return true;
+		}
 		
-		return true;
+		return false;
 	}
 
 	private void addFormatMenu(final TableReportPreviewView view, Menu menu, final ColumnDto column) {

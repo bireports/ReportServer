@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -57,6 +57,7 @@ import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 import net.sf.jasperreports.engine.query.JRClauseFunction;
 import net.sf.jasperreports.engine.query.JRJdbcQueryExecuter;
+import net.sf.jasperreports.engine.type.ParameterEvaluationTimeEnum;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 
 import org.apache.commons.logging.Log;
@@ -545,6 +546,11 @@ public class JasperStyleParameterParser extends JRAbstractQueryExecuter {
 
 			public Object clone() {
 				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public ParameterEvaluationTimeEnum getEvaluationTime() {
+				return null;
 			}
 		};
 	}

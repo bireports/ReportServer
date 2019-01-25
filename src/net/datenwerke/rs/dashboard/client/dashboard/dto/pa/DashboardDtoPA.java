@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -58,6 +58,7 @@ public interface DashboardDtoPA extends PropertyAccess<DashboardDto> {
 	public ValueProvider<DashboardDto,LayoutTypeDto> layout();
 	public ValueProvider<DashboardDto,Integer> n();
 	public ValueProvider<DashboardDto,String> name();
+	public ValueProvider<DashboardDto,Boolean> primary();
 	public ValueProvider<DashboardDto,Boolean> singlePage();
 
 

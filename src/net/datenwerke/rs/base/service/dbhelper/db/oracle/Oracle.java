@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -30,6 +30,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Inject;
+
 import net.datenwerke.gxtdto.client.utils.SqlTypes;
 import net.datenwerke.rs.base.service.dbhelper.DatabaseHelper;
 import net.datenwerke.rs.base.service.dbhelper.queries.LimitQuery;
@@ -40,8 +42,7 @@ import net.datenwerke.rs.base.service.dbhelper.querybuilder.QueryBuilder;
 import net.datenwerke.rs.base.service.reportengines.table.entities.Column;
 import net.datenwerke.rs.utils.config.ConfigService;
 import net.datenwerke.rs.utils.oracle.StupidOracleService;
-
-import com.google.inject.Inject;
+import oracle.xdb.XMLType;
 
 /**
  * 
@@ -99,7 +100,13 @@ public class Oracle extends DatabaseHelper {
 				dateIndices.add(i);
 		
 		if(dateIndices.isEmpty())
-			return super.createResultSetHandler(resultSet, con);
+			return new ResultSetObjectHandler() {
+				
+				@Override
+				public Object getObject(int pos) throws SQLException {
+					return getOracleObject(resultSet, pos);
+				}
+			};
 		
 		return new ResultSetObjectHandler() {
 			
@@ -113,9 +120,20 @@ public class Oracle extends DatabaseHelper {
 					}else if(sos.isOracleDatum(obj))
 						return sos.getDateFromOracleDatum(obj);
 				}
-				return resultSet.getObject(pos);
+				return getOracleObject(resultSet, pos);
 			}
 		};
+	}
+	
+	private Object getOracleObject(ResultSet resultSet, int pos) throws SQLException {
+		Object o = resultSet.getObject(pos);
+		// we just display the xml text
+		if (o instanceof XMLType) {
+			XMLType xml = (XMLType)o;
+			String xmlString = xml.getString();
+			return xmlString;
+		}
+		return o;
 	}
 	
 	@Override

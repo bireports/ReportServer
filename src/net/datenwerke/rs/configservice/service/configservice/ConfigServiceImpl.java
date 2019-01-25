@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -124,8 +124,28 @@ public class ConfigServiceImpl implements ConfigService{
 		} catch (ObjectResolverException e) {
 			throw new ConfigFileNotFoundException("Could not find config for " + identifier, e);
 		} catch (JSONException e) {
-			throw new ConfigFileNotFoundException("Could parse config for " + identifier + " to json", e);
+			throw new ConfigFileNotFoundException("Could not parse config for " + identifier + " to json", e);
 		} 
+	}
+	
+	@Override
+	public String getConfigAsJsonFailsafe(String identifier) {
+		try{
+			Object object = terminalService.getObjectByLocation("/fileserver/etc/" + identifier, false);
+			if(null == object || ! (object instanceof FileServerFile))
+				throw new ConfigFileNotFoundException("Could not find config for " + identifier);
+			
+			FileServerFile file = (FileServerFile) object;
+			
+			byte[] data = file.getData();
+			if(null == data)
+				throw new ConfigFileNotFoundException("config file is empty " + identifier);
+			
+			return XML.toJSONObject(new String(data)).toString();
+		} catch (Exception e) {
+			logger.warn( "Configfile " + identifier + " could not be loaded. Default values are in effect.");
+			return "";
+		}
 	}
 
 	@Override

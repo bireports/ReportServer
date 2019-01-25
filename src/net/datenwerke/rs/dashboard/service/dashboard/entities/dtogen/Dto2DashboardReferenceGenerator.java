@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -219,6 +219,12 @@ public class Dto2DashboardReferenceGenerator implements Dto2PosoGenerator<Dashbo
 		/*  set name */
 		poso.setName(dto.getName() );
 
+		/*  set primary */
+		try{
+			poso.setPrimary(dto.isPrimary() );
+		} catch(NullPointerException e){
+		}
+
 		/*  set singlePage */
 		try{
 			poso.setSinglePage(dto.isSinglePage() );
@@ -324,6 +330,14 @@ public class Dto2DashboardReferenceGenerator implements Dto2PosoGenerator<Dashbo
 			poso.setName(dto.getName() );
 		}
 
+		/*  set primary */
+		if(dto.isPrimaryModified()){
+			try{
+				poso.setPrimary(dto.isPrimary() );
+			} catch(NullPointerException e){
+			}
+		}
+
 		/*  set singlePage */
 		if(dto.isSinglePageModified()){
 			try{
@@ -398,6 +412,12 @@ public class Dto2DashboardReferenceGenerator implements Dto2PosoGenerator<Dashbo
 
 		/*  set name */
 		poso.setName(dto.getName() );
+
+		/*  set primary */
+		try{
+			poso.setPrimary(dto.isPrimary() );
+		} catch(NullPointerException e){
+		}
 
 		/*  set singlePage */
 		try{
@@ -476,6 +496,14 @@ public class Dto2DashboardReferenceGenerator implements Dto2PosoGenerator<Dashbo
 		/*  set name */
 		if(dto.isNameModified()){
 			poso.setName(dto.getName() );
+		}
+
+		/*  set primary */
+		if(dto.isPrimaryModified()){
+			try{
+				poso.setPrimary(dto.isPrimary() );
+			} catch(NullPointerException e){
+			}
 		}
 
 		/*  set singlePage */

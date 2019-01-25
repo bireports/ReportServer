@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -100,6 +100,9 @@ public class Dto2RECCsvGenerator implements Dto2PosoGenerator<RECCsvDto,RECCsv> 
 	}
 
 	protected void mergePlainDto2Poso(RECCsvDto dto, final RECCsv poso)  throws ExpectedException {
+		/*  set lineSeparator */
+		poso.setLineSeparator(dto.getLineSeparator() );
+
 		/*  set printHeader */
 		try{
 			poso.setPrintHeader(dto.isPrintHeader() );
@@ -115,6 +118,11 @@ public class Dto2RECCsvGenerator implements Dto2PosoGenerator<RECCsvDto,RECCsv> 
 	}
 
 	protected void mergeProxy2Poso(RECCsvDto dto, final RECCsv poso)  throws ExpectedException {
+		/*  set lineSeparator */
+		if(dto.isLineSeparatorModified()){
+			poso.setLineSeparator(dto.getLineSeparator() );
+		}
+
 		/*  set printHeader */
 		if(dto.isPrintHeaderModified()){
 			try{
@@ -143,6 +151,9 @@ public class Dto2RECCsvGenerator implements Dto2PosoGenerator<RECCsvDto,RECCsv> 
 	}
 
 	protected void mergePlainDto2UnmanagedPoso(RECCsvDto dto, final RECCsv poso)  throws ExpectedException {
+		/*  set lineSeparator */
+		poso.setLineSeparator(dto.getLineSeparator() );
+
 		/*  set printHeader */
 		try{
 			poso.setPrintHeader(dto.isPrintHeader() );
@@ -158,6 +169,11 @@ public class Dto2RECCsvGenerator implements Dto2PosoGenerator<RECCsvDto,RECCsv> 
 	}
 
 	protected void mergeProxy2UnmanagedPoso(RECCsvDto dto, final RECCsv poso)  throws ExpectedException {
+		/*  set lineSeparator */
+		if(dto.isLineSeparatorModified()){
+			poso.setLineSeparator(dto.getLineSeparator() );
+		}
+
 		/*  set printHeader */
 		if(dto.isPrintHeaderModified()){
 			try{

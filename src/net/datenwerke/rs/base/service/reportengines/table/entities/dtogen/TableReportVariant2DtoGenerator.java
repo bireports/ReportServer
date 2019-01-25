@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -194,6 +194,9 @@ public class TableReportVariant2DtoGenerator implements Poso2DtoGenerator<TableR
 
 			/*  set flags */
 			dto.setFlags(poso.getFlags() );
+
+			/*  set hideParents */
+			dto.setHideParents(poso.isHideParents() );
 
 			/*  set metadataDatasourceContainer */
 			Object tmpDtoDatasourceContainerDtogetMetadataDatasourceContainer = dtoServiceProvider.get().createDto(poso.getMetadataDatasourceContainer(), here, referenced);

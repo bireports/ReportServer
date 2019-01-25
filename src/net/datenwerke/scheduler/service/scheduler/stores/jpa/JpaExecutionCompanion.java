@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -162,13 +162,16 @@ public class JpaExecutionCompanion extends JobExecutionCompanionImpl {
 		AbstractJob job = schedulerTask.getJob();
 		ExecutionLogEntry logEntry = schedulerTask.getLogEntry();
 
-		job = em.find(job.getClass(), job.getId());
-		schedulerTask.setJob(job);
+		AbstractJob reloadedJob = em.find(job.getClass(), job.getId());
+		schedulerTask.setJob(reloadedJob);
 		schedulerTask.setLogEntry(em.find(logEntry.getClass(), logEntry.getId()));
 
 		/* inject members into job */
-		injector.injectMembers(job);
-		injector.injectMembers(job.getTrigger());
+		injector.injectMembers(reloadedJob);
+		injector.injectMembers(reloadedJob.getTrigger());
+		
+		/* copy transient fields */
+		reloadedJob.copyTransientFieldsFrom(job);
 	}
 	
 	@Override

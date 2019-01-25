@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -22,8 +22,6 @@
  
  
 package net.datenwerke.rs.dashboard.client.dashboard.locale;
-
-import net.datenwerke.gxtdto.client.forms.simpleform.SimpleFormFieldConfiguration;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
@@ -150,5 +148,16 @@ public interface DashboardMessages extends Messages {
 
 	String editParameterBtnLabel();
 
+	String storeDashboardPromptTitle();
+
+	String storeToConfigure();
+
+	String defaultDashboardLabel();
+
+	String importConfigFailureNoParent();
+	String importerName();
+	String importMainPropertiesDescription();
+	String importMainPropertiesHeadline();
+	String importWhereTo();
 
 }

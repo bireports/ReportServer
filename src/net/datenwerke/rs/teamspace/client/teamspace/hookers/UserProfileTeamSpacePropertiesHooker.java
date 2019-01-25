@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -86,7 +86,7 @@ public class UserProfileTeamSpacePropertiesHooker extends
 		form.loadFields();
 		
 		form.mask(BaseMessages.INSTANCE.loadingMsg());
-		tsDao.getPrimarySpace(new RsAsyncCallback<TeamSpaceDto>(){
+		tsDao.getExplicitPrimarySpace(new RsAsyncCallback<TeamSpaceDto>(){
 			@Override
 			public void onSuccess(TeamSpaceDto result) {
 				if(null != result)

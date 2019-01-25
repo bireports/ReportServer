@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -35,6 +35,7 @@ public class MailReportAction__ extends net.datenwerke.scheduler.service.schedul
 	public static final String PROPERTY_MESSAGE = "PROPERTY_MESSAGE";
 	public static final String PROPERTY_SUBJECT = "PROPERTY_SUBJECT";
 	public static final String PROPERTY_USERS = "PROPERTY_USERS";
+	public static final String compressed = "compressed";
 	public static final String message = "message";
 	public static final String subject = "subject";
 

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -53,7 +53,7 @@ public interface RPCTreeManagerAsync {
 
 	public void duplicateNode(AbstractNodeDto toDuplicate, Dto state, AsyncCallback<AbstractNodeDto> callback);
 	
-	public void setFlag(AbstractNodeDto node, long flag, boolean set, AsyncCallback<AbstractNodeDto> callback);
+	public void setFlag(AbstractNodeDto node, long flagToSet, long flagToUnset, AsyncCallback<AbstractNodeDto> callback);
 
 	
 }

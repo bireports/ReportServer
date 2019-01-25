@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -45,6 +45,7 @@ import net.datenwerke.security.service.usermanager.UserManagerService;
 import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
 import net.datenwerke.security.service.usermanager.entities.Group;
 import net.datenwerke.security.service.usermanager.entities.OrganisationalUnit;
+import net.datenwerke.security.service.usermanager.entities.Sex;
 import net.datenwerke.security.service.usermanager.entities.User;
 
 import org.hibernate.proxy.HibernateProxy;
@@ -165,6 +166,7 @@ public class UserManagerRpcServiceImpl extends SecuredRemoteServiceServlet
 		user.setFirstname(userDto.getFirstname());
 		user.setLastname(userDto.getLastname());
 		user.setEmail(userDto.getEmail());
+		user.setSex((Sex)dtoService.loadPoso(userDto.getSex()));
 
 		userService.merge(user);
 		

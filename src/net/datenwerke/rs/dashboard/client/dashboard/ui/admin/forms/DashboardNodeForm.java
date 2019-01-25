@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -29,9 +29,13 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.DialogHideEvent;
+import com.sencha.gxt.widget.core.client.event.DialogHideEvent.DialogHideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
@@ -41,7 +45,10 @@ import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import net.datenwerke.gf.client.managerhelper.mainpanel.SimpleFormView;
 import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwConfirmMessageBox;
+import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleFormSubmissionCallback;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCCustomComponentImpl;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCTextAreaImpl;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.dummy.CustomComponent;
@@ -53,12 +60,15 @@ import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardNodeDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.LayoutTypeDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.LibraryDadgetDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.ReportDadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.decorator.DashboardDtoDec;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.pa.DashboardNodeDtoPA;
 import net.datenwerke.rs.dashboard.client.dashboard.locale.DashboardMessages;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.DadgetCatalogFactory;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardContainer;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardView;
+import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardContainer.ConfigType;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardView.EditSuccessCallback;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.helper.SFFCDashboardLayout;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
@@ -70,7 +80,7 @@ import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
  */
 public class DashboardNodeForm extends SimpleFormView {
 
-	static class MyDashboardContainer implements DashboardContainer {
+	class MyDashboardContainer implements DashboardContainer {
 		
 		private DwContentPanel viewWrapper;
 		private Provider<DashboardView> viewProvider;
@@ -118,7 +128,7 @@ public class DashboardNodeForm extends SimpleFormView {
 		}
 		
 		@Override
-		public void dadgetConfigured(final DashboardDto dashboard, final DadgetDto dadget, final EditSuccessCallback callback){
+		public void dadgetConfigured(final DashboardDto dashboard, final DadgetDto dadget, ConfigType type, final EditSuccessCallback callback){
 //			dashboardDao.updateDadget(dadget, new RsAsyncCallback<DadgetDto>(){
 //				@Override
 //				public void onSuccess(DadgetDto result) {
@@ -130,11 +140,34 @@ public class DashboardNodeForm extends SimpleFormView {
 			dashboardNode.setDashboard(dashboard);
 
 		    callback.onSuccess(dashboard, dadget);
+		    
+		    if(type == ConfigType.CONFIG && (dadget instanceof ReportDadgetDto || dadget instanceof LibraryDadgetDto)){
+				ConfirmMessageBox cmb = new DwConfirmMessageBox(DashboardMessages.INSTANCE.storeDashboardPromptTitle(), DashboardMessages.INSTANCE.storeToConfigure());
+				cmb.addDialogHideHandler(new DialogHideHandler() {
+					
+					@Override
+					public void onDialogHide(DialogHideEvent event) {
+						if (event.getHideButton() == PredefinedButton.YES){
+							onSubmit(new SimpleFormSubmissionCallback(null) {
+								@Override
+								public void formSubmitted() {
+								}
+							});
+						}
+					}
+				});
+				cmb.show();
+		    }
 		}
 		@Override
 		public void edited(DashboardDto dashboard) {
 		}
 	};
+	
+	protected void onSuccessfulSubmit() {
+		mask(BaseMessages.INSTANCE.storingMsg());
+		reloadNodeAndView();
+	}
 	
 	private final ToolbarService toolbarService;
 	private final Provider<DashboardView> viewProvider;

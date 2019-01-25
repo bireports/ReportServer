@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -31,9 +31,11 @@ import java.util.Set;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 
+import net.datenwerke.gxtdto.client.dtomanager.ClientDtoManagerService;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.forms.simpleform.actions.ShowHideFieldAction;
@@ -70,6 +72,9 @@ public abstract class ReportDadgetDefaultExportHooker implements ReportDadgetExp
 	protected final ReportExporterUIService reportExportService;
 	protected final ReportExecutorDao reportExecutorDao;
 	protected final ReportExporterDao reportExporterDao;
+	
+	@Inject
+	protected  ClientDtoManagerService dtoManager;
 	
 	
 	public ReportDadgetDefaultExportHooker(
@@ -175,12 +180,13 @@ public abstract class ReportDadgetDefaultExportHooker implements ReportDadgetExp
 
 	@Override
 	public void displayReport(final ReportDadgetDto rDadget, ReportDto report,
-			final DadgetPanel panel, final Set<ParameterInstanceDto> parameterInstances) {
+			final DadgetPanel panel, final Set<ParameterInstanceDto> parameterInstancesProxied) {
 		final String config = rDadget.getConfig();
 		if(null == config)
 			return;
 		
 		panel.mask(BaseMessages.INSTANCE.loadingMsg());
+		final Set<ParameterInstanceDto> parameterInstances = (Set<ParameterInstanceDto>) dtoManager.unproxy(parameterInstancesProxied);
 		reportExecutorDao.loadFullReportForExecution(report, new RsAsyncCallback<ReportDto>(){
 			@Override
 			public void onSuccess(ReportDto result) {

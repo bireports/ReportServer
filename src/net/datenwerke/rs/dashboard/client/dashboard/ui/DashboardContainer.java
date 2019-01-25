@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -29,6 +29,11 @@ import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardView.EditSuccess
 
 public interface DashboardContainer {
 
+	enum ConfigType{
+		CONFIG,
+		MISC
+	}
+	
 	void reload(DashboardDto dashboard);
 	
 	void edited(DashboardDto dashboard);
@@ -39,7 +44,7 @@ public interface DashboardContainer {
 
 	void addDadget(DashboardDto dashboard, DadgetDto dadget);
 
-	void dadgetConfigured(DashboardDto dashboard, DadgetDto dadget, EditSuccessCallback callback);
+	void dadgetConfigured(DashboardDto dashboard, DadgetDto dadget, ConfigType type, EditSuccessCallback callback);
 
 
 }

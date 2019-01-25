@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -95,7 +95,7 @@ public class SimpleCryptoMail extends SimpleMail implements NeedsPostprocessing 
 	@Override
 	public void setText(String text) {
 		try {
-			rootBodyPart.setText(text);
+			rootBodyPart.setText(text, CHARSET_UTF8, MIME_SUBTYPE_PLAIN);
 		} catch (MessagingException e) {
 			logger.warn( e.getMessage(), e);
 		}
@@ -148,7 +148,7 @@ public class SimpleCryptoMail extends SimpleMail implements NeedsPostprocessing 
 		try {
 			/* create text */
 			MimeBodyPart textMBP = new MimeBodyPart();
-			textMBP.setText(text, CHARSET_UTF8, MIME_SUBTYPE_HTML);
+			textMBP.setText(text, CHARSET_UTF8, MIME_SUBTYPE_PLAIN);
 			multipart.addBodyPart(textMBP);
 			
 			/* create attachements */

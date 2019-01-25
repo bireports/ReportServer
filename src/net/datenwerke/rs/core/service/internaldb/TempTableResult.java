@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -38,12 +38,14 @@ public class TempTableResult implements CacheableResult {
 	private long created;
 	private Long timeout;
 	private Long grace = 60 * 60 * 1000L;
+	private int rev;
 
 	public TempTableResult(TempTableHelper tableHelper, ConnectionPoolConfig cpc, String query) {
 		this.setTableHelper(tableHelper);
 		this.setPoolConfig(cpc);
 		this.setQuery(query);
 		this.created = System.currentTimeMillis();
+		this.rev = tableHelper.getWriteRev();
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class TempTableResult implements CacheableResult {
 			return true;
 		
 		if(force || created + timeout + grace < System.currentTimeMillis()){
-			getTableHelper().cleanup();
+			getTableHelper().cleanup(rev);
 			cleanedUp = true;
 			return true;
 		}
@@ -78,6 +80,8 @@ public class TempTableResult implements CacheableResult {
 	}
 	
 	public String getFinalQuery(){
+		if(0 == timeout)
+			return tableHelper.processQuery(query, rev);
 		return tableHelper.processQuery(query);
 	}
 

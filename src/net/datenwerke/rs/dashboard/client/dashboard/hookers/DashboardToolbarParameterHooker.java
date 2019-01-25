@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -65,6 +65,7 @@ import net.datenwerke.rs.dashboard.client.dashboard.locale.DashboardMessages;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.DadgetPanel;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardMainComponent;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardView;
+import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardContainer.ConfigType;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
 
@@ -190,7 +191,7 @@ public class DashboardToolbarParameterHooker implements DashboardToolbarHook {
 									Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 										@Override
 										public void execute() {
-											dadgetPanel.getView().dadgetConfigured(dadgetPanel);
+											dadgetPanel.getView().dadgetConfigured(dadgetPanel, ConfigType.MISC);
 										}
 									});
 								}

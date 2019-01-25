@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -50,7 +50,7 @@ public class ExportOptionVetoer implements VetoReportExporterHook {
 			
 			boolean found = false;
 			for(String f : formats){
-				if(f.trim().equals(exporter.getOutputFormat())){
+				if(f.trim().toUpperCase().equals(exporter.getOutputFormat().toUpperCase())){
 					found = true;
 					break;
 				}

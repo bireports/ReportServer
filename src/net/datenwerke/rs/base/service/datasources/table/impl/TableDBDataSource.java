@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -118,6 +118,9 @@ public class TableDBDataSource implements TableDataSource {
 
 		if(null == query || "".equals(query.trim()))
 			throw new IllegalArgumentException("Query may not be empty");
+		
+		//this is necessary if the sql has a comment at the end in order to separate the comment from the next sql
+		query += "\n"; 
 		
 		this.connection = connection;
 		this.datasourceContainerProvider = datasourceContainerProvider;

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -100,7 +100,7 @@ public class BirtReportDatasourceConfigConfigurator implements DatasourceDefinit
 			form.setValue(targetTypeKey, bConfig.getTargetType());
 		
 		
-		form.setFieldWidth(190);
+		form.setFieldWidth(180);
 		targetKey = form.addField(String.class, BirtReportDatasourceConfigDtoPA.INSTANCE.target(), BirtMessages.INSTANCE.datasourceTarget());
 		if(null != bConfig.getTarget())
 			form.setValue(targetKey, bConfig.getTarget());

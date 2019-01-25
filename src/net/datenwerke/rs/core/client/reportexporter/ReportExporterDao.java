@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -73,5 +73,9 @@ public class ReportExporterDao extends Dao {
 	String message, List<StrippedDownUser> recipients,
 	AsyncCallback<Void> callback){
 		rpcService.exportViaMail(reportDto, executorToke, format, configs, subject, message, recipients, transformAndKeepCallback(callback));
+	}
+	
+	public void getExportDefaultSettingsAsJSON(String identifier, AsyncCallback<String> callback) {
+		rpcService.getExportDefaultSettingsAsJSON(identifier, transformAndKeepCallback(callback));
 	}
 }

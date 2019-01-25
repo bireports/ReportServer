@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -28,6 +28,7 @@ import com.google.gwt.editor.client.Editor.Path;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import java.lang.String;
 import net.datenwerke.dtoservices.dtogenerator.annotations.CorrespondingPoso;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.pa.ReportDtoPA;
@@ -47,6 +48,7 @@ public interface SaikuReportDtoPA extends ReportDtoPA {
 
 	/* Properties */
 	public ValueProvider<SaikuReportDto,Boolean> allowMdx();
+	public ValueProvider<SaikuReportDto,String> queryXml();
 
 
 }

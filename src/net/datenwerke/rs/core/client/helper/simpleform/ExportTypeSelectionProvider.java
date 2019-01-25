@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -88,13 +88,16 @@ public class ExportTypeSelectionProvider extends FormFieldProviderHookImpl {
 		
 		final DwTextButton formatConfigBtn = new DwTextButton(ReportExporterMessages.INSTANCE.formatConfigLabel());
 		
-		List<ReportExporter> exporters = reportExporterService.getUsableExporters(config.getReport());
+		List<ReportExporter> exporters = reportExporterService.getCleanedUpAvailableExporters(config.getReport());
 		exporterMap = new HashMap<Radio, ReportExporter>();
 		boolean first = true;
 		
 		final HorizontalLayoutContainer radioContainer = new HorizontalLayoutContainer();
 		
 		for(final ReportExporter exporter : exporters){
+			if(! exporter.canBeScheduled())
+				continue;
+			
 			String name = exporter.getExportTitle();
 
 			final Radio radio = new Radio();

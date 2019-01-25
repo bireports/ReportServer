@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -39,7 +39,7 @@ public class LogicalOperatorHandler implements ExpressionTokenHandlerHook {
 		
 		return "and".equals(strToken) ? new LogicalOperatorToken(LogicalOperator.AND, greedy) :
 			   "or".equals(strToken) ? new LogicalOperatorToken(LogicalOperator.OR, greedy) :
-			   "not".equals(strToken) ? new LogicalOperatorToken(LogicalOperator.NOT, false) :  // "is not null" -> no greedy
+			   "not".equals(strToken) ? new LogicalOperatorToken(LogicalOperator.NOT, greedy) : 
 			   null;
 	}
 

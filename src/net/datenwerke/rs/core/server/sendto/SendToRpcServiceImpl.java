@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -36,6 +36,7 @@ import net.datenwerke.rs.core.client.reportexporter.dto.ReportExecutionConfigDto
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.core.client.sendto.SendToClientConfig;
 import net.datenwerke.rs.core.client.sendto.rpc.SendToRpcService;
+import net.datenwerke.rs.core.server.reportexport.hooks.ReportExportViaSessionHook;
 import net.datenwerke.rs.core.service.reportmanager.ReportDtoService;
 import net.datenwerke.rs.core.service.reportmanager.ReportExecutorService;
 import net.datenwerke.rs.core.service.reportmanager.ReportService;
@@ -148,6 +149,11 @@ public class SendToRpcServiceImpl extends SecuredRemoteServiceServlet implements
 			/* create variant */
 			Report adjustedReport = (Report) dtoService.createUnmanagedPoso(reportDto);
 			Report toExecute = orgReport.createTemporaryVariant(adjustedReport);
+			
+			final ReportExecutionConfig[] configArray = getConfigArray(executorToken, formatConfig);
+			for(ReportExportViaSessionHook viaSessionHooker : hookHandlerService.getHookers(ReportExportViaSessionHook.class)){
+				viaSessionHooker.adjustReport(toExecute, configArray);
+			}
 
 			if(null == format){
 				/* call handler without executed report */
@@ -176,6 +182,12 @@ public class SendToRpcServiceImpl extends SecuredRemoteServiceServlet implements
 
 	private ReportExecutionConfig[] getConfigArray(String executorToken,
 			List<ReportExecutionConfigDto> configs) throws ExpectedException {
+		
+		if(null == configs) {
+			ReportExecutionConfig[] configArray = { new RECReportExecutorToken(executorToken) };
+			return configArray;
+		} 
+			
 		ReportExecutionConfig[] configArray = new ReportExecutionConfig[configs.size()+1];
 		for(int i = 0; i < configs.size(); i++)
 			configArray[i] = (ReportExecutionConfig) dtoService.createPoso(configs.get(i));

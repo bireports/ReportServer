@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -242,8 +242,11 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 				@Override
 				public void onHeaderMouseDown(HeaderMouseDownEvent event) {
 					if(event.getEvent().getButton() == NativeEvent.BUTTON_RIGHT){
-						configureHeaderMenu(model, event.getColumnIndex(), event.getEvent().getClientX(), event.getEvent().getClientY());
-						grid.setContextMenu(menu);
+						if (!tReport.isConfigurationProtected()) {
+							configureHeaderMenu(model, event.getColumnIndex(), event.getEvent().getClientX(), event.getEvent().getClientY());
+							grid.setContextMenu(menu);
+						} else 
+							grid.setContextMenu(null);
 					}
 				}
 			});
@@ -253,8 +256,11 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 				public void onCellMouseDown(final CellMouseDownEvent event) {
 					if(event.getEvent().getButton() == NativeEvent.BUTTON_RIGHT){
 						int cellIndex = event.getCellIndex();
-						configureMenu(cellIndex, event.getRowIndex(), model, event);
-						grid.setContextMenu(menu);
+						if (!tReport.isConfigurationProtected()) {
+							configureMenu(cellIndex, event.getRowIndex(), model, event);
+							grid.setContextMenu(menu);
+						} else 
+							grid.setContextMenu(null);
 					}
 				}
 			});
@@ -490,14 +496,11 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 		if(null == column)
 			return;
 
-		boolean foundEnhancer = false;
 		Iterator<TableReportPreviewCellEnhancerHook> iterator = hookHandler.getHookers(TableReportPreviewCellEnhancerHook.class).iterator();
 		while(iterator.hasNext()){
 			TableReportPreviewCellEnhancerHook enhancer = iterator.next();
 			if(! enhancer.consumes(tReport, column, value, rawValue))
 				continue;
-
-			foundEnhancer = true;
 
 			boolean separator = enhancer.enhanceMenu(this, menu, tReport, column, value, rawValue);
 			if(iterator.hasNext() && separator)

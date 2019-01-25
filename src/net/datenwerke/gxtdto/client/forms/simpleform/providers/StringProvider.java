@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -104,6 +104,8 @@ public class StringProvider extends FormFieldProviderHookImpl {
 			} else 
 				field = new TextField();
 			((ValueBaseField)field).setWidth(null);
+			if(null != textAreaConfig)
+				((ValueBaseField)field).setWidth(textAreaConfig.getWidth());
 		}
 		
 		if(field instanceof ValueBaseField){

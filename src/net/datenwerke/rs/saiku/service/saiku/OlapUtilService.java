@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -26,9 +26,7 @@ package net.datenwerke.rs.saiku.service.saiku;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-
-import net.datenwerke.rs.saiku.service.datasource.MondrianDatasource;
-import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReport;
+import java.util.Map;
 
 import org.olap4j.OlapConnection;
 import org.olap4j.OlapException;
@@ -36,12 +34,21 @@ import org.olap4j.metadata.Cube;
 import org.olap4j.metadata.Dimension;
 import org.olap4j.metadata.Level;
 import org.olap4j.metadata.Member;
+import org.saiku.olap.dto.SaikuDimension;
+import org.saiku.olap.dto.SaikuHierarchy;
+import org.saiku.olap.dto.SaikuMember;
+import org.saiku.olap.dto.SimpleCubeElement;
+
+import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
+import net.datenwerke.rs.saiku.service.datasource.MondrianDatasource;
+import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReport;
 
 public interface OlapUtilService {
 
 	OlapConnection getOlapConnection(SaikuReport report) throws ClassNotFoundException, IOException, SQLException;
 
-	OlapConnection getOlapConnection(MondrianDatasource mondrianDatasource) throws IOException, ClassNotFoundException, SQLException;
+	OlapConnection getOlapConnection(MondrianDatasource mondrianDatasource)
+			throws IOException, ClassNotFoundException, SQLException;
 
 	Cube getCube(SaikuReport report) throws ClassNotFoundException, IOException, SQLException;
 
@@ -55,7 +62,27 @@ public interface OlapUtilService {
 
 	List<Member> getHierarchyRootMembers(Cube cube, String hierarchyName) throws OlapException;
 
-	List<String> getCubes(MondrianDatasource datasource)
-			throws ClassNotFoundException, IOException, SQLException;
+	List<String> getCubes(MondrianDatasource datasource) throws ClassNotFoundException, IOException, SQLException;
+
+	Map<String, Object> getProperties(Cube cube);
+
+	List<SaikuHierarchy> getAllDimensionHierarchies(Cube cube, String dimensionName);
+
+	SaikuDimension getDimension(Cube cube, String dimensionName);
+
+	List<SimpleCubeElement> getAllMembers(Cube cube, String hierarchy, String level);
+
+	List<SimpleCubeElement> getAllMembers(Cube nativeCube, String hierarchy, String level, String searchString,
+			int searchLimit);
+
+	SaikuMember getMember(Cube cube, String uniqueMemberName);
+
+	/**
+	 * Clears the Mondrian Cache of the given report.
+	 * 
+	 * @param report
+	 *            the report of which the cache should be cleared
+	 */
+	void flushCache(Report report);
 
 }

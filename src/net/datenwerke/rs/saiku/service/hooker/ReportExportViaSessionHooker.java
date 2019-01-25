@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -26,6 +26,8 @@ package net.datenwerke.rs.saiku.service.hooker;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.saiku.olap.query2.ThinQuery;
+
 import net.datenwerke.rs.base.service.reportengines.table.entities.TableReport;
 import net.datenwerke.rs.base.service.reportengines.table.entities.TableReportVariant;
 import net.datenwerke.rs.core.server.reportexport.hooks.ReportExportViaSessionHook;
@@ -33,18 +35,20 @@ import net.datenwerke.rs.core.service.reportmanager.engine.config.RECReportExecu
 import net.datenwerke.rs.core.service.reportmanager.engine.config.ReportExecutionConfig;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.saiku.service.saiku.SaikuSessionContainer;
+import net.datenwerke.rs.saiku.service.saiku.ThinQueryService;
 import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReport;
 import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReportVariant;
-
-import org.saiku.olap.query.IQuery;
 
 public class ReportExportViaSessionHooker implements ReportExportViaSessionHook {
 
 	private Provider<SaikuSessionContainer> saikuSessionContainer;
+	private ThinQueryService tqService;
 
 	@Inject
-	public ReportExportViaSessionHooker(Provider<SaikuSessionContainer> saikuSessionContainer) {
+	public ReportExportViaSessionHooker(Provider<SaikuSessionContainer> saikuSessionContainer,
+			ThinQueryService tqService) {
 		this.saikuSessionContainer = saikuSessionContainer;
+		this.tqService = tqService;
 	}
 
 	@Override
@@ -52,18 +56,22 @@ public class ReportExportViaSessionHooker implements ReportExportViaSessionHook 
 		RECReportExecutorToken executorToken = getConfig(RECReportExecutorToken.class, configs);
 		if(null != executorToken && adjustedReport instanceof SaikuReportVariant){
 			SaikuReport origReport = saikuSessionContainer.get().getReport(executorToken.getToken());
-			IQuery query = saikuSessionContainer.get().getQueryForReport(origReport);
+			ThinQuery query = saikuSessionContainer.get().getQueryForReport(origReport);
 			if(null != query){
-				String xml = query.toXml();
+				String xml = tqService.toJSONString(query);
 				((SaikuReportVariant) adjustedReport).setQueryXml(xml);
 			}
+			if(null != origReport)
+				((SaikuReportVariant) adjustedReport).setHideParents(origReport.isHideParents());
 		} else if(null != executorToken && adjustedReport instanceof TableReportVariant && ((TableReport)adjustedReport).isCube()){
 			SaikuReport origReport = saikuSessionContainer.get().getReport(executorToken.getToken());
-			IQuery query = saikuSessionContainer.get().getQueryForReport(origReport);
+			ThinQuery query = saikuSessionContainer.get().getQueryForReport(origReport);
 			if(null != query){
-				String xml = query.toXml();
+				String xml = tqService.toJSONString(query);
 				((TableReportVariant) adjustedReport).setCubeXml(xml);
 			}
+			if(null != origReport)
+				((TableReportVariant) adjustedReport).setHideParents(origReport.isHideParents());
 		}
 	}
 	

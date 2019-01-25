@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -269,6 +269,9 @@ public class Dto2SaikuReportGenerator implements Dto2PosoGenerator<SaikuReportDt
 		}
 		poso.setParameterInstances(new_col_parameterInstances);
 
+		/*  set queryXml */
+		poso.setQueryXml(dto.getQueryXml() );
+
 	}
 
 	protected void mergeProxy2Poso(SaikuReportDto dto, final SaikuReport poso)  throws ExpectedException {
@@ -416,6 +419,11 @@ public class Dto2SaikuReportGenerator implements Dto2PosoGenerator<SaikuReportDt
 			poso.setParameterInstances(new_col_parameterInstances);
 		}
 
+		/*  set queryXml */
+		if(dto.isQueryXmlModified()){
+			poso.setQueryXml(dto.getQueryXml() );
+		}
+
 	}
 
 	public void mergeUnmanagedPoso(SaikuReportDto dto, final SaikuReport poso)  throws ExpectedException {
@@ -474,6 +482,9 @@ public class Dto2SaikuReportGenerator implements Dto2PosoGenerator<SaikuReportDt
 			col_parameterInstances.add((ParameterInstance) dtoServiceProvider.get().createUnmanagedPoso(refDto));
 		}
 		poso.setParameterInstances(col_parameterInstances);
+
+		/*  set queryXml */
+		poso.setQueryXml(dto.getQueryXml() );
 
 	}
 
@@ -543,6 +554,11 @@ public class Dto2SaikuReportGenerator implements Dto2PosoGenerator<SaikuReportDt
 				col_parameterInstances.add((ParameterInstance) dtoServiceProvider.get().createUnmanagedPoso(refDto));
 			}
 			poso.setParameterInstances(col_parameterInstances);
+		}
+
+		/*  set queryXml */
+		if(dto.isQueryXmlModified()){
+			poso.setQueryXml(dto.getQueryXml() );
 		}
 
 	}

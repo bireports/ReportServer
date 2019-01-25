@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -48,6 +48,7 @@ public class SelectionRestObject {
 	private String hierarchy;
 	private String type;
 	private String action;
+	private String showTotals;
 
 
 	public SelectionRestObject() {
@@ -86,6 +87,13 @@ public class SelectionRestObject {
 		this.action = action;
 	}
 
+	public String getTotalsFunction() {
+		return showTotals;
+	}
+
+	public void setTotalsFunction(String showTotals) {
+		this.showTotals = showTotals;
+	}
 	
 	
 }

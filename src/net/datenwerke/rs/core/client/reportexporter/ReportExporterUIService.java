@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -33,7 +33,7 @@ public interface ReportExporterUIService {
 	public List<ReportExporter> getAvailableExporters(ReportDto report);
 	
 	/**
-	 * This method should generally be preferredd over {@link #getAvailableExporters(ReportDto)}. It returns the exporters for a report which are allowed and in the right order.
+	 * This method should generally be preferred over {@link #getAvailableExporters(ReportDto)}. It returns the exporters for a report which are allowed and in the right order.
 	 * 
 	 * @param report
 	 * @return
@@ -48,7 +48,7 @@ public interface ReportExporterUIService {
 	public String getExportServletPath();
 
 	/**
-	 * Returns all exporters that are able to export the report as it is configuread at the moment
+	 * Returns all exporters that are able to export the report as it is configured at the moment
 	 * @param report
 	 * @return
 	 */

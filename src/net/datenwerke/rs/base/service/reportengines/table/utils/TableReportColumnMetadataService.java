@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -29,13 +29,14 @@ import java.util.Map;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.NonFatalException;
 import net.datenwerke.rs.base.service.reportengines.table.entities.Column;
 import net.datenwerke.rs.base.service.reportengines.table.entities.TableReport;
+import net.datenwerke.security.service.usermanager.entities.User;
 
 public interface TableReportColumnMetadataService {
 
-	void augmentWithMetadata(TableReport report) throws NonFatalException;
+	void augmentWithMetadata(TableReport report, User user) throws NonFatalException;
 	
-	void augmentWithMetadata(Collection<Column> columns, TableReport report) throws NonFatalException;
+	void augmentWithMetadata(Collection<Column> columns, TableReport report, User user) throws NonFatalException;
 
-	Map<String, ColumnMetadata> createColumnMetadataMap(TableReport realReport) throws NonFatalException;
+	Map<String, ColumnMetadata> createColumnMetadataMap(TableReport realReport, User user) throws NonFatalException;
 
 }

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -27,14 +27,22 @@ import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 
 import net.datenwerke.dbpool.config.ConnectionPoolConfig;
+import net.datenwerke.rs.base.service.datasources.definitions.DatabaseDatasource;
 
 public interface TempTableService {
 
 	String PROPERTY_KEY_DEFAULT_DATASOURCE = "internaldb.datasource";
 	
-	
+	/**
+	 * Ensure to call {@link TempTableHelper#writeOperationCompleted()} after completing your write operation.
+	 * 
+	 * @param requester
+	 * @return
+	 */
 	public TempTableHelper getHelper(String requester);
 	public void shutdown();
 	public ConnectionPoolConfig getConnectionConfig();
 	void dropRSTMPtables() throws SQLException, InterruptedException, ExecutionException;
+
+	DatabaseDatasource getInternalDbDatasource();
 }

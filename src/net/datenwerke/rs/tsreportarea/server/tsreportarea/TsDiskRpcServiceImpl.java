@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -26,13 +26,20 @@ package net.datenwerke.rs.tsreportarea.server.tsreportarea;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.NoResultException;
 
-import org.plutext.jaxb.svg11.Vkern;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
+import com.google.inject.persist.Transactional;
 
 import net.datenwerke.gxtdto.client.dtomanager.Dto;
 import net.datenwerke.gxtdto.client.dtomanager.Dto2PosoMapper;
@@ -65,7 +72,6 @@ import net.datenwerke.security.server.SecuredRemoteServiceServlet;
 import net.datenwerke.security.service.authenticator.AuthenticatorService;
 import net.datenwerke.security.service.security.SecurityService;
 import net.datenwerke.security.service.security.SecurityServiceSecuree;
-import net.datenwerke.security.service.security.SecurityTarget;
 import net.datenwerke.security.service.security.annotation.ArgumentVerification;
 import net.datenwerke.security.service.security.annotation.RightsVerification;
 import net.datenwerke.security.service.security.annotation.SecurityChecked;
@@ -78,12 +84,6 @@ import net.datenwerke.security.service.usermanager.entities.User;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 import net.datenwerke.treedb.client.treedb.dto.EntireTreeDTO;
 import net.datenwerke.treedb.service.treedb.AbstractNode;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import com.google.inject.persist.Transactional;
 
 /**
  * 
@@ -217,6 +217,8 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		
 		/* get folder */
 		AbstractTsDiskNode folder = getFolder(teamSpace, folderDto);
+		if(null == folder)
+			return new TsDiskItemList();
 		
 		/* create result list */
 		List<AbstractTsDiskNodeDto> items = new ArrayList<AbstractTsDiskNodeDto>();
@@ -580,7 +582,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		
 		if(changeUnderlyingReport && node instanceof TsDiskReportReference){
 			TsDiskReportReference reference = (TsDiskReportReference) node;
-			if(reference.isHardlink() && null != reference.getReport() && ! reference.getReport().isWriteProtected()){
+			if(reference.isHardlink() && null != reference.getReport() && ! reference.getReport().isWriteProtected() && ! reference.getReport().isConfigurationProtected()){
 				Report report = reference.getReport();
 				if(null != report){
 					report.setName(reference.getName());
@@ -727,6 +729,36 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		
 		return resultList;
 	}
+	
+	@Override
+	@Transactional(rollbackOn={Exception.class})
+	public Map<TeamSpaceDto, List<List<AbstractTsDiskNodeDto>>> getTeamSpacesWithPathsThatLinkTo(@Named("report") ReportDto reportDto)
+			throws ServerCallFailedException {
+		Report report = (Report) dtoService.loadPoso(reportDto);
+		
+		Map<TeamSpace, List<List<AbstractTsDiskNode>>> pathsMap = favoriteService.getTeamSpacesWithPathsThatLinkTo(report);
+		
+		Map<TeamSpaceDto, List<List<AbstractTsDiskNodeDto>>> resultMap = new HashMap<>();
+		Iterator<TeamSpace> it = pathsMap.keySet().iterator();
+		
+		while (it.hasNext()) {
+			TeamSpace ts = it.next();
+			TeamSpaceDto tsDto = (TeamSpaceDto) dtoService.createListDto(ts);
+			List<List<AbstractTsDiskNode>> paths = pathsMap.get(ts);
+			List<List<AbstractTsDiskNodeDto>> pathsDto = new ArrayList<>();
+			for (List<AbstractTsDiskNode> path: paths) {
+				List<AbstractTsDiskNodeDto> pathDto = new ArrayList<>();
+				for (AbstractTsDiskNode node: path) {
+					AbstractTsDiskNodeDto nodeDto = (AbstractTsDiskNodeDto) dtoService.createListDto(node);
+					pathDto.add(nodeDto);
+				}
+				pathsDto.add(pathDto);
+			}
+			resultMap.put(tsDto, pathsDto);
+		}
+		
+		return resultMap;
+	}
 
 	@Override
 	public EntireTreeDTO loadAll(Dto state, Collection<Dto2PosoMapper> wlFilters, Collection<Dto2PosoMapper> blFilters)
@@ -838,7 +870,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 	}
 
 	@Override
-	public AbstractNodeDto setFlag(AbstractNodeDto node, long flag, boolean set)
+	public AbstractNodeDto setFlag(AbstractNodeDto node, long flagToSet, long FlagToUnset)
 			throws ServerCallFailedException {
 		return null;
 	}

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -149,6 +149,8 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 	private boolean editDashboardOnSelect;
 
 	private boolean canEdit;
+
+	private DwTextButton toolsBtn;
 	
 	@Inject
 	public DashboardMainComponent(
@@ -295,7 +297,7 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 		}
 		
 		/* add tools */
-		DwTextButton toolsBtn = toolbarService.createSmallButtonLeft(DashboardMessages.INSTANCE.tools(), BaseIcon.COG);
+		toolsBtn = toolbarService.createSmallButtonLeft(DashboardMessages.INSTANCE.tools(), BaseIcon.COG);
 		toolbar.add(toolsBtn);
 		
 		Menu toolsMenu = new DwMenu();
@@ -639,6 +641,15 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 	protected void init(DashboardContainerDto result) {
 		init(result, null);
 	}
+	
+	protected DashboardDto getPrimaryDashboard() {
+		for (DashboardDto dashboard: dbStore.getAll()) {
+			if (dashboard.isPrimary()) {
+				return dashboard;
+			}
+		}
+		return null;
+	}
 
 	protected void init(DashboardContainerDto result, DashboardDto dashboardToSelect) {
 		dbStore.clear();
@@ -651,12 +662,16 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 
 		dbStore.addAll(result.getDashboards());
 
-		
 		if(null != dashboardToSelect)
 			dashboardSelector.setValue(dashboardToSelect,true);
-		else if(! dbStore.getAll().isEmpty())
-			dashboardSelector.setValue(dbStore.get(0),true);
-		else if(canEdit)
+		else if(! dbStore.getAll().isEmpty()) {
+			/* We select the primary dashboard if set. If not, we select the first dashboard in the list. */
+			DashboardDto primaryDashboard = getPrimaryDashboard();
+			if (null != primaryDashboard) 
+				dashboardSelector.setValue(primaryDashboard, true);
+			else
+				dashboardSelector.setValue(dbStore.get(0),true);
+		} else if(canEdit)
 			createDashboard(false);
 		
 		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -769,7 +784,7 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 		});
 	}
 	
-	public void dadgetConfigured(DashboardDto dashboard, final DadgetDto dadget, final EditSuccessCallback callback){
+	public void dadgetConfigured(DashboardDto dashboard, final DadgetDto dadget, ConfigType type, final EditSuccessCallback callback){
 		mask(BaseMessages.INSTANCE.save());
 		dao.editDadgetToDashboard(dashboard, dadget, new RsAsyncCallback<DashboardDto>(){
 			@Override
@@ -822,6 +837,14 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 	public void hideToolbar() {
 		if(null != toolbar && toolbar == nsContainer.getWidget(0))
 			toolbar.removeFromParent();
+	}
+	
+	public void hideToolsButton() {
+		toolsBtn.hide();
+	}
+
+	public void hideAddButton() {
+		addDadgetBtn.hide();
 	}
 
 	public void setProtected(){

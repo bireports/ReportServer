@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -67,10 +67,6 @@ public class StringConfigurator extends UserVariableConfiguratorImpl<StringUserV
 	@Override
 	public Widget getEditComponent(StringUserVariableInstanceDto instance, final StringUserVariableDefinitionDto definition) {
 		SimpleForm form = SimpleForm.getInlineInstance();
-		form.setSize(
-			300 + definition.getWidth(), 
-			50 + definition.getHeight()
-		);
 		
 		if(definition.getHeight() == 1)
 			form.addField(String.class, StringUserVariableInstanceDtoPA.INSTANCE.value(), BaseMessages.INSTANCE.value()); 

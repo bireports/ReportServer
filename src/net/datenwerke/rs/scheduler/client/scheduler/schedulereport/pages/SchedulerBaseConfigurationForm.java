@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -31,9 +31,32 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.inject.Inject;
+import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.util.ToggleGroup;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.widget.core.client.Component;
+import com.sencha.gxt.widget.core.client.box.MessageBox;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.DateField;
+import com.sencha.gxt.widget.core.client.form.Radio;
+import com.sencha.gxt.widget.core.client.form.TextArea;
+import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.TimeField;
+
 import net.datenwerke.gf.client.login.LoginService;
 import net.datenwerke.gf.client.treedb.UITree;
 import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
 import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.forms.FormHelper;
@@ -56,29 +79,6 @@ import net.datenwerke.security.ext.client.usermanager.UserManagerDao;
 import net.datenwerke.security.ext.client.usermanager.UserManagerUIService;
 import net.datenwerke.security.ext.client.usermanager.provider.annotations.UserManagerTreeBasicSingleton;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.inject.Inject;
-import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.core.client.util.ToggleGroup;
-import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.widget.core.client.Component;
-import com.sencha.gxt.widget.core.client.box.MessageBox;
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
-import com.sencha.gxt.widget.core.client.form.DateField;
-import com.sencha.gxt.widget.core.client.form.Radio;
-import com.sencha.gxt.widget.core.client.form.TextArea;
-import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.TimeField;
 
 public class SchedulerBaseConfigurationForm extends DwContentPanel implements Validatable{
 
@@ -136,10 +136,13 @@ public class SchedulerBaseConfigurationForm extends DwContentPanel implements Va
 		
 		final DwTextButton formatConfigBtn = new DwTextButton(SchedulerMessages.INSTANCE.formatConfig());
 		
-		List<ReportExporter> exporters = reportExporterService.getUsableExporters(report);
+		List<ReportExporter> exporters = reportExporterService.getCleanedUpAvailableExporters(report);
 		exporterMap = new HashMap<Radio, ReportExporter>();
 		boolean first = true;
 		for(final ReportExporter exporter : exporters){
+			if(! exporter.canBeScheduled())
+				continue;
+			
 			String name = exporter.getExportTitle();
 
 			final Radio radio = new Radio();

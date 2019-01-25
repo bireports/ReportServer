@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -43,6 +43,7 @@ import net.datenwerke.rs.scripting.service.scripting.SimpleScriptingService;
 import net.datenwerke.rs.terminal.service.terminal.TerminalService;
 import net.datenwerke.rs.terminal.service.terminal.TerminalSession;
 import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocation;
+import net.datenwerke.scheduler.service.scheduler.entities.AbstractJob;
 import net.datenwerke.scheduler.service.scheduler.entities.history.JobEntry;
 import net.datenwerke.scheduler.service.scheduler.exceptions.JobExecutionException;
 import net.datenwerke.scheduler.service.scheduler.jobs.BaseJob__;
@@ -127,6 +128,12 @@ public class ScriptExecuteJob extends ReportServerJob {
 		Object result = scriptResult.getResult();
 		if(null != result)
 			jobEntry.addHistoryProperty("result", result.toString());
+	}
+	
+	@Override
+	public void copyTransientFieldsFrom(AbstractJob job) {
+		if(job instanceof ScriptExecuteJob)
+			this.scriptResult = ((ScriptExecuteJob) job).scriptResult;
 	}
 
 }

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -63,10 +63,8 @@ import net.datenwerke.gxtdto.client.baseex.widget.layout.DwNorthSouthContainer;
 import net.datenwerke.gxtdto.client.dtomanager.Dto;
 import net.datenwerke.gxtdto.client.dtomanager.IdedDto;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
-import net.datenwerke.gxtdto.client.forms.simpleform.actions.ShowHideFieldAction;
 import net.datenwerke.gxtdto.client.forms.simpleform.actions.SimpleFormAction;
 import net.datenwerke.gxtdto.client.forms.simpleform.conditions.FieldChanged;
-import net.datenwerke.gxtdto.client.forms.simpleform.conditions.FieldEquals;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCCustomComponent;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCSpace;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCCustomComponentImpl;
@@ -192,7 +190,7 @@ public class DatabaseBundleForm extends SimpleFormView{
 		
 		form.addField(Separator.class, new SFFCSpace());
 		
-		String staticSelectionField = form.addField(CustomComponent.class, new SFFCCustomComponentImpl(nsContainer));
+		form.addField(CustomComponent.class, new SFFCCustomComponentImpl(nsContainer));
 		grid.getStore().addStoreHandlers(new GenericStoreHandler<DatabaseBundleEntryDto>(){
 			@Override
 			protected void handleDataChangeEvent() {
@@ -208,7 +206,6 @@ public class DatabaseBundleForm extends SimpleFormView{
 			}
 		});
 		
-		form.addCondition(mappingField, new FieldEquals("static"), new ShowHideFieldAction(staticSelectionField));
 	}
 
 

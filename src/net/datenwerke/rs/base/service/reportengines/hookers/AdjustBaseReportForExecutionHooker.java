@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -29,27 +29,35 @@ import net.datenwerke.rs.base.service.reportengines.table.utils.TableReportColum
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.core.service.reportmanager.hooks.AdjustReportForExecutionHook;
+import net.datenwerke.security.service.authenticator.AuthenticatorService;
+import net.datenwerke.security.service.usermanager.entities.User;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 public class AdjustBaseReportForExecutionHooker implements AdjustReportForExecutionHook {
 
 	private final TableReportColumnMetadataService columnMetadataService;
+	private final Provider<AuthenticatorService> authenticatorServiceProvider;
 	
 	@Inject
 	public AdjustBaseReportForExecutionHooker(
-		TableReportColumnMetadataService columnMetadataService
+		TableReportColumnMetadataService columnMetadataService,
+		Provider<AuthenticatorService> authenticatorServiceProvider
 		){
 		
 		/* store objects */
 		this.columnMetadataService = columnMetadataService;
+		this.authenticatorServiceProvider = authenticatorServiceProvider;
 	}
 	
 	@Override
 	public void adjust(Report report) {
 		if(report instanceof TableReport){
 			try {
-				columnMetadataService.augmentWithMetadata((TableReport)report);
+				AuthenticatorService authenticatorService = authenticatorServiceProvider.get();
+				User user = authenticatorService.getCurrentUser();
+				columnMetadataService.augmentWithMetadata((TableReport)report, user);
 			} catch (NonFatalException e) {
 			}
 		}

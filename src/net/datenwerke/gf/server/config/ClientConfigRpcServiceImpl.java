@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,15 +23,20 @@
  
 package net.datenwerke.gf.server.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
+
+import com.google.inject.Singleton;
 
 import net.datenwerke.gf.client.config.ClientConfigModule;
 import net.datenwerke.gf.client.config.rpc.ClientConfigRpcService;
+import net.datenwerke.gf.service.config.ClientConfigExposerHook;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.utils.config.ConfigService;
 import net.datenwerke.security.server.SecuredRemoteServiceServlet;
-
-import com.google.inject.Singleton;
 
 @Singleton
 public class ClientConfigRpcServiceImpl extends SecuredRemoteServiceServlet implements ClientConfigRpcService {
@@ -40,13 +45,17 @@ public class ClientConfigRpcServiceImpl extends SecuredRemoteServiceServlet impl
 	 * 
 	 */
 	private static final long serialVersionUID = -191463296295625883L;
+	
 	private final ConfigService configService;
+	private final HookHandlerService hookHandler;
 
 	@Inject
 	public ClientConfigRpcServiceImpl(
-		ConfigService configService	
+		ConfigService configService,
+		HookHandlerService hookHandler
 		) {
 		this.configService = configService;
+		this.hookHandler = hookHandler;
 	}
 
 	@Override
@@ -60,6 +69,19 @@ public class ClientConfigRpcServiceImpl extends SecuredRemoteServiceServlet impl
 		} catch(Exception e) {
 			throw new ServerCallFailedException(e);
 		}
+	}
+
+	@Override
+	public HashMap<String, String> getConfigProperties(String identifier) {
+		HashMap<String, String> properties = new HashMap<>();
+		
+		for(ClientConfigExposerHook exposer : hookHandler.getHookers(ClientConfigExposerHook.class)){
+			Map<String,String> addProperties = exposer.exposeConfig(identifier);
+			if(null != addProperties)
+				properties.putAll(addProperties);
+		}
+		
+		return properties;
 	}
 
 

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -29,6 +29,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.widget.core.client.Window;
+
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCTextAreaImpl;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
@@ -38,12 +44,6 @@ import net.datenwerke.rs.uservariables.client.uservariables.dto.UserVariableDefi
 import net.datenwerke.rs.uservariables.client.variabletypes.list.dto.ListUserVariableDefinitionDto;
 import net.datenwerke.rs.uservariables.client.variabletypes.list.dto.ListUserVariableInstanceDto;
 import net.datenwerke.rs.uservariables.client.variabletypes.locale.UserVariablesTypesMessages;
-
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.widget.core.client.Window;
-import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
 
 public class ListConfigurator extends UserVariableConfiguratorImpl<ListUserVariableDefinitionDto, ListUserVariableInstanceDto> {
 
@@ -70,7 +70,6 @@ public class ListConfigurator extends UserVariableConfiguratorImpl<ListUserVaria
 	public Widget getEditComponent(final ListUserVariableInstanceDto instance,
 			ListUserVariableDefinitionDto definition) {
 		SimpleForm form = SimpleForm.getInlineInstance();
-		form.setSize(400, 200);
 
 		form.addField(String.class, new ValueProvider<ListUserVariableInstanceDto, String>() {
 			@Override

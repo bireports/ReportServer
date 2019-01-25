@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -197,7 +197,7 @@ public class TableReportEngine extends ReportEngine<TableDataSource, TableOutput
 		try{
 			if(null == ds)
 				throw new IllegalArgumentException("Could not find datasource for report");
-			configureDataSource(ds, (TableReport) report, parameters, configs);
+			configureDataSource(ds, (TableReport) report, parameters, configs, user);
 			
 			/* add comment */
 			ds.addQueryComment("user: " + String.valueOf(user.getId()));
@@ -227,7 +227,7 @@ public class TableReportEngine extends ReportEngine<TableDataSource, TableOutput
 		}
 	}
 
-	private void configureDataSource(TableDataSource ds, TableReport report, ParameterSet parameters, ReportExecutionConfig[] configs) throws ReportExecutorException {
+	private void configureDataSource(TableDataSource ds, TableReport report, ParameterSet parameters, ReportExecutionConfig[] configs, User user) throws ReportExecutorException {
 		/* handle special modes */
 		if(hasConfig(RECPaged.class, configs)){
 			RECPaged paged = getConfig(RECPaged.class, configs);
@@ -259,7 +259,7 @@ public class TableReportEngine extends ReportEngine<TableDataSource, TableOutput
 		ds.setPreFilter(((TableReport)report).getPreFilter().getRootBlock());
 		
 		try {
-			tableReportMetadataService.augmentWithMetadata(((TableReport)report).getColumns(), (TableReport) report);
+			tableReportMetadataService.augmentWithMetadata(((TableReport)report).getColumns(), (TableReport) report, user);
 		} catch (NonFatalException e) {
 			logger.warn( e.getMessage(), e);
 		}
@@ -429,6 +429,7 @@ public class TableReportEngine extends ReportEngine<TableDataSource, TableOutput
 			
 			/* last group row */
 			if(foundData){
+				lastSubtotalGroupFieldValues = subtotalGroupFieldValues.clone();
 				outputGenerator.nextRow();
 				outputGenerator.addGroupRow(subtotalIndices, getCompactRow(reducedSubtotalIndices, subtotals.getData().get(groupCount++).getRow()), subtotalGroupFieldIndices, lastSubtotalGroupFieldValues, rowSize, groupCellFormatters);
 			}

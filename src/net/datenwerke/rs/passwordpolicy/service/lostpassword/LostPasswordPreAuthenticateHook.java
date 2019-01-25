@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -32,6 +32,7 @@ import net.datenwerke.rs.authenticator.client.login.dto.ChallengeResponseContain
 import net.datenwerke.rs.authenticator.client.login.dto.NamedUserAuthToken;
 import net.datenwerke.rs.authenticator.client.login.dto.UserPasswordAuthToken;
 import net.datenwerke.rs.authenticator.cr.service.ChallengeResponseService;
+import net.datenwerke.rs.authenticator.cr.service.SessionChallengeContainer;
 import net.datenwerke.rs.passwordpolicy.service.BsiPasswordPolicyService;
 import net.datenwerke.rs.passwordpolicy.service.BsiPasswordPolicyUserMetadata;
 import net.datenwerke.rs.utils.crypto.PasswordHasher;
@@ -43,6 +44,7 @@ import net.datenwerke.security.service.usermanager.entities.User;
 import net.datenwerke.security.service.usermanager.entities.UserProperty;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
  * Tests whether a user tries to authenticate with a temporary password, 
@@ -58,6 +60,7 @@ public class LostPasswordPreAuthenticateHook implements PreAuthenticateHook {
 	private final ChallengeResponseService challengeResponseService;
 	private final UserPropertiesService userPropertiesService;
 	private final BsiPasswordPolicyService bsiPasswordPolicyService;
+	private final Provider<SessionChallengeContainer> challengeContainerProvider;
 
 	@Inject
 	public LostPasswordPreAuthenticateHook(
@@ -65,7 +68,8 @@ public class LostPasswordPreAuthenticateHook implements PreAuthenticateHook {
 		PasswordHasher passwordHasher,
 		ChallengeResponseService challengeResponseService, 
 		UserPropertiesService userPropertiesService, 
-		BsiPasswordPolicyService bsiPasswordPolicyService
+		BsiPasswordPolicyService bsiPasswordPolicyService,
+		Provider<SessionChallengeContainer> challengeContainerProvider
 		) {
 		
 		this.userManagerService = userManagerService;
@@ -73,6 +77,7 @@ public class LostPasswordPreAuthenticateHook implements PreAuthenticateHook {
 		this.challengeResponseService = challengeResponseService;
 		this.userPropertiesService = userPropertiesService;
 		this.bsiPasswordPolicyService = bsiPasswordPolicyService;
+		this.challengeContainerProvider = challengeContainerProvider;
 	}
 	
 	@Override
@@ -122,6 +127,11 @@ public class LostPasswordPreAuthenticateHook implements PreAuthenticateHook {
 									String cleartextPassword) {
 								return false;
 							}
+
+							@Override
+							public String hashPassword(String password, String salt) {
+								return password;
+							}
 						});
 						
 						BsiPasswordPolicyUserMetadata userMetadata = bsiPasswordPolicyService.getUserMetadata(u);
@@ -149,7 +159,9 @@ public class LostPasswordPreAuthenticateHook implements PreAuthenticateHook {
 			return passwordHasher.validatePassword(tmpPasswdProp.getValue(), ((UserPasswordAuthToken)token).getPassword());
 		} else if(token instanceof ChallengeResponseAuthToken){
 			ChallengeResponseContainer challengeResponse = ((ChallengeResponseAuthToken)token).getChallengeResponse();
-			return challengeResponseService.validateResponse(challengeResponse, tmpPasswdProp.getValue());
+			boolean validationResult = challengeResponseService.validateResponse(challengeResponse, tmpPasswdProp.getValue());
+			challengeContainerProvider.get().setContainer(challengeResponse);
+			return validationResult;
 		}
 	
 		return false;

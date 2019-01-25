@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,6 +25,8 @@ package net.datenwerke.gf.client.config.rpc;
 
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
 
+import java.util.HashMap;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -32,4 +34,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface ClientConfigRpcService extends RemoteService {
 	
 	public String getConfigFile(String configfile) throws ServerCallFailedException;
+
+	HashMap<String, String> getConfigProperties(String identifier);
 }

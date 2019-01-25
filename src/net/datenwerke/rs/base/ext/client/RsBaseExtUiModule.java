@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,6 +25,7 @@ package net.datenwerke.rs.base.ext.client;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 
+import net.datenwerke.rs.base.ext.client.dashboardmanager.eximport.ex.DashboardManagerExportUIModule;
 import net.datenwerke.rs.base.ext.client.datasourcemanager.eximport.ex.DatasourceManagerExportUIModule;
 import net.datenwerke.rs.base.ext.client.reportmanager.eximport.ex.ReportManagerExportUIModule;
 
@@ -37,6 +38,7 @@ public class RsBaseExtUiModule extends AbstractGinModule {
 		/* sub modules */
 		install(new DatasourceManagerExportUIModule());
 		install(new ReportManagerExportUIModule());
+		install(new DashboardManagerExportUIModule());
 	}
 
 }

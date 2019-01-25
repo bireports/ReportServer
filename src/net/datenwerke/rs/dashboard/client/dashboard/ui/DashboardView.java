@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -68,8 +68,10 @@ import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetContainerDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.LayoutTypeDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.decorator.DashboardDtoDec;
 import net.datenwerke.rs.dashboard.client.dashboard.hooks.DadgetProcessorHook;
 import net.datenwerke.rs.dashboard.client.dashboard.security.DashboardViewGenericTargetIdentifier;
+import net.datenwerke.rs.dashboard.client.dashboard.ui.DashboardContainer.ConfigType;
 import net.datenwerke.security.client.security.SecurityUIService;
 import net.datenwerke.security.client.security.dto.WriteDto;
 
@@ -500,12 +502,19 @@ public class DashboardView extends DwFlowContainer {
 		adjustTopBottomContainers();
 	}
 
-	public void dadgetConfigured(final DadgetPanel panel) {
-		mainComponent.dadgetConfigured(dashboard, panel.getDadget(), new EditSuccessCallback(){
+	public void dadgetConfigured(final DadgetPanel panel, ConfigType type) {
+		mainComponent.dadgetConfigured(dashboard, panel.getDadget(), type, new EditSuccessCallback(){
 			@Override
 			public void onSuccess(DashboardDto updatedDashboard, DadgetDto updatedDadget) {
 				panel.clear();
+				DadgetDto oldDadget = panel.getDadget();
 				panel.updateDadget(updatedDadget);
+				
+				/* update also dashboard */
+				DashboardDto dashboard = panel.getView().getDashboard();
+				if(null != dashboard)
+					((DashboardDtoDec)dashboard).updateDadget(oldDadget, updatedDadget);
+				
 				onDadgetResize(panel,updatedDadget.getHeight());
 				getProcessor(updatedDadget).draw(updatedDadget, panel);
 				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -574,7 +583,7 @@ public class DashboardView extends DwFlowContainer {
 			for(Widget w : containerToAdjust)
 				((DadgetPanel)w).getDadget().setN(n++);
 			
-			mainComponent.dadgetConfigured(dashboard, active.getDadget(), new EditSuccessCallback() {
+			mainComponent.dadgetConfigured(dashboard, active.getDadget(), ConfigType.MISC, new EditSuccessCallback() {
 				@Override
 				public void onSuccess(DashboardDto updatedDashboard, DadgetDto updatedDadget) {
 					getPanel(updatedDadget).onMove();
@@ -611,7 +620,7 @@ public class DashboardView extends DwFlowContainer {
 			for(Widget w : container)
 				((DadgetPanel)w).getDadget().setN(n++);
 			
-			mainComponent.dadgetConfigured(dashboard, active.getDadget(), new EditSuccessCallback() {
+			mainComponent.dadgetConfigured(dashboard, active.getDadget(), ConfigType.MISC, new EditSuccessCallback() {
 				@Override
 				public void onSuccess(DashboardDto updatedDashboard, DadgetDto updatedDadget) {
 					getPanel(updatedDadget).onMove();

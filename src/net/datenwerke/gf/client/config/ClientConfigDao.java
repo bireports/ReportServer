@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -23,11 +23,13 @@
  
 package net.datenwerke.gf.client.config;
 
-import net.datenwerke.gf.client.config.rpc.ClientConfigRpcServiceAsync;
-import net.datenwerke.gxtdto.client.dtomanager.Dao;
+import java.util.HashMap;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+
+import net.datenwerke.gf.client.config.rpc.ClientConfigRpcServiceAsync;
+import net.datenwerke.gxtdto.client.dtomanager.Dao;
 
 public class ClientConfigDao extends Dao {
 	
@@ -40,5 +42,9 @@ public class ClientConfigDao extends Dao {
 	
 	public void getClientConfig(String configfile, AsyncCallback<String> callback){
 		rpcService.getConfigFile(configfile, callback);
+	}
+	
+	public void getConfigProperties(String identifier, AsyncCallback<HashMap<String,String>> callback){
+		rpcService.getConfigProperties(identifier, callback);
 	}
 }

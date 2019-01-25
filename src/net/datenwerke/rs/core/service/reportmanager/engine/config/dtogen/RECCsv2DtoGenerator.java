@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -64,6 +64,9 @@ public class RECCsv2DtoGenerator implements Poso2DtoGenerator<RECCsv,RECCsvDtoDe
 		dto.setDtoView(here);
 
 		if(here.compareTo(DtoView.NORMAL) >= 0){
+			/*  set lineSeparator */
+			dto.setLineSeparator(StringEscapeUtils.escapeXml(StringUtils.left(poso.getLineSeparator(),8192)));
+
 			/*  set printHeader */
 			dto.setPrintHeader(poso.isPrintHeader() );
 

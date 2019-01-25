@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -31,6 +31,7 @@ import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
 @GeneratedType("net.datenwerke.entityservices.metadatagenerator.EntityMetadataProcessor")
 public class AbstractNode__ implements net.datenwerke.entityservices.metadatagenerator.interfaces.EntityMetadataProvider {
 
+	public static final String FLAG_CONFIGURATION_PROTECTION = "FLAG_CONFIGURATION_PROTECTION";
 	public static final String FLAG_WRITE_PROTECTION = "FLAG_WRITE_PROTECTION";
 	public static final String children = "children";
 	public static final String createdOn = "createdOn";

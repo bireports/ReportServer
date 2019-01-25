@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -44,6 +44,7 @@ import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2Connectio
 import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2InputStreamTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2JasperTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2JdcbDatasourceTransformer;
+import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2QueryTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2TableTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.database.Database2JasperTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.database.Database2JdbcConnectionTransformer;
@@ -73,6 +74,7 @@ public class DatasourceExtensionStartup {
 		Csv2TableTransformer csv2TableTransformer,
 		Csv2ConnectionTransformer csv2ConnectionTransformer,
 		Csv2JdcbDatasourceTransformer csv2JdbcDatasourceTransformer,
+		Csv2QueryTransformer csv2QueryTransformer,
 		
 		Database2JasperTransformer database2JasperTransformer, 
 		Database2JdbcConnectionTransformer database2JdbcConnectionTransformer, 
@@ -95,6 +97,7 @@ public class DatasourceExtensionStartup {
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, csv2TableTransformer);
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, csv2ConnectionTransformer);
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, csv2JdbcDatasourceTransformer);
+		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, csv2QueryTransformer);
 		
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, database2JasperTransformer);
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, database2JdbcConnectionTransformer);

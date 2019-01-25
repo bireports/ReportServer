@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -52,6 +52,7 @@ import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterContaine
 import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterSet;
 import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterSetFactory;
 import net.datenwerke.rs.utils.entitycloner.EntityClonerService;
+import net.datenwerke.security.service.usermanager.entities.User;
 
 /**
  * Simply supplies you with data in the form of an RSTableModel.
@@ -131,6 +132,11 @@ public class SimpleDataSupplier {
 	
 	public RSTableModel getData(DatasourceContainerProvider container) throws ReportExecutorException{
 		return getData(container, null, null, null);
+	}
+	
+	public RSTableModel getData(DatasourceContainerProvider container, User user) throws ReportExecutorException {
+		ParameterSet parameters = parameterSetFactory.safeCreate(user);
+		return getData(container, parameters, null, null);
 	}
 	
 	public RSTableModel getData(DatasourceContainerProvider container, ParameterSet parameters) throws ReportExecutorException{

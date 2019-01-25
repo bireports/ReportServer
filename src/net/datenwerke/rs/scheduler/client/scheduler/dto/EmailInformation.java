@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -33,6 +33,7 @@ public class EmailInformation implements AdditionalScheduleInformation {
 	
 	private String subject;
 	private String message;
+	private boolean compressed;
 	
 	public String getMessage() {
 		return message;
@@ -50,4 +51,11 @@ public class EmailInformation implements AdditionalScheduleInformation {
 		return subject;
 	}
 
+	public boolean isCompressed() {
+		return compressed;
+	}
+	
+	public void setCompressed(boolean compressed) {
+		this.compressed = compressed;
+	}
 }

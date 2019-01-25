@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -29,6 +29,7 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import java.lang.Boolean;
+import java.lang.String;
 import java.util.List;
 import net.datenwerke.dtoservices.dtogenerator.annotations.CorrespondingPoso;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
@@ -56,8 +57,10 @@ public interface TableReportDtoPA extends ReportDtoPA {
 	public ValueProvider<TableReportDto,Boolean> allowCubification();
 	public ValueProvider<TableReportDto,List<ColumnDto>> columns();
 	public ValueProvider<TableReportDto,Boolean> cube();
+	public ValueProvider<TableReportDto,String> cubeXml();
 	public ValueProvider<TableReportDto,Boolean> distinctFlag();
 	public ValueProvider<TableReportDto,Boolean> enableSubtotals();
+	public ValueProvider<TableReportDto,Boolean> hideParents();
 	public ValueProvider<TableReportDto,DatasourceContainerDto> metadataDatasourceContainer();
 	public ValueProvider<TableReportDto,PreFilterDto> preFilter();
 

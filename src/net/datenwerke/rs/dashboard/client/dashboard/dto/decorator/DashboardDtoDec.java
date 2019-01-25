@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,8 +25,10 @@ package net.datenwerke.rs.dashboard.client.dashboard.dto.decorator;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import net.datenwerke.gxtdto.client.dtomanager.IdedDto;
+import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.LayoutTypeDto;
@@ -39,6 +41,8 @@ public class DashboardDtoDec extends DashboardDto implements IdedDto {
 
 
 	private static final long serialVersionUID = 1L;
+	
+	private Map<String, ParameterInstanceDto> temporaryInstanceMap;
 
 	public DashboardDtoDec() {
 		super();
@@ -49,6 +53,14 @@ public class DashboardDtoDec extends DashboardDto implements IdedDto {
 		List<DadgetDto> dadgets = getDadgets();
 		Collections.replaceAll(dadgets, old, newDadget);
 		setDadgets(dadgets);
+	}
+
+	public Map<String, ParameterInstanceDto> getTemporaryInstanceMap() {
+		return temporaryInstanceMap;
+	}
+
+	public void setTemporaryInstanceMap(Map<String, ParameterInstanceDto> temporaryInstanceMap) {
+		this.temporaryInstanceMap = temporaryInstanceMap;
 	}
 
 

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -80,6 +80,8 @@ import net.datenwerke.rs.adminutils.service.su.SuModule;
 import net.datenwerke.rs.authenticator.cr.server.ChallengeResponseRpcServiceImpl;
 import net.datenwerke.rs.authenticator.cr.service.ChallengeResponseModule;
 import net.datenwerke.rs.authenticator.server.LoginHandlerImpl;
+import net.datenwerke.rs.base.ext.server.dashboardmanager.DashboardManagerExportRpcServiceImpl;
+import net.datenwerke.rs.base.ext.server.dashboardmanager.DashboardManagerImportRpcServiceImpl;
 import net.datenwerke.rs.base.ext.server.datasourcemanager.DatasourceManagerExportRpcServiceImpl;
 import net.datenwerke.rs.base.ext.server.datasourcemanager.DatasourceManagerImportRpcServiceImpl;
 import net.datenwerke.rs.base.ext.server.reportmanager.ReportManagerExportRpcServiceImpl;
@@ -223,7 +225,7 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 
 	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
-	public static final String CODE_VERSION = "2016-05-29-17-55-24";
+	public static final String CODE_VERSION = "2018-06-26-15-44-00";
 	
 	public static final String ENTERPRISE_MODULE_LOCATION = "net.datenwerke.rsenterprise.main.service.RsEnterpriseModule";
 	private static final String ENTERPRISE_MODULE_LOAD_MODULE_METHOD = "getEnterpriseModules";
@@ -360,6 +362,8 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 				serve(BASE_URL + "conditions").with(ConditionRpcServiceImpl.class); //$NON-NLS-1$
 				
 				serve(BASE_URL + "dashboard").with(DashboardRpcServiceImpl.class); //$NON-NLS-1$
+				serve(BASE_URL + "dashboardmanager_import").with(DashboardManagerImportRpcServiceImpl.class); //$NON-NLS-1$
+				serve(BASE_URL + "dashboardmanager_export").with(DashboardManagerExportRpcServiceImpl.class); //$NON-NLS-1$
 				
 				serve(BASE_URL + "datasources").with(DatasourceManagerTreeHandlerRpcServiceImpl.class); //$NON-NLS-1$
 				serve(BASE_URL + "datasources_tree").with(DatasourceManagerTreeHandlerRpcServiceImpl.class); //$NON-NLS-1$
@@ -510,6 +514,10 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 			new DwGwtFrameworkModule(),
 			new ReportServerModule(),
 			new LocalizationModule(),
+			/* ConfigModule must be loaded before the crypto module is loaded, 
+			 * since the crypto params are loaded there, eventually in an external config file. */
+			new ConfigModule(),
+			
 			new SecurityModule(),
 			new PasswordPolicyModule(),
 			new ChallengeResponseModule(),
@@ -524,6 +532,7 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 			new AuthenticatorModule(),
 			new ReportDocumentationModule(),
 			new GenRightsModule(),
+			
 			new CryptoModule(),
 			new DashboardModule(),
 			new DatasourceModule(),
@@ -602,7 +611,6 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 			
 			new ReportServerInstallationModule(),
 			
-			new ConfigModule(),
 			new ManPageModule(),
 			new SuModule(),
 			new PropertiesModule(),

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -27,6 +27,11 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.envers.Audited;
+
+import com.google.inject.Injector;
+
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
 import net.datenwerke.gf.base.service.annotations.Field;
@@ -36,11 +41,6 @@ import net.datenwerke.rs.saiku.client.saiku.locale.SaikuMessages;
 import net.datenwerke.rs.saiku.service.saiku.locale.SaikuEngineMessages;
 import net.datenwerke.rs.utils.instancedescription.annotations.InstanceDescription;
 import net.datenwerke.treedb.service.treedb.annotation.TreeDBAllowedChildren;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.envers.Audited;
-
-import com.google.inject.Injector;
 
 @Entity
 @Table(name="SAIKU_REPORT")
@@ -68,24 +68,33 @@ public class SaikuReport extends Report {
 	@Lob
 	@Type(type = "net.datenwerke.rs.utils.hibernate.RsClobType")
 	@Field
+	@ExposeToClient(allowArbitraryLobSize=true,disableHtmlEncode=true,exposeValueToClient=false)
 	private String queryXml;
 	
 	@ExposeToClient
 	private boolean allowMdx;
 	
+	@Deprecated
+	private boolean hideParents;
+	
 	public String getQueryXml() {
-		String connection = getUuid();
-		if(null == connection || null == queryXml)
-			return queryXml;
-		
-		String adapted = queryXml.replaceFirst("connection=\"[^\"]+\"","connection=\"" + connection + "\"");
-		return adapted;
+		return queryXml;
 	}
 
 	public void setQueryXml(String queryXml) {
 		this.queryXml = queryXml;
 	}
 
+	@Deprecated
+	public void setHideParents(boolean hideParents) {
+		this.hideParents = hideParents;
+	}
+	
+	@Deprecated
+	public boolean isHideParents() {
+		return hideParents;
+	}
+	
 	@Override
 	protected Report createVariant(Report report) {
 		if(! (report instanceof SaikuReport))
@@ -95,6 +104,9 @@ public class SaikuReport extends Report {
 		
 		/* copy parameter instances */
 		initVariant(variant, report);
+		
+		variant.setQueryXml(((SaikuReport)report).getQueryXml());
+		variant.setHideParents(((SaikuReport)report).isHideParents());
 		
 		return variant;
 		

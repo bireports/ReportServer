@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -65,6 +65,7 @@ public class ScheduleViaEmailHooker implements ScheduleConfigProviderHook {
 		MailReportAction mailAction = mailReportActionProvider.get();
 		mailAction.setSubject(emailInfo.getSubject());
 		mailAction.setMessage(emailInfo.getMessage());
+		mailAction.setCompressed(emailInfo.isCompressed());
 		try {
 			job.addAction(mailAction);
 		} catch (ActionNotSupportedException e) {
@@ -85,6 +86,7 @@ public class ScheduleViaEmailHooker implements ScheduleConfigProviderHook {
 		
 		info.setSubject(action.getSubject());
 		info.setMessage(action.getMessage());
+		info.setCompressed(action.isCompressed());
 		
 		rsd.addAdditionalInfo(info);
 	}

@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -25,6 +25,9 @@ package net.datenwerke.rs.core.service.reportmanager;
 
 import java.util.Set;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.gf.service.history.hooks.HistoryUrlBuilderHook;
 import net.datenwerke.gf.service.lifecycle.hooks.ConfigDoneHook;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
@@ -37,12 +40,11 @@ import net.datenwerke.rs.core.service.reportmanager.hookers.ConfigureBaseReportV
 import net.datenwerke.rs.core.service.reportmanager.hookers.ReportManagerHistoryUrlBuilderHooker;
 import net.datenwerke.rs.core.service.reportmanager.hooks.ConfigureReportViaHistoryLocationHook;
 import net.datenwerke.rs.core.service.reportmanager.hooks.ConfigureReportViaHttpRequestHook;
+import net.datenwerke.rs.core.service.reportmanager.hooks.VariantCreatorHook;
+import net.datenwerke.rs.core.service.reportmanager.metadata.hookers.VariantCreatedAdjustMetadataHooker;
 import net.datenwerke.rs.utils.eventbus.EventBus;
 import net.datenwerke.security.service.eventlogger.jpa.RemoveEntityEvent;
 import net.datenwerke.security.service.security.SecurityService;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class ReportManagerStartup {
 
@@ -57,13 +59,16 @@ public class ReportManagerStartup {
 		
 		Provider<ReportManagerHistoryUrlBuilderHooker> reportManagerUrlBuilder,
 		
-		HandleDatasourceRemoveEventHandler handleDatasourceRemoveHandler
+		HandleDatasourceRemoveEventHandler handleDatasourceRemoveHandler,
+		
+		VariantCreatedAdjustMetadataHooker adjustMetadataHooker
 		){
 		
 		eventBus.attachObjectEventHandler(RemoveEntityEvent.class, DatasourceDefinition.class, handleDatasourceRemoveHandler);
 		
 		hookHandler.attachHooker(ConfigureReportViaHttpRequestHook.class, baseReportRequestConfiguration);
 		hookHandler.attachHooker(ConfigureReportViaHistoryLocationHook.class, baseReportRequestConfiguration);
+		hookHandler.attachHooker(VariantCreatorHook.class, adjustMetadataHooker);
 		
 		hookHandler.attachHooker(HistoryUrlBuilderHook.class, reportManagerUrlBuilder);
 

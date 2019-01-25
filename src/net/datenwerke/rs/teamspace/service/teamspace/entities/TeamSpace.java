@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -88,7 +88,7 @@ public class TeamSpace {
 	@JoinTable(name="TEAMSPACE_2_MEMBER")
 	@ExposeToClient(mergeDtoValueBack=false, view=DtoView.ALL)
 	@EnclosedEntity
-    @OneToMany(cascade={CascadeType.ALL})
+    @OneToMany(cascade={CascadeType.ALL}, orphanRemoval=true)
 	private Set<TeamSpaceMember> members = new HashSet<TeamSpaceMember>();
 	
 	@ExposeToClient(mergeDtoValueBack=false)
@@ -163,9 +163,11 @@ public class TeamSpace {
 	}
 	
 	public void setMembers(Set<TeamSpaceMember> members) {
-		if(null == members)
-			members = new HashSet<TeamSpaceMember>();
-		this.members = members;
+		if(null == this.members)
+			this.members = new HashSet<>();
+		this.members.clear();
+		if(null != members)
+			this.members.addAll(members);
 	}
 
 	/**
@@ -218,8 +220,11 @@ public class TeamSpace {
 	}
 	
 	public void setApps(Set<TeamSpaceApp> apps) {
+		if(null == this.apps)
+			this.apps = new HashSet<>();
 		this.apps.clear();
-		this.apps.addAll(apps);
+		if(null != apps)
+			this.apps.addAll(apps);
 	}
 
 	public Set<TeamSpaceApp> getApps() {

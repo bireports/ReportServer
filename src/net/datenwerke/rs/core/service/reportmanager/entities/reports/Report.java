@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -61,7 +61,6 @@ import net.datenwerke.gxtdto.client.dtomanager.DtoView;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.core.client.datasourcemanager.dto.DatasourceContainerProviderDto;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportPropertyDto;
-import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportStringPropertyDto;
 import net.datenwerke.rs.core.client.reportmanager.locale.ReportmanagerMessages;
 import net.datenwerke.rs.core.service.datasourcemanager.DatasourceService;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceContainer;
@@ -85,6 +84,7 @@ import net.datenwerke.rs.utils.entitydiff.annotations.EntityDiffGuide;
 import net.datenwerke.rs.utils.entitydiff.annotations.EntityDiffGuides;
 import net.datenwerke.rs.utils.instancedescription.annotations.Description;
 import net.datenwerke.rs.utils.instancedescription.annotations.Title;
+import net.datenwerke.treedb.service.treedb.AbstractNode;
 
 /**
  * 
@@ -471,6 +471,12 @@ abstract public class Report extends AbstractReportManagerNode implements Parame
 		for(ReportProperty property : adjustedReport.getReportProperties())
 			propertiesSet.add(entityCloner.get().cloneEntity(property));
 		((Report)variant).setReportProperties(propertiesSet);
+		
+		/* Flags */
+		if (variant instanceof AbstractNode && adjustedReport instanceof AbstractNode) {
+			((AbstractNode)variant).setWriteProtection(((AbstractNode)adjustedReport).isWriteProtected());
+			((AbstractNode)variant).setConfigurationProtection(((AbstractNode)adjustedReport).isConfigurationProtected());
+		}
 	}
 
 	public void replaceWith(Report report, Injector injector){

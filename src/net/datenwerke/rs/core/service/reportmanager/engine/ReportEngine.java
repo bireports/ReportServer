@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -26,6 +26,7 @@ package net.datenwerke.rs.core.service.reportmanager.engine;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.base.service.datasources.transformers.DatasourceTransformationService;
 import net.datenwerke.rs.core.service.parameters.entities.ParameterInstance;
@@ -118,9 +119,10 @@ public abstract class ReportEngine<D, G extends ReportOutputGenerator, E extends
 	 * 
 	 * @param report
 	 * @param parameters
+	 * @throws ExpectedException 
 	 * @throws ReportServerException
 	 */
-	public CompiledReport execute(OutputStream os, Report report, ParameterSet parameterSet, User user, String outputFormat, ReportExecutionConfig... configs) throws ReportExecutorException{
+	public CompiledReport execute(OutputStream os, Report report, ParameterSet parameterSet, User user, String outputFormat, ReportExecutionConfig... configs) throws ReportExecutorException, ExpectedException{
 		
 		/* Use supplied uuid or create own */
 		String uuid = UUID.randomUUID().toString();
@@ -179,7 +181,7 @@ public abstract class ReportEngine<D, G extends ReportOutputGenerator, E extends
 	
 	public CompiledReport executeDry(OutputStream os, Report report,
 			ParameterSet parameterSet, User user, String outputFormat,
-			ReportExecutionConfig[] configs) throws ReportExecutorException {
+			ReportExecutionConfig[] configs) throws ReportExecutorException, ExpectedException {
 		for(ReportEngineTakeOverExecutionHook engineHooker : hookHandler.getHookers(ReportEngineTakeOverExecutionHook.class)){
 			if(engineHooker.takesOver(this, report, parameterSet, user, outputFormat, configs)){
 				return engineHooker.executeReportDry(this, report, parameterSet, user, outputFormat, configs);

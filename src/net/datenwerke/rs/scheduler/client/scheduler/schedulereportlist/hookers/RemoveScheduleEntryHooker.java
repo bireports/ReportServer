@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -33,6 +33,7 @@ import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
 import net.datenwerke.rs.scheduler.client.scheduler.SchedulerDao;
 import net.datenwerke.rs.scheduler.client.scheduler.locale.SchedulerMessages;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.ScheduledReportListPanel;
+import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.SchedulerAdminModule;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.ReportScheduleJobInformation;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.ReportScheduleJobListInformation;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.hooks.ScheduledReportListDetailToolbarHook;
@@ -93,9 +94,17 @@ public class RemoveScheduleEntryHooker implements ScheduledReportListDetailToolb
 
 		/* only for selected user */
 		UserDto user = loginService.getCurrentUser();
-		if(! user.getId().equals(detailInfo.getOwnerId()) && ! user.isSuperUser() && ! securityService.hasRight(SchedulingAdminViewGenericTargetIdentifier.class, ExecuteDto.class))
-			return;
-		
+		if(! user.getId().equals(detailInfo.getOwnerId()) && ! user.isSuperUser()) {
+			/* If we are in the admin-panel: we check for scheduling-admin rights. */
+			if (reportListPanel.getName().equals(SchedulerAdminModule.ADMIN_FILTER_PANEL)) {
+				if(! securityService.hasRight(SchedulingAdminViewGenericTargetIdentifier.class, ExecuteDto.class)) {
+					return;
+				}
+			} else {
+				/* We are not in the admin panel. */
+				return;
+			}
+		}
 		
 		TextButton removeBtn;
 		if(securityService.hasRight(SchedulingAdminViewGenericTargetIdentifier.class, ExecuteDto.class)){

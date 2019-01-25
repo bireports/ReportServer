@@ -1,7 +1,7 @@
 /*
  *  ReportServer
- *  Copyright (c) 2016 datenwerke Jan Albrecht
- *  http://reportserver.datenwerke.net
+ *  Copyright (c) 2018 InfoFabrik GmbH
+ *  http://reportserver.net/
  *
  *
  * This file is part of ReportServer.
@@ -28,6 +28,8 @@ import net.datenwerke.gxtdto.client.dtomanager.Dao;
 import net.datenwerke.gxtdto.client.dtomanager.callback.DaoAsyncCallback;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.model.DwModel;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.core.client.reportexecutor.hooks.PrepareReportModelForStorageOrExecutionHook;
 import net.datenwerke.rs.core.client.reportexecutor.rpc.ReportExecutorRpcServiceAsync;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 
@@ -38,20 +40,31 @@ import com.google.inject.Inject;
 public class ReportExecutorDao extends Dao {
 
 	private final ReportExecutorRpcServiceAsync rpcService;
+	private HookHandlerService hookHandler;
 
 	@Inject
-	public ReportExecutorDao(ReportExecutorRpcServiceAsync rpcService) {
+	public ReportExecutorDao(ReportExecutorRpcServiceAsync rpcService,
+			HookHandlerService hookHandler) {
 		super();
 		this.rpcService = rpcService;
+		this.hookHandler = hookHandler;
 	}
 	
 	public void createNewVariant(ReportDto reportVariantDto, String executeToken, String title, String description, AsyncCallback<ReportDto> callback){
 		reportVariantDto = unproxy(reportVariantDto);
+
+		prepareForStorage(reportVariantDto, executeToken);
+
 		rpcService.createNewVariant(reportVariantDto, executeToken, title, description, transformDtoCallback(callback));
 	}
 
+	
+
 	public Request executeAs(String format, String executeToken, ReportDto report, DwModel config, AsyncCallback<DwModel> callback){
 		report = unproxy(report);
+		
+		prepareForStorage(report, executeToken);
+		
 		return rpcService.executeAs(format, executeToken, report, config, transformAndKeepCallback(callback));
 	}
 
@@ -59,6 +72,9 @@ public class ReportExecutorDao extends Dao {
 			String description, 
 			AsyncCallback<ReportDto> callback){
 		reportVariantDto = unproxy(reportVariantDto);
+		
+		prepareForStorage(reportVariantDto, executeToken);
+		
 		rpcService.editVariant(reportVariantDto, executeToken, title, description, transformDtoCallback(callback));
 	}
 
@@ -106,7 +122,14 @@ public class ReportExecutorDao extends Dao {
 
 	public void setPreviewModeUserProperty(String value, RsAsyncCallback<Void> cb) {
 		rpcService.setPreviewModeUserProperty(value, cb);
-		
+	}
+	
+	private void prepareForStorage(ReportDto reportDto, String executeToken) {
+		for(PrepareReportModelForStorageOrExecutionHook hooker : hookHandler.getHookers(PrepareReportModelForStorageOrExecutionHook.class)){
+			if(hooker.consumes(reportDto)){
+				hooker.prepareForExecutionOrStorage(reportDto, executeToken);
+			}
+		}
 	}
 	
 }
