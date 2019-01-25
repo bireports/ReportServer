@@ -1,0 +1,127 @@
+/*
+ *  ReportServer
+ *  Copyright (c) 2016 datenwerke Jan Albrecht
+ *  http://reportserver.datenwerke.net
+ *
+ *
+ * This file is part of ReportServer.
+ *
+ * ReportServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+ 
+package net.datenwerke.rs.core.client.reportmanager;
+
+import net.datenwerke.gf.client.administration.AdministrationUIModule;
+import net.datenwerke.gf.client.administration.AdministrationUIService;
+import net.datenwerke.gf.client.administration.hooks.AdminModuleProviderHook;
+import net.datenwerke.gf.client.history.HistoryUiService;
+import net.datenwerke.gf.client.managerhelper.hooks.MainPanelViewProviderHook;
+import net.datenwerke.gf.client.managerhelper.hooks.TreeConfiguratorHook;
+import net.datenwerke.gf.client.treedb.TreeDBHistoryCallback;
+import net.datenwerke.gf.client.treedb.UITree;
+import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHook;
+import net.datenwerke.gxtdto.client.objectinformation.hooks.ObjectInfoKeyInfoProvider;
+import net.datenwerke.gxtdto.client.waitonevent.SynchronousCallbackOnEventTrigger;
+import net.datenwerke.gxtdto.client.waitonevent.WaitOnEventTicket;
+import net.datenwerke.gxtdto.client.waitonevent.WaitOnEventUIService;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectorSimpleFormProvider;
+import net.datenwerke.rs.core.client.reportmanager.hookers.MainPanelViewProviderHooker;
+import net.datenwerke.rs.core.client.reportmanager.hookers.ReportCatalogRepositoryProvider;
+import net.datenwerke.rs.core.client.reportmanager.hooks.ReportSelectionRepositoryProviderHook;
+import net.datenwerke.rs.core.client.reportmanager.objectinfo.FolderObjectInfo;
+import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerAdminViewTree;
+import net.datenwerke.rs.core.client.reportmanager.provider.treehookers.ReportManagerTreeConfigurationHooker;
+import net.datenwerke.rs.core.client.reportmanager.security.ReportManagerGenericTargetIdentifier;
+import net.datenwerke.rs.core.client.reportmanager.security.ReportManagerViewSecurityTargetDomainHooker;
+import net.datenwerke.rs.core.client.reportmanager.ui.ReportManagerPanel;
+import net.datenwerke.security.client.security.SecurityUIService;
+import net.datenwerke.security.client.security.dto.ReadDto;
+import net.datenwerke.security.client.security.hooks.GenericSecurityViewDomainHook;
+import net.datenwerke.security.client.security.hooks.GenericTargetProviderHook;
+
+import com.google.gwt.event.shared.EventBus;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
+public class ReportManagerUIStartup  {
+
+	@Inject
+	public ReportManagerUIStartup(
+		final WaitOnEventUIService waitOnEventService,
+		
+		final HookHandlerService hookHandler,
+		final Provider<ReportManagerAdminModule> adminModuleProvider,
+		
+		final ReportManagerUIService reportManagerUIService,
+		ReportManagerTreeManagerDao reportManagerTreeHandler,
+		
+		MainPanelViewProviderHooker mainPanelViewProvider,
+
+		ReportManagerViewSecurityTargetDomainHooker securityTargetDomain,
+		
+		final SecurityUIService securityService,
+		
+		final FolderObjectInfo folderObjectInfo,
+		
+		final ReportManagerTreeConfigurationHooker treeConfigurator,
+		
+		Provider<ReportSelectorSimpleFormProvider> reportSelectionSsfProvider,
+		
+		ReportCatalogRepositoryProvider catalogRepositoryProvider,
+		
+		@ReportManagerAdminViewTree Provider<UITree> reportManagerTree,
+		HistoryUiService historyService,
+		EventBus eventBus,
+		Provider<ReportManagerPanel> reportManagerAdminPanel
+		){
+		
+		/* config tree */
+		hookHandler.attachHooker(TreeConfiguratorHook.class, treeConfigurator);
+		
+		/* attach object infos */
+		hookHandler.attachHooker(ObjectInfoKeyInfoProvider.class, folderObjectInfo);
+		
+		/* attach views */
+		hookHandler.attachHooker(MainPanelViewProviderHook.class, mainPanelViewProvider);
+			
+		/* simple form */
+		hookHandler.attachHooker(FormFieldProviderHook.class, reportSelectionSsfProvider);
+		
+		/* attach repository provider */
+		hookHandler.attachHooker(ReportSelectionRepositoryProviderHook.class, catalogRepositoryProvider, HookHandlerService.PRIORITY_HIGH);
+		
+		/* attach security target domains */
+		hookHandler.attachHooker(GenericTargetProviderHook.class, new GenericTargetProviderHook(securityTargetDomain.genericSecurityViewDomainHook_getTargetId()));
+		hookHandler.attachHooker(GenericSecurityViewDomainHook.class, securityTargetDomain);
+		
+		/* test if user has rights to see report manager admin view */
+		waitOnEventService.callbackOnEvent(AdministrationUIService.REPORTSERVER_EVENT_HAS_ADMIN_RIGHTS, new SynchronousCallbackOnEventTrigger(){
+			public void execute(final WaitOnEventTicket ticket) {
+				if(securityService.hasRight(ReportManagerGenericTargetIdentifier.class, ReadDto.class))
+					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(adminModuleProvider),  HookHandlerService.PRIORITY_HIGH + 3);
+
+				waitOnEventService.signalProcessingDone(ticket);
+			}
+		});
+		
+		/* configureHistory */
+		historyService.addHistoryCallback(ReportManagerUIModule.REPORTMANAGER_FAV_HISTORY_TOKEN,
+				new TreeDBHistoryCallback(reportManagerTree, eventBus, reportManagerAdminPanel, AdministrationUIModule.ADMIN_PANEL_ID));
+		
+	}
+
+
+}

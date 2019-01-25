@@ -1,0 +1,121 @@
+/*
+ *  ReportServer
+ *  Copyright (c) 2016 datenwerke Jan Albrecht
+ *  http://reportserver.datenwerke.net
+ *
+ *
+ * This file is part of ReportServer.
+ *
+ * ReportServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+ 
+package net.datenwerke.rs.dashboard.service.dashboard.dagets.dtogen;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
+import net.datenwerke.dtoservices.dtogenerator.poso2dtogenerator.interfaces.Poso2DtoGenerator;
+import net.datenwerke.gxtdto.client.dtomanager.DtoView;
+import net.datenwerke.gxtdto.server.dtomanager.DtoMainService;
+import net.datenwerke.gxtdto.server.dtomanager.DtoService;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetContainerDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetNodeDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.LibraryDadgetDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.decorator.LibraryDadgetDtoDec;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.LibraryDadget;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.dtogen.LibraryDadget2DtoGenerator;
+
+/**
+ * Poso2DtoGenerator for LibraryDadget
+ *
+ * This file was automatically created by DtoAnnotationProcessor, version 0.1
+ */
+@GeneratedType("net.datenwerke.dtoservices.dtogenerator.DtoAnnotationProcessor")
+public class LibraryDadget2DtoGenerator implements Poso2DtoGenerator<LibraryDadget,LibraryDadgetDtoDec> {
+
+	private final net.datenwerke.rs.dashboard.service.dashboard.dagets.post.LibraryDadget2DtoPost postProcessor_1;
+	private final Provider<DtoService> dtoServiceProvider;
+
+	@Inject
+	public LibraryDadget2DtoGenerator(
+		Provider<DtoService> dtoServiceProvider,
+		net.datenwerke.rs.dashboard.service.dashboard.dagets.post.LibraryDadget2DtoPost postProcessor_1	){
+		this.dtoServiceProvider = dtoServiceProvider;
+		this.postProcessor_1 = postProcessor_1;
+	}
+
+	public LibraryDadgetDtoDec instantiateDto(LibraryDadget poso)  {
+		LibraryDadgetDtoDec dto = new LibraryDadgetDtoDec();
+
+		/* post processing */
+		this.postProcessor_1.dtoInstantiated(poso, dto);
+		return dto;
+	}
+
+	public LibraryDadgetDtoDec createDto(LibraryDadget poso, DtoView here, DtoView referenced)  {
+		/* create dto and set view */
+		final LibraryDadgetDtoDec dto = new LibraryDadgetDtoDec();
+		dto.setDtoView(here);
+
+		if(here.compareTo(DtoView.MINIMAL) >= 0){
+			/*  set id */
+			dto.setId(poso.getId() );
+
+		}
+		if(here.compareTo(DtoView.NORMAL) >= 0){
+			/*  set col */
+			dto.setCol(poso.getCol() );
+
+			/*  set container */
+			Object tmpDtoDadgetContainerDtogetContainer = dtoServiceProvider.get().createDto(poso.getContainer(), referenced, referenced);
+			dto.setContainer((DadgetContainerDto)tmpDtoDadgetContainerDtogetContainer);
+			/* ask for a dto with higher view if generated */
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onDtoCreation(tmpDtoDadgetContainerDtogetContainer, poso.getContainer(), new net.datenwerke.gxtdto.server.dtomanager.CallbackOnDtoCreation(){
+				public void callback(Object refDto){
+					if(null != refDto)
+						dto.setContainer((DadgetContainerDto)refDto);
+				}
+			});
+
+			/*  set dadgetNode */
+			Object tmpDtoDadgetNodeDtogetDadgetNode = dtoServiceProvider.get().createDto(poso.getDadgetNode(), here, referenced);
+			dto.setDadgetNode((DadgetNodeDto)tmpDtoDadgetNodeDtogetDadgetNode);
+			/* ask for a dto with higher view if generated */
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onDtoCreation(tmpDtoDadgetNodeDtogetDadgetNode, poso.getDadgetNode(), new net.datenwerke.gxtdto.server.dtomanager.CallbackOnDtoCreation(){
+				public void callback(Object refDto){
+					if(null != refDto)
+						dto.setDadgetNode((DadgetNodeDto)refDto);
+				}
+			});
+
+			/*  set height */
+			dto.setHeight(poso.getHeight() );
+
+			/*  set n */
+			dto.setN(poso.getN() );
+
+			/*  set reloadInterval */
+			dto.setReloadInterval(poso.getReloadInterval() );
+
+		}
+
+		/* post processing */
+		this.postProcessor_1.dtoCreated(poso, dto);
+
+		return dto;
+	}
+
+
+}

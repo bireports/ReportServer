@@ -1,0 +1,71 @@
+/*
+ *  ReportServer
+ *  Copyright (c) 2016 datenwerke Jan Albrecht
+ *  http://reportserver.datenwerke.net
+ *
+ *
+ * This file is part of ReportServer.
+ *
+ * ReportServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+ 
+package net.datenwerke.rs.authenticator.client.login.hookers;
+
+import net.datenwerke.gf.client.homepage.hooks.HomepageHeaderContentHook;
+import net.datenwerke.gf.client.homepage.ui.DwMainViewportTopBarElement;
+import net.datenwerke.gf.client.login.LoginService;
+import net.datenwerke.rs.authenticator.client.login.locale.LoginMessages;
+
+import com.google.inject.Inject;
+import com.sencha.gxt.widget.core.client.container.HBoxLayoutContainer;
+
+/**
+ * 
+ *
+ */
+public class HomepageLogoutHook implements HomepageHeaderContentHook {
+	
+	private final LoginService loginService;
+	
+	@Inject
+	public HomepageLogoutHook(
+		LoginService loginService
+		){
+		
+		/* store objects */
+		this.loginService = loginService;
+	}
+	
+	@Override
+	public DwMainViewportTopBarElement homepageHeaderContentHook_addTopRight(HBoxLayoutContainer container) {
+		return new DwMainViewportTopBarElement() {
+			
+			@Override
+			public void onClick() {
+				loginService.logoff();
+			}
+			
+			@Override
+			public String getName() {
+				return LoginMessages.INSTANCE.logout();
+			}
+		};
+	}
+	
+
+
+
+	
+}

@@ -1,0 +1,210 @@
+/*
+ *  ReportServer
+ *  Copyright (c) 2016 datenwerke Jan Albrecht
+ *  http://reportserver.datenwerke.net
+ *
+ *
+ * This file is part of ReportServer.
+ *
+ * ReportServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+ 
+package net.datenwerke.rs.dashboard.service.dashboard.entities;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Version;
+
+import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
+import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
+import net.datenwerke.gxtdto.client.dtomanager.DtoView;
+import net.datenwerke.rs.utils.entitycloner.annotation.EnclosedEntity;
+import net.datenwerke.rs.utils.instancedescription.annotations.Description;
+import net.datenwerke.rs.utils.instancedescription.annotations.Title;
+
+import org.hibernate.annotations.Type;
+import org.hibernate.envers.Audited;
+
+@Audited
+@Entity
+@Table(name="DASHBOARD")
+@Inheritance(strategy=InheritanceType.JOINED)
+@GenerateDto(
+	dtoPackage="net.datenwerke.rs.dashboard.client.dashboard.dto",
+	createDecorator=true
+)
+public class Dashboard implements Serializable {
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7723151130710002611L;
+
+	@JoinTable(name="DASHBOARD_2_DADGET")
+	@EnclosedEntity
+	@ExposeToClient
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OrderBy("n")
+	private List<Dadget> dadgets = new ArrayList<Dadget>();
+	
+	@ExposeToClient(view=DtoView.MINIMAL)
+	@Title
+	private String name;
+	
+	@ExposeToClient
+	@Lob
+	@Type(type = "net.datenwerke.rs.utils.hibernate.RsClobType")
+	@Description
+    private String description;
+	
+	@ExposeToClient
+	private int n;
+	
+	@ExposeToClient
+	private LayoutType layout = LayoutType.TWO_COLUMN_EQUI;
+	
+	@Version
+	private Long version;
+	
+	@ExposeToClient(id=true)
+	@Id @GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
+	
+	@ExposeToClient
+	private boolean singlePage = true;
+
+	public Long getId() {
+		return id;
+	}
+	
+	public void setId(Long id){
+		this.id = id;
+	}
+	
+    public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setN(int n) {
+		this.n = n;
+	}
+
+	public int getN() {
+		return n;
+	}
+
+	public void setDadgets(List<Dadget> dadgets) {
+		this.dadgets = dadgets;
+	}
+
+	public List<Dadget> getDadgets() {
+		return dadgets;
+	}
+	
+	public void addDadget(Dadget dadget){
+		this.dadgets.add(0,dadget);
+		renumber();
+	}
+	
+	public void addDadgetPlain(Dadget dadget){
+		this.dadgets.add(dadget);
+	}
+	
+	
+	private void renumber(){
+		int c = 0;
+		for(Dadget d : this.dadgets)
+			d.setN(c++);
+	}
+	
+	public boolean removeDadget(Dadget dadget){
+		boolean remove = this.dadgets.remove(dadget);
+		renumber();
+		return remove;
+	}
+
+	public void setLayout(LayoutType layout) {
+		if(null == layout)
+			layout = LayoutType.TWO_COLUMN_EQUI;
+		this.layout = layout;
+	}
+
+	public LayoutType getLayout() {
+		return layout;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public boolean contains(Dadget dadget) {
+		return dadgets.contains(dadget);
+	}
+
+	public List<Dadget> getDadgetsInColumn(int col) {
+		List<Dadget> dadgets = new ArrayList<Dadget>();
+		
+		for(Dadget d : this.dadgets){
+			if(col == d.getCol() || 
+			  (col == 1 && d.getCol() > 1 && layout == LayoutType.ONE_COLUMN) || 
+			  (col == 2 && d.getCol() > 2 && (layout == LayoutType.TWO_COLUMN_EQUI || layout == LayoutType.TWO_COLUMN_LEFT_LARGE || layout == LayoutType.TWO_COLUMN_RIGHT_LARGE)) ||
+			  (col == 3 && d.getCol() > 3 && layout == LayoutType.THREE_COLUMN)){
+				dadgets.add(d);
+			}
+		}
+		
+		return dadgets;
+	}
+	
+	public boolean isSinglePage() {
+		return singlePage;
+	}
+	
+	public void setSinglePage(boolean singlePage) {
+		this.singlePage = singlePage;
+	}
+}

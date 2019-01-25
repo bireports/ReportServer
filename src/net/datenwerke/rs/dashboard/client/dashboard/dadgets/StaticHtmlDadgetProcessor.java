@@ -1,0 +1,245 @@
+/*
+ *  ReportServer
+ *  Copyright (c) 2016 datenwerke Jan Albrecht
+ *  http://reportserver.datenwerke.net
+ *
+ *
+ * This file is part of ReportServer.
+ *
+ * ReportServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+ 
+package net.datenwerke.rs.dashboard.client.dashboard.dadgets;
+
+import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.codemirror.CodeMirrorPanel.ToolBarEnhancer;
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
+import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCCodeMirror;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.gxtdto.client.utilityservices.UtilsUIService;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.StaticHtmlDadgetDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.decorator.StaticHtmlDadgetDtoDec;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.pa.StaticHtmlDadgetDtoPA;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.pa.UrlDadgetDtoPA;
+import net.datenwerke.rs.dashboard.client.dashboard.hooks.DadgetProcessorHook;
+import net.datenwerke.rs.dashboard.client.dashboard.locale.DashboardMessages;
+import net.datenwerke.rs.dashboard.client.dashboard.ui.DadgetPanel;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
+
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+
+public class StaticHtmlDadgetProcessor implements DadgetProcessorHook {
+
+	private final UtilsUIService utilsService;
+	
+	@Inject
+	public StaticHtmlDadgetProcessor(UtilsUIService utilsService) {
+		super();
+		this.utilsService = utilsService;
+	}
+
+	@Override
+	public BaseIcon getIcon() {
+		return BaseIcon.CODE;
+	}
+	
+	@Override
+	public boolean isRedrawOnMove() {
+		return true;
+	}
+
+
+	@Override
+	public String getTitle() {
+		return DashboardMessages.INSTANCE.staticHtmlDadgetTitle();
+	}
+
+	@Override
+	public String getDescription() {
+		return DashboardMessages.INSTANCE.staticHtmlDadgetDescription();
+	}
+
+	@Override
+	public boolean consumes(DadgetDto dadget) {
+		return dadget instanceof StaticHtmlDadgetDto;
+	}
+
+	@Override
+	public DadgetDto instantiateDadget() {
+		StaticHtmlDadgetDtoDec dadget = new StaticHtmlDadgetDtoDec();
+		
+		dadget.setData("<!DOCTYPE html>\n" +
+				"<html>\n" +
+				"\t<head>\n" +
+				"\t</head>\n" +
+				"\t<body>\n" +
+				"\t</body>\n" +
+				"</html>");
+		
+		return dadget;
+	}
+
+	@Override
+	public void draw(DadgetDto dadget, DadgetPanel panel) {
+		
+		panel.setHeadingText(((StaticHtmlDadgetDto)dadget).getTitle());
+		
+		panel.add(utilsService.asIframe(((StaticHtmlDadgetDto)dadget).getData()));
+	}
+
+	@Override
+	public void displayConfigDialog(final DadgetDto dadget,
+			final DadgetConfigureCallback dadgetConfigureCallback) {
+		final DwWindow window = new DwWindow();
+		window.setSize(800, 640);
+		
+		final SimpleForm form = SimpleForm.getInlineInstance();
+		
+		final String titleField = form.addField(String.class, StaticHtmlDadgetDtoPA.INSTANCE.title(), DashboardMessages.INSTANCE.staticHtmlDadgetTitleLabel());
+		final String reloadField = form.addField(Long.class, StaticHtmlDadgetDtoPA.INSTANCE.reloadInterval(), DashboardMessages.INSTANCE.reloadIntervalLabel());
+		final String heightField = form.addField(Integer.class, StaticHtmlDadgetDtoPA.INSTANCE.height(), DashboardMessages.INSTANCE.heightLabel());
+		
+		final String codeMirrorField = form.addField(String.class, StaticHtmlDadgetDtoPA.INSTANCE.data(), DashboardMessages.INSTANCE.staticHtmlDadgetHtmlLabel(), new SFFCCodeMirror() {
+			
+			@Override
+			public int getWidth() {
+				return -1;
+			}
+			
+			@Override
+			public int getHeight() {
+				return 380;
+			}
+			
+			@Override
+			public String getLanguage() {
+				return "htmlmixed";
+			}
+			@Override
+			public boolean lineNumbersVisible() {
+				return true;
+			}
+
+
+			@Override
+			public ToolBarEnhancer getEnhancer() {
+				return null;
+		 	}
+		});
+		
+		form.loadFields();
+		
+		final StaticHtmlDadgetDto sDadget = (StaticHtmlDadgetDto) dadget; 
+		if(null != sDadget.getTitle())
+			form.setValue(titleField, sDadget.getTitle());
+		if(null != sDadget.getData())
+			form.setValue(codeMirrorField, sDadget.getData());
+		form.setValue(reloadField, dadget.getReloadInterval());
+		form.setValue(heightField, dadget.getHeight());
+		
+		window.add(form);
+		
+		DwTextButton cancelBtn = new DwTextButton(BaseMessages.INSTANCE.cancel());
+		window.addButton(cancelBtn);
+		cancelBtn.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				window.hide();
+				dadgetConfigureCallback.cancelled();
+			}
+		});
+		
+		DwTextButton submitBtn = new DwTextButton(BaseMessages.INSTANCE.submit());
+		window.addButton(submitBtn);
+		submitBtn.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				window.hide();
+				
+				sDadget.setTitle((String) form.getValue(titleField));
+				sDadget.setReloadInterval((long) form.getValue(reloadField));
+				sDadget.setHeight((int) form.getValue(heightField));
+				sDadget.setData((String) form.getValue(codeMirrorField));
+				
+				dadgetConfigureCallback.configuringDone();
+			}
+		});
+		
+		
+		window.show();
+	}
+	
+	@Override
+	public Widget getAdminConfigDialog(DadgetDto dadget, SimpleForm wrappingForm) {
+		final SimpleForm form = SimpleForm.getInlineInstance();
+		
+		form.addField(String.class, StaticHtmlDadgetDtoPA.INSTANCE.title(), DashboardMessages.INSTANCE.staticHtmlDadgetTitleLabel());
+		
+		form.addField(Long.class, StaticHtmlDadgetDtoPA.INSTANCE.reloadInterval(), DashboardMessages.INSTANCE.reloadIntervalLabel());
+		form.addField(Double.class, StaticHtmlDadgetDtoPA.INSTANCE.height(), DashboardMessages.INSTANCE.heightLabel());
+		
+		form.addField(String.class, StaticHtmlDadgetDtoPA.INSTANCE.data(), DashboardMessages.INSTANCE.staticHtmlDadgetHtmlLabel(), new SFFCCodeMirror() {
+			
+			@Override
+			public int getWidth() {
+				return -1;
+			}
+			
+			@Override
+			public int getHeight() {
+				return 380;
+			}
+			
+			@Override
+			public String getLanguage() {
+				return "text/html";
+			}
+			@Override
+			public boolean lineNumbersVisible() {
+				return true;
+			}
+
+			
+			@Override
+			public ToolBarEnhancer getEnhancer() {
+				return null;
+		 	}
+		});
+		
+		form.bind(dadget);
+		
+		return form;
+	}
+
+
+	@Override
+	public boolean hasConfigDialog() {
+		return true;
+	}
+
+	@Override
+	public void addTools(DadgetPanel dadgetPanel) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -1,0 +1,189 @@
+/*
+ *  ReportServer
+ *  Copyright (c) 2016 datenwerke Jan Albrecht
+ *  http://reportserver.datenwerke.net
+ *
+ *
+ * This file is part of ReportServer.
+ *
+ * ReportServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+ 
+package net.datenwerke.rs.dashboard.service.dashboard;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
+import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.FavoriteList;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.FavoriteListEntry;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.FavoriteListEntry__;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.FavoriteList__;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.LibraryDadget;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.LibraryDadget__;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.ReportDadget;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.ReportDadget__;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.DadgetNode;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardNode;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardReference;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardReference__;
+import net.datenwerke.rs.tsreportarea.service.tsreportarea.entities.AbstractTsDiskNode;
+import net.datenwerke.rs.tsreportarea.service.tsreportarea.entities.TsDiskReportReference;
+import net.datenwerke.rs.utils.simplequery.annotations.Join;
+import net.datenwerke.rs.utils.simplequery.annotations.Predicate;
+import net.datenwerke.rs.utils.simplequery.annotations.QueryByAttribute;
+import net.datenwerke.rs.utils.simplequery.annotations.SimpleQuery;
+import net.datenwerke.security.service.authenticator.AuthenticatorService;
+import net.datenwerke.security.service.usermanager.entities.User;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.name.Named;
+
+public class DadgetServiceImpl implements DadgetService {
+
+	private Provider<EntityManager> entityManagerProvider;
+	private final Provider<AuthenticatorService> authenticatorServiceProvider;
+
+	@Inject
+	public DadgetServiceImpl(
+		Provider<AuthenticatorService> authenticatorServiceProvider,
+		Provider<EntityManager> entityManagerProvider){
+			
+		this.authenticatorServiceProvider = authenticatorServiceProvider;
+		this.entityManagerProvider = entityManagerProvider;
+	}
+	
+	@Override
+	public FavoriteList loadFavoriteList() {
+		User currentUser = authenticatorServiceProvider.get().getCurrentUser();
+		FavoriteList list = loadFavoriteList(currentUser);
+		
+		if(null == list){
+			list = new FavoriteList();
+			list.setUser(currentUser);
+			
+			entityManagerProvider.get().persist(list);
+		}
+		
+		return list;
+	}
+
+	@QueryByAttribute(where=FavoriteList__.user)
+	public FavoriteList loadFavoriteList(User currentUser) {
+		return null; // magic
+	}
+	
+	@Override
+	public void persist(FavoriteListEntry entry) {
+		entityManagerProvider.get().persist(entry);
+	}
+	
+	@Override
+	public FavoriteList merge(FavoriteList list) {
+		EntityManager em = entityManagerProvider.get();
+		list = em.merge(list);
+		return list;
+	}
+
+	@Override
+	public void remove(FavoriteList list, FavoriteListEntry entry) {
+		if(null == entry)
+			return;
+		
+		for (Iterator iterator = list.getReferenceEntries().iterator(); iterator.hasNext();) {
+			FavoriteListEntry e = (FavoriteListEntry) iterator.next();
+			if(e.equals(entry)){
+				iterator.remove();
+				break;
+			}
+		}
+		
+		entityManagerProvider.get().remove(entry);
+	}
+
+	@Override
+	public void removeFromFavorites(AbstractTsDiskNode node) {
+		Collection<FavoriteList> lists = getFavoriteListsWithFavorite(node);
+		if(null == lists)
+			return;
+		
+		for(FavoriteList list : lists){
+			remove(list, list.getEntry(node));
+			merge(list);
+		}
+	}
+
+	@Override
+	public void removeFromReportDadgets(Report report) {
+		Collection<ReportDadget> dadgets = getReportDadgetsWith(report);
+		if(null == dadgets)
+			return;
+		
+		EntityManager em = entityManagerProvider.get();
+		
+		for(ReportDadget dadget : dadgets){
+			dadget.setReport(null);
+			dadget.getParameterInstances().clear();
+			em.merge(dadget);
+		}
+	}
+	
+	@Override
+	public void removeFromReportDadgets(TsDiskReportReference reference) {
+		Collection<ReportDadget> dadgets = getReportDadgetsWith(reference);
+		if(null == dadgets)
+			return;
+		
+		EntityManager em = entityManagerProvider.get();
+		
+		for(ReportDadget dadget : dadgets){
+			dadget.setReportReference(null);
+			em.merge(dadget);
+		}
+	}
+	
+	@Override
+	@QueryByAttribute(where=ReportDadget__.report)
+	public Collection<ReportDadget> getReportDadgetsWith(Report report) {
+		return null; // magic
+	}
+	
+	@Override
+	@QueryByAttribute(where=ReportDadget__.reportReference)
+	public Collection<ReportDadget> getReportDadgetsWith(TsDiskReportReference reference) {
+		return null; // magic
+	}
+
+	@SimpleQuery(join=@Join(joinAttribute=FavoriteList__.referenceEntries,where=@Predicate(attribute=FavoriteListEntry__.referenceEntry, value="fav")))
+	public List<FavoriteList> getFavoriteListsWithFavorite(@Named("fav")AbstractTsDiskNode node) {
+		return null; // by magic
+	}
+	
+	@Override
+	@QueryByAttribute(where=LibraryDadget__.dadgetNode)
+	public List<LibraryDadget> getLibraryDadgetsWith(DadgetNode node) {
+		return null; //magic
+	}
+	
+	@Override
+	@QueryByAttribute(where=DashboardReference__.dashboardNode)
+	public List<DashboardReference> getDashboardContainerssWith(DashboardNode node) {
+		return null;
+	}
+}
