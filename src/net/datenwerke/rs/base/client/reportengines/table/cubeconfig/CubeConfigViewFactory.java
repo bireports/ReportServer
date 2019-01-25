@@ -54,7 +54,7 @@ public class CubeConfigViewFactory implements ReportViewFactory{
 	public boolean consumes(ReportDto report) {
 		return 
 			report instanceof TableReportDto &&
-			report.hasAccessRight(ExecuteDto.class) && ((TableReportDto)report).isCube() && !report.isConfigurationProtected();
+			report.hasAccessRight(ExecuteDto.class) && ((TableReportDto)report).isCubeFlag() && !report.isConfigurationProtected();
 	}
 	
 	@Override

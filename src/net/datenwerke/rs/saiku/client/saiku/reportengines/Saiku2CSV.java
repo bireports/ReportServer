@@ -41,7 +41,7 @@ public class Saiku2CSV extends Export2CSV {
 
 	@Override
 	public boolean consumes(ReportDto report) {
-		return report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCube());
+		return report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCubeFlag());
 	}
 
 }

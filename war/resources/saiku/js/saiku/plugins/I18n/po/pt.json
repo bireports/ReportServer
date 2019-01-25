@@ -184,5 +184,8 @@
 	" Add ":"Adicionar",
 	"You need to include at least one measure or a level on columns for a valid query.": "Você precisa incluir pelo menos uma medida ou um nível em colunas para uma consulta válida.",
     "You need to include at least one level on rows for a valid query.": "Você precisa incluir pelo menos um nível em linhas para uma consulta válida.",
-    "Reset Cube": "Reset Cube"
+    "Reset Cube": "Reset Cube",
+    "Deep Avg": "Média Profunda",
+    "None": "Nada",
+    "Grand Total": "Total geral"
 }

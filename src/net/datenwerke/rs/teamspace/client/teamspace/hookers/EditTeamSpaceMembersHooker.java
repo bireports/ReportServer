@@ -55,6 +55,7 @@ import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
+import com.sencha.gxt.widget.core.client.toolbar.SeparatorToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwSplitButton;
@@ -63,6 +64,7 @@ import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
 import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
 import net.datenwerke.gxtdto.client.forms.selection.SelectionMode;
 import net.datenwerke.gxtdto.client.forms.selection.SelectionPopup;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
 import net.datenwerke.gxtdto.client.utilityservices.grid.GridHelperService;
 import net.datenwerke.gxtdto.client.utilityservices.grid.GridHelperService.CCContainer;
@@ -72,6 +74,7 @@ import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
 import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceDao;
 import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceUIService;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.StrippedDownTeamSpaceMemberDto;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.StrippedDownTeamSpaceMemberDto.Type;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceMemberDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
@@ -79,9 +82,12 @@ import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.StrippedDownTeamSpace
 import net.datenwerke.rs.teamspace.client.teamspace.hooks.TeamSpaceEditDialogHookImpl;
 import net.datenwerke.rs.teamspace.client.teamspace.locale.TeamSpaceMessages;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
+import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownGroup;
+import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownGroupPA;
 import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownUser;
 import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownUserPA;
 import net.datenwerke.security.ext.client.usermanager.UserManagerUIService;
+import net.datenwerke.security.ext.client.usermanager.locale.UsermanagerMessages;
 
 /**
  * 
@@ -91,6 +97,7 @@ public class EditTeamSpaceMembersHooker extends
 		TeamSpaceEditDialogHookImpl {
 
 	private static StrippedDownUserPA userPa = GWT.create(StrippedDownUserPA.class);
+	private static StrippedDownGroupPA groupPa = GWT.create(StrippedDownGroupPA.class);
 	private static StrippedDownTeamSpaceMemberDtoPa memberPa = GWT.create(StrippedDownTeamSpaceMemberDtoPa.class);
 	
 	private final GridHelperService gridHelperService;
@@ -100,6 +107,7 @@ public class EditTeamSpaceMembersHooker extends
 	private final TeamSpaceUIService teamSpaceService;
 	
 	private ListStore<StrippedDownUser> allUsersStore;
+	private ListStore<StrippedDownGroup> allGroupsStore;
 	private ListStore<StrippedDownTeamSpaceMemberDto> memberStore;
 	private boolean changed = false;
 	
@@ -143,6 +151,7 @@ public class EditTeamSpaceMembersHooker extends
 		
 		/* create store */
 		allUsersStore =  new ListStore<StrippedDownUser>(userPa.dtoId());
+		allGroupsStore =  new ListStore<StrippedDownGroup>(groupPa.dtoId());
 		memberStore = new ListStore<StrippedDownTeamSpaceMemberDto>(memberPa.dtoId());
 		memberStore.setAutoCommit(true);
 		
@@ -184,9 +193,11 @@ public class EditTeamSpaceMembersHooker extends
 							List<StrippedDownUser> selectedItems) {
 						/* remove members */
 						for(StrippedDownTeamSpaceMemberDto model: memberStore.getAll()){
+							if(model.getType() != Type.USER)
+								continue;
 							boolean found = false;
 							for(StrippedDownUser user : selectedItems){
-								if(user.getId().equals(model.getUserId())){
+								if(user.getId().equals(model.getFolkId())){
 									found = true;
 									break;
 								}
@@ -200,7 +211,7 @@ public class EditTeamSpaceMembersHooker extends
 						for(StrippedDownUser user : selectedItems){
 							boolean found = false;
 							for(StrippedDownTeamSpaceMemberDto model: memberStore.getAll()){
-								if(user.getId().equals(model.getUserId())){
+								if(user.getId().equals(model.getFolkId())){
 									found = true;
 									break;
 								}
@@ -222,13 +233,82 @@ public class EditTeamSpaceMembersHooker extends
 				selectionPanel.setSelectionMode(SelectionMode.MULTI);
 				List<StrippedDownUser> selectedUsers = new ArrayList<StrippedDownUser>();
 				for(StrippedDownTeamSpaceMemberDto member : memberStore.getAll())
-					selectedUsers.add(member.getStrippedUser());
+					if(member.getType() == StrippedDownTeamSpaceMemberDto.Type.USER)
+						selectedUsers.add(member.getStrippedUser());
 				selectionPanel.setSelectedItems(selectedUsers);
 				selectionPanel.show();	
 			}
 		});
 		
 		toolbar.add(addMemberBtn);
+		
+		/* add member */
+		DwTextButton addGroupBtn = toolbarService.createSmallButtonLeft(TeamSpaceMessages.INSTANCE.editTeamSpaceMembersAddGroupMember(), BaseIcon.GROUP_ADD);
+		addGroupBtn.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				Map<ValueProvider<StrippedDownGroup,String>, String> displayProperties = new LinkedHashMap<ValueProvider<StrippedDownGroup,String>, String>();
+				displayProperties.put(groupPa.name(), BaseMessages.INSTANCE.name());
+				displayProperties.put(groupPa.ou(), TeamSpaceMessages.INSTANCE.ou());
+
+				SelectionPopup<StrippedDownGroup> selectionPanel = new SelectionPopup<StrippedDownGroup>(allGroupsStore, displayProperties){
+					@Override
+					protected void itemsSelected(
+							List<StrippedDownGroup> selectedItems) {
+						/* remove members */
+						for(StrippedDownTeamSpaceMemberDto model: memberStore.getAll()){
+							if(model.getType() != Type.GROUP)
+								continue;
+							
+							boolean found = false;
+							for(StrippedDownGroup groups : selectedItems){
+								if(groups.getId().equals(model.getFolkId())){
+									found = true;
+									break;
+								}
+							}
+							if(! found)
+								memberStore.remove(model);
+						}
+						
+						/* add members */
+						List<StrippedDownTeamSpaceMemberDto> members = new ArrayList<StrippedDownTeamSpaceMemberDto>();
+						for(StrippedDownGroup groups : selectedItems){
+							boolean found = false;
+							for(StrippedDownTeamSpaceMemberDto model: memberStore.getAll()){
+								if(groups.getId().equals(model.getFolkId())){
+									found = true;
+									break;
+								}
+							}
+								
+							if(! found)
+								members.add(StrippedDownTeamSpaceMemberDto.createFrom(groups));
+						}
+							
+						
+						memberStore.addAll(members);
+						
+						/* set changed */
+						changed = true;
+					}
+				};
+				selectionPanel.setLoader(userManagerService.getStrippedGroupLoader());
+				selectionPanel.loadData();
+				selectionPanel.setSelectionMode(SelectionMode.MULTI);
+				List<StrippedDownGroup> selectedGroups = new ArrayList<StrippedDownGroup>();
+				for(StrippedDownTeamSpaceMemberDto member : memberStore.getAll())
+					if(member.getType() == StrippedDownTeamSpaceMemberDto.Type.GROUP)
+						selectedGroups.add(member.getStrippedGroup());
+				selectionPanel.setSelectedItems(selectedGroups);
+				selectionPanel.show();	
+			}
+		});
+		
+		toolbar.add(addGroupBtn);
+		
+		toolbar.add(new SeparatorToolItem());
 		
 		/* remove members */
 		SplitButton removeButton = toolbarService.configureButton(new DwSplitButton(), TeamSpaceMessages.INSTANCE.editTeamSpaceMembersRemoveMember(), BaseIcon.DELETE);
@@ -270,28 +350,34 @@ public class EditTeamSpaceMembersHooker extends
 		
 		
 		/* add user column */
-		ColumnConfig<StrippedDownTeamSpaceMemberDto,StrippedDownTeamSpaceMemberDto> ccOwner = new ColumnConfig<StrippedDownTeamSpaceMemberDto,StrippedDownTeamSpaceMemberDto>(new IdentityValueProvider<StrippedDownTeamSpaceMemberDto>(), 30);
-		ccOwner.setCell(new AbstractCell<StrippedDownTeamSpaceMemberDto>() {
+		ColumnConfig<StrippedDownTeamSpaceMemberDto,StrippedDownTeamSpaceMemberDto> ccicon = new ColumnConfig<StrippedDownTeamSpaceMemberDto,StrippedDownTeamSpaceMemberDto>(new IdentityValueProvider<StrippedDownTeamSpaceMemberDto>(), 30);
+		ccicon.setCell(new AbstractCell<StrippedDownTeamSpaceMemberDto>() {
 			@Override
 			public void render(com.google.gwt.cell.client.Cell.Context context,
 					StrippedDownTeamSpaceMemberDto value, SafeHtmlBuilder sb) {
 				if(value.isOwner())
 					 sb.append(BaseIcon.USER_MD.toSafeHtml());
+				else if(value.getType() == Type.GROUP)
+					sb.append(BaseIcon.GROUP.toSafeHtml());
 			}
 		});
-		configs.add(ccOwner);
+		configs.add(ccicon);
 		
-		ColumnConfig<StrippedDownTeamSpaceMemberDto,String> ccFirst = new ColumnConfig<StrippedDownTeamSpaceMemberDto,String>(memberPa.firstname(), 150,TeamSpaceMessages.INSTANCE.editTeamSpaceMembersGridFirstnameColumn());
+		ColumnConfig<StrippedDownTeamSpaceMemberDto,String> ccName = new ColumnConfig<StrippedDownTeamSpaceMemberDto,String>(memberPa.name(), 140,BaseMessages.INSTANCE.name());
+		configs.add(ccName);
+
+		ColumnConfig<StrippedDownTeamSpaceMemberDto,String> ccFirst = new ColumnConfig<StrippedDownTeamSpaceMemberDto,String>(memberPa.firstname(), 150, UsermanagerMessages.INSTANCE.firstname());
 		configs.add(ccFirst);
-		ColumnConfig<StrippedDownTeamSpaceMemberDto,String> ccLast = new ColumnConfig<StrippedDownTeamSpaceMemberDto,String>(memberPa.lastname(), 150, TeamSpaceMessages.INSTANCE.editTeamSpaceMembersGridLastnameColumn());
+		
+		ColumnConfig<StrippedDownTeamSpaceMemberDto,String> ccLast = new ColumnConfig<StrippedDownTeamSpaceMemberDto,String>(memberPa.lastname(), 150, UsermanagerMessages.INSTANCE.lastname());
 		configs.add(ccLast);
 		
-		final CCContainer<StrippedDownTeamSpaceMemberDto, TeamSpaceRoleDto> cccRole = gridHelperService.createComboBoxColumnConfig(TeamSpaceRoleDto.values(), memberPa.role(), false, null, 150);
+		final CCContainer<StrippedDownTeamSpaceMemberDto, TeamSpaceRoleDto> cccRole = gridHelperService.createComboBoxColumnConfig(TeamSpaceRoleDto.values(), memberPa.role(), false, null, 140);
 		ColumnConfig<StrippedDownTeamSpaceMemberDto,TeamSpaceRoleDto> roleConfig = cccRole.getConfig();
 		roleConfig.setHeader( TeamSpaceMessages.INSTANCE.editTeamSpaceMembersGridRoleColumn());
 		configs.add(roleConfig);
 		
-		/* create gride */
+		/* create grid */
 		final Grid<StrippedDownTeamSpaceMemberDto> grid = new Grid<StrippedDownTeamSpaceMemberDto>(memberStore, new ColumnModel<StrippedDownTeamSpaceMemberDto>(configs));
 		
 		/* create editing */

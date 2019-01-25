@@ -26,8 +26,6 @@ package net.datenwerke.rs.scheduler.service.scheduler.mail;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -36,6 +34,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.io.FilenameUtils;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,6 @@ import net.datenwerke.rs.scheduler.service.scheduler.annotations.SchedulerModule
 import net.datenwerke.rs.scheduler.service.scheduler.annotations.SchedulerModuleEmailSubject;
 import net.datenwerke.rs.scheduler.service.scheduler.annotations.SchedulerModuleEmailText;
 import net.datenwerke.rs.scheduler.service.scheduler.jobs.report.ReportExecuteJob;
-import net.datenwerke.rs.terminal.service.terminal.exceptions.TerminalException;
 import net.datenwerke.rs.utils.juel.SimpleJuel;
 import net.datenwerke.rs.utils.localization.LocalizationServiceImpl;
 import net.datenwerke.rs.utils.zip.ZipUtilsService;
@@ -76,10 +74,12 @@ public class MailReportAction extends AbstractAction {
 	@Transient
 	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
-	public static final String PROPERTY_SUBJECT = "subject";
-	public static final String PROPERTY_MESSAGE = "message";
-	public static final String PROPERTY_USERS = "users";
-	public static final String PROPERTY_GROUPS = "groups";
+	private static final String PROPERTY_SUBJECT = "subject";
+	private static final String PROPERTY_MESSAGE = "message";
+	private static final String PROPERTY_USERS = "users";
+	private static final String PROPERTY_GROUPS = "groups";
+	private static final String PROPERTY_NAME = "name";
+	private static final String PROPERTY_FILENAME = "filename";
 
 	@Transient @Inject private static Provider<MailMessages> messages = LocalizationServiceImpl.getMessagesProvider(MailMessages.class);
 	
@@ -149,6 +149,9 @@ public class MailReportAction extends AbstractAction {
 		/* prepare attechement */
 		String filenamePrefix = juel.parse(attachementNameTemplate);
 		SimpleAttachement attachement =	prepareAttachment(job, filenamePrefix);
+		
+		juel.addReplacement(PROPERTY_FILENAME, attachement.getFileName());
+		juel.addReplacement(PROPERTY_NAME, FilenameUtils.getBaseName(attachement.getFileName()));
 		
 		/* set content */		
 		if(mailHelper.isHTML()){

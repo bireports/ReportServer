@@ -66,6 +66,14 @@ public class FileServerVfs extends TreeBasedVirtualFileSystem<AbstractFileServer
 		else
 			return ((FileServerFile)node).getName();
 	}
+	
+	@Override
+	protected void doRename(AbstractFileServerNode node, String name) {
+		if(node instanceof FileServerFolder)
+			((FileServerFolder)node).setName(name);
+		else
+			((FileServerFile)node).setName(name);
+	}
 
 	@Override
 	protected AbstractFileServerNode instantiateFolder(String folder) {

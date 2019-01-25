@@ -63,6 +63,8 @@ public interface DatasourcesMessages extends Messages {
 	String submit();
 
 	String setDefaultDatasource();
+	
+	String urlContainsWhitespaceWarning();
 
 	String clearPassword();
 

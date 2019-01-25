@@ -201,7 +201,9 @@ public class TableReportForm extends AbstractReportForm {
 
 			@Override
 			public void executeGetColumns(String query, final AsyncCallback<List<String>> callback) {
-				tableReportDao.loadColumnDefinition((TableReportDto) getSelectedNode(), query, null, new RsAsyncCallback<List<ColumnDto>>(){
+				TableReportDto report = (TableReportDto) getSelectedNode();
+				DatasourceContainerDto container = report.getDatasourceContainer();
+				tableReportDao.loadColumnDefinition(report, container, query, null, new RsAsyncCallback<List<ColumnDto>>(){
 					@Override
 					public void onSuccess(List<ColumnDto> result) {
 						List<String> columns = new ArrayList<String>();
@@ -222,7 +224,10 @@ public class TableReportForm extends AbstractReportForm {
 					PagingLoadConfig loadConfig,
 					String query,
 					AsyncCallback<PagingLoadResult<ListStringBaseModel>> callback) {
-				tableReportDao.loadData((TableReportDto) getSelectedNode(), loadConfig, query, callback);
+				TableReportDto report = (TableReportDto) getSelectedNode();
+				DatasourceContainerDto container = report.getDatasourceContainer();
+				
+				tableReportDao.loadData(report, container, loadConfig, query, callback);
 			}
 			
 		});

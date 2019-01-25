@@ -30,44 +30,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
-import net.datenwerke.gxtdto.client.baseex.widget.form.DwComboBox;
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwCardContainer;
-import net.datenwerke.gxtdto.client.baseex.widget.mb.DwConfirmMessageBox;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
-import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
-import net.datenwerke.gxtdto.client.eventbus.events.SubmoduleDisplayRequest;
-import net.datenwerke.gxtdto.client.eventbus.handlers.SubmoduleDisplayRequestHandler;
-import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
-import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCAllowBlank;
-import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCTextAreaImpl;
-import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
-import net.datenwerke.gxtdto.client.theme.CssClassConstant;
-import net.datenwerke.gxtdto.client.ui.helper.wrapper.HeadDescMainWrapper;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
-import net.datenwerke.gxtdto.client.utils.labelprovider.DisplayTitleLabelProvider;
-import net.datenwerke.gxtdto.client.xtemplates.NullSafeFormatter;
-import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
-import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceApp;
-import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceDao;
-import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceUIService;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.decorator.TeamSpaceDtoDec;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.TeamSpaceDtoPA;
-import net.datenwerke.rs.teamspace.client.teamspace.hooks.TeamSpaceAppProviderHook;
-import net.datenwerke.rs.teamspace.client.teamspace.locale.TeamSpaceMessages;
-import net.datenwerke.rs.theme.client.icon.BaseIcon;
-
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -94,7 +66,6 @@ import com.sencha.gxt.data.shared.loader.ListLoader;
 import com.sencha.gxt.data.shared.loader.LoadResultListStoreBinding;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.ListView;
-import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -109,10 +80,40 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.Menu;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import com.sencha.gxt.widget.core.client.menu.SeparatorMenuItem;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
+
+import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.baseex.widget.form.DwComboBox;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwCardContainer;
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwConfirmMessageBox;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
+import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
+import net.datenwerke.gxtdto.client.eventbus.events.SubmoduleDisplayRequest;
+import net.datenwerke.gxtdto.client.eventbus.handlers.SubmoduleDisplayRequestHandler;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
+import net.datenwerke.gxtdto.client.theme.CssClassConstant;
+import net.datenwerke.gxtdto.client.ui.helper.wrapper.HeadDescMainWrapper;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
+import net.datenwerke.gxtdto.client.utils.labelprovider.DisplayTitleLabelProvider;
+import net.datenwerke.gxtdto.client.xtemplates.NullSafeFormatter;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceApp;
+import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceDao;
+import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceUIService;
+import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceUIService.TeamSpaceOperationSuccessHandler;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.decorator.TeamSpaceDtoDec;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.TeamSpaceDtoPA;
+import net.datenwerke.rs.teamspace.client.teamspace.hooks.TeamSpaceAppProviderHook;
+import net.datenwerke.rs.teamspace.client.teamspace.locale.TeamSpaceMessages;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
 /**
  * 
@@ -129,7 +130,7 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 	
 	@FormatterFactories(@FormatterFactory(factory=NullSafeFormatter.class,methods=@FormatterFactoryMethod(name="nullsafe")))
 	public interface TeamSpaceTemplates extends XTemplates {
-		@XTemplate("<div class=\"rs-lview-title\">{entry.name:nullsafe} ({entry.id:nullsafe})</div>" + 
+		@XTemplate("<div class=\"rs-lview-title\">{entry.toDisplayTitle:nullsafe}</div>" + 
 			    "<div class=\"rs-lview-desc\">{entry.description:nullsafe}&nbsp;</div>"
 				)
 	    public SafeHtml render(TeamSpaceDto entry); 
@@ -251,8 +252,8 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 		teamSpaceSelector.setForceSelection(true);
 		teamSpaceSelector.setAllowBlank(false);
 		teamSpaceSelector.setEditable(false);
-		teamSpaceSelector.setWidth(350);
-		teamSpaceSelector.setMinListWidth(350);
+		teamSpaceSelector.setWidth(900);
+		teamSpaceSelector.setMinListWidth(900);
 		teamSpaceSelector.setTypeAhead(true);
 		teamSpaceSelector.setTriggerAction(TriggerAction.ALL);
 		
@@ -261,8 +262,7 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 			public void onSelection(SelectionEvent<TeamSpaceDto> event) {
 				if(null == event.getSelectedItem())
 					return;
-				currentSpace = event.getSelectedItem();
-				initCurrentSpace();
+				loadSpace(event.getSelectedItem());
 			}
 		});
 	}
@@ -288,6 +288,28 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 	public void notifyOfSelection() {
 		if(null == currentSpace)
 			loadPrimaryTeamSpace();
+		
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+			
+			@Override
+			public void execute() {
+				forceComponentLayout();
+			}
+		});
+	}
+	
+	private void forceComponentLayout() {
+		appToolbar.forceLayout();
+		mainComponent.forceLayout();
+	}
+	
+	public void delayedForceComponentLayout() {
+		Timer timer = new Timer() {
+			public void run() {
+				forceComponentLayout();
+			}
+		};
+		timer.schedule(500);
 	}
 	
 	/**
@@ -332,8 +354,9 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 		initApps();
 		addSpaceConfigurationToToolbar();
 		
-		appToolbar.forceLayout();
-		mainComponent.forceLayout();
+		forceComponentLayout();
+
+		appToolbar.setVisible(true);
 	}
 	
 	private void buildCompleteAppMap(){
@@ -539,59 +562,6 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 		spaceStore.remove(space);
 	}
 
-
-	protected void displayAddSpaceDialog() {
-		final DwWindow window = new DwWindow();
-		window.setSize(430, 340);
-		window.setHeadingText(TeamSpaceMessages.INSTANCE.newTeamSpaceHeading());
-		window.setHeaderIcon(BaseIcon.GROUP_ADD);
-		
-		/* create form */
-		final SimpleForm form = SimpleForm.getInlineInstance();
-		window.add(form, new MarginData(10));
-		
-		form.addField(String.class, 
-				TeamSpaceDtoPA.INSTANCE.name(), 
-				TeamSpaceMessages.INSTANCE.newTeamSpaceNameLabel(),
-				new SFFCAllowBlank() {
-					@Override
-					public boolean allowBlank() {
-						return false;
-					}
-				});
-		
-		form.addField(String.class, 
-				TeamSpaceDtoPA.INSTANCE.description(), 
-				TeamSpaceMessages.INSTANCE.newTeamSpaceDescriptionLabel(),
-				new SFFCTextAreaImpl());
-		
-		/* create dummy teamspace and bind it to form */
-		final TeamSpaceDto dummy = new TeamSpaceDtoDec();
-		form.bind(dummy);
-		
-		/* create buttons */
-		window.addCancelButton();
-		
-		DwTextButton submitBtn = new DwTextButton(TeamSpaceMessages.INSTANCE.submitCreateTeamSpace());
-		window.addButton(submitBtn);
-		submitBtn.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				if(! form.isValid())
-					return;
-				window.hide();
-				tsDao.createNewTeamSpace(dummy, new NotamCallback<TeamSpaceDto>(TeamSpaceMessages.INSTANCE.newTeamSpaceCreatedMessage()){
-					@Override
-					public void doOnSuccess(TeamSpaceDto space) {
-						loadSpace(space);
-					}
-				});
-			}
-		});
-		
-		window.show();
-	}
-	
 	protected void removeCurrentSpace() {
 		tsDao.removeTeamSpace(currentSpace, new NotamCallback<Void>(TeamSpaceMessages.INSTANCE.teamSpaceRemoved()){
 			@Override
@@ -605,7 +575,12 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 
 
 	protected void displayConfigureCurrentSpaceDialog() {
-		editTeamSpaceDialogCreator.displayDialog(this, currentSpace);
+		editTeamSpaceDialogCreator.displayDialog(currentSpace, new TeamSpaceOperationSuccessHandler() {
+			@Override
+			public void onSuccess(TeamSpaceDto teamSpace) {
+				loadSpace(teamSpace);
+			}
+		});
 	}
 
 	protected void displayCreateInitialSpaceDialog() {
@@ -663,6 +638,15 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 		window.show();
 	}
 
+	protected void displayAddSpaceDialog() {
+		teamSpaceService.displayAddSpaceDialog(new TeamSpaceOperationSuccessHandler() {
+			@Override
+			public void onSuccess(TeamSpaceDto teamSpace) {
+				loadSpace(teamSpace);				
+			}
+		});
+	}
+	
 	protected void displayAdminSelectSpaceDialog() {
 		/* create window */
 		final DwWindow window = new DwWindow();
@@ -756,6 +740,46 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 		window.show();
 	}
 
+	public void notifyOfDeletion(TeamSpaceDto deleted) {
+		
+		int indexDeleted = getIndexOfTeamspace(deleted.getId());
+		if (-1 != indexDeleted) {
+			TeamSpaceDto toDelete = spaceStore.get(indexDeleted);
+			removeFromStore(toDelete);
+		}
+			
+		if (deleted.equals(currentSpace)) {
+			currentSpace = null;
+			loadPrimaryTeamSpace();
+			
+		}
+		
+	}
 
+	private int getIndexOfTeamspace(long teamSpaceId) {
+		
+		for (int i=0; i<= spaceStore.size()-1; i++) {
+			TeamSpaceDto teamSpaceDto = spaceStore.get(i);
+			if (teamSpaceDto.getId() == teamSpaceId) {
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+
+	public void notifyOfAddition(TeamSpaceDto added) {
+		spaceStore.add(added);
+	}
+
+	public void notifyOfUpdate(TeamSpaceDto updated) {
+		int indexUpdated = getIndexOfTeamspace(updated.getId());
+		if (-1 != indexUpdated) {
+			TeamSpaceDto toUpdate = spaceStore.get(indexUpdated);
+			toUpdate.setName(updated.getName());
+			toUpdate.setDescription(updated.getDescription());
+			spaceStore.update(toUpdate);
+		}
+	}
 	
 }

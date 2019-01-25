@@ -76,4 +76,9 @@ public class DemoDbConnectionPool implements ConnectionPoolConfig {
 	public Date getLastUpdated() {
 		return null;
 	}
+	
+	@Override
+	public Properties getJdbcProperties() {
+		return null;
+	}
 }

@@ -112,7 +112,7 @@ public class ReportExportToTemplateHooker extends ReportExporterImpl {
 
 	@Override
 	public boolean consumes(ReportDto report) {
-		return report instanceof TableReportDto && ! ((TableReportDto)report).isCube();
+		return report instanceof TableReportDto && ! ((TableReportDto)report).isCubeFlag();
 	}
 
 	@Override

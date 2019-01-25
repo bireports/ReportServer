@@ -25,13 +25,13 @@ package net.datenwerke.rs.teamspace.client.teamspace.rpc;
 
 import java.util.Collection;
 
-import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.StrippedDownTeamSpaceMemberDto;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
-
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.sencha.gxt.data.shared.loader.ListLoadResult;
+
+import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.StrippedDownTeamSpaceMemberDto;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
 
 @RemoteServiceRelativePath("teamspace")
 public interface TeamSpaceRpcService extends RemoteService {
@@ -57,5 +57,5 @@ public interface TeamSpaceRpcService extends RemoteService {
 	public ListLoadResult<TeamSpaceDto> loadAllTeamSpaces() throws ServerCallFailedException;
 	
 	public TeamSpaceDto reloadTeamSpaceForEdit(TeamSpaceDto teamSpaceDto) throws ServerCallFailedException;
-
+	
 }

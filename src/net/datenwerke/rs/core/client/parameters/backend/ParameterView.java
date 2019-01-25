@@ -683,7 +683,7 @@ public class ParameterView extends MainPanelView{
 			throw new IllegalStateException("We should have a configurator for " + definition.getClass().getName()); //$NON-NLS-1$
 		
 		/* add edit component */
-		editComponent = configurator.getEditComponentForDefinition(definition);
+		editComponent = configurator.getEditComponentForDefinition(definition, (ReportDto) getSelectedNode());
 		
 		/* create wrapper */
 		DwContentPanel wrapper = new DwContentPanel();

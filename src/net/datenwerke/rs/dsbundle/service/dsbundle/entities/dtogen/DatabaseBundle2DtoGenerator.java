@@ -128,6 +128,9 @@ public class DatabaseBundle2DtoGenerator implements Poso2DtoGenerator<DatabaseBu
 			/*  set flags */
 			dto.setFlags(poso.getFlags() );
 
+			/*  set jdbcProperties */
+			dto.setJdbcProperties(poso.getJdbcProperties() );
+
 			/*  set keySource */
 			dto.setKeySource(StringEscapeUtils.escapeXml(StringUtils.left(poso.getKeySource(),8192)));
 

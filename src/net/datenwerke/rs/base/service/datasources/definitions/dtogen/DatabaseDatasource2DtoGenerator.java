@@ -105,6 +105,9 @@ public class DatabaseDatasource2DtoGenerator implements Poso2DtoGenerator<Databa
 			/*  set flags */
 			dto.setFlags(poso.getFlags() );
 
+			/*  set jdbcProperties */
+			dto.setJdbcProperties(poso.getJdbcProperties() );
+
 			/*  set url */
 			dto.setUrl(StringEscapeUtils.escapeXml(StringUtils.left(poso.getUrl(),8192)));
 

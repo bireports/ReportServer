@@ -23,14 +23,6 @@
  
 package net.datenwerke.rs.core.client.datasourcemanager.helper.forms.simpleform;
 
-import net.datenwerke.gxtdto.client.forms.simpleform.SimpleFormFieldConfiguration;
-import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHookImpl;
-import net.datenwerke.gxtdto.client.model.DwModel;
-import net.datenwerke.rs.core.client.datasourcemanager.DatasourceUIService;
-import net.datenwerke.rs.core.client.datasourcemanager.dto.DatasourceContainerDto;
-import net.datenwerke.rs.core.client.datasourcemanager.dto.DatasourceContainerProviderDto;
-import net.datenwerke.rs.core.client.datasourcemanager.helper.forms.DatasourceSelectionField;
-
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,6 +31,15 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.widget.core.client.container.Container;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleFormFieldConfiguration;
+import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHookImpl;
+import net.datenwerke.gxtdto.client.model.DwModel;
+import net.datenwerke.rs.base.client.datasources.config.DatabaseDatasourceConfigConfigurator.DatabaseSpecificFieldConfigExecution;
+import net.datenwerke.rs.core.client.datasourcemanager.DatasourceUIService;
+import net.datenwerke.rs.core.client.datasourcemanager.dto.DatasourceContainerDto;
+import net.datenwerke.rs.core.client.datasourcemanager.dto.DatasourceContainerProviderDto;
+import net.datenwerke.rs.core.client.datasourcemanager.helper.forms.DatasourceSelectionField;
 
 /**
  * 
@@ -76,6 +77,10 @@ public class DatasourceSimpleFormProvider extends FormFieldProviderHookImpl {
 			label.setLabelAlign(form.getSField(name).getFieldLayoutConfig().getLabelAlign());
 		datasourceFieldCreator.setFieldLabel(label);
 		
+		DatabaseSpecificFieldConfigExecution specificExecutionConfig = getSpecificExecutionConfig();
+		if(null!=specificExecutionConfig)
+			datasourceFieldCreator.addSpecificDatasourceConfig(specificExecutionConfig);
+		
 		datasourceFieldCreator.addSelectionField();
 		if(! hasSupressDefaultConfig())
 			datasourceFieldCreator.addDisplayDefaultButton();
@@ -88,6 +93,13 @@ public class DatasourceSimpleFormProvider extends FormFieldProviderHookImpl {
 		});
 		
 		return wrapper;
+	}
+	
+	private DatabaseSpecificFieldConfigExecution getSpecificExecutionConfig() {
+		for(SimpleFormFieldConfiguration config : getConfigs())
+			if(config instanceof SFFCDatasourceSpecificConfig)
+				return ((SFFCDatasourceSpecificConfig)config).getConfigExecution();
+		return null;
 	}
 
 	public void addFieldBindings(Object model, ValueProvider vp, Widget field) {

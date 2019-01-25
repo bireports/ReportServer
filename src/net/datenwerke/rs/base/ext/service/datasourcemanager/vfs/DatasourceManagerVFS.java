@@ -23,16 +23,15 @@
  
 package net.datenwerke.rs.base.ext.service.datasourcemanager.vfs;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.rs.core.service.datasourcemanager.DatasourceService;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.AbstractDatasourceManagerNode;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceFolder;
 import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocation;
 import net.datenwerke.rs.terminal.service.terminal.vfs.hooks.TreeBasedVirtualFileSystem;
-import net.datenwerke.security.service.usermanager.entities.OrganisationalUnit;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class DatasourceManagerVFS extends TreeBasedVirtualFileSystem<AbstractDatasourceManagerNode> {
 
@@ -61,6 +60,14 @@ public class DatasourceManagerVFS extends TreeBasedVirtualFileSystem<AbstractDat
 			return ((DatasourceFolder)node).getName();
 		else
 			return ((DatasourceDefinition)node).getName();
+	}
+	
+	@Override
+	protected void doRename(AbstractDatasourceManagerNode node, String name) {
+		if(node instanceof DatasourceFolder)
+			((DatasourceFolder)node).setName(name);
+		else
+			 ((DatasourceDefinition)node).setName(name);
 	}
 
 	@Override

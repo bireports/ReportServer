@@ -23,6 +23,7 @@
  
 package net.datenwerke.rs.birt.service.datasources.birtreport.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -59,7 +60,8 @@ public class BirtReportDatasourceConfig extends DatasourceDefinitionConfig {
 	@ExposeToClient
 	private BirtReportDatasourceTargetType targetType = BirtReportDatasourceTargetType.DATASET;
 	
-	@ExposeToClient
+	@ExposeToClient(disableHtmlEncode=true)
+	@Column(length = 4096)
 	private String queryWrapper;
 
 	public String getQueryWrapper() {

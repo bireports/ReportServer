@@ -39,9 +39,9 @@ public abstract class TableReport_ extends net.datenwerke.rs.core.service.report
 	public static volatile SingularAttribute<TableReport, Boolean> enableSubtotals;
 	public static volatile SingularAttribute<TableReport, Boolean> distinctFlag;
 	public static volatile SingularAttribute<TableReport, String> cubeXml;
+	public static volatile SingularAttribute<TableReport, Boolean> cubeFlag;
 	public static volatile SingularAttribute<TableReport, Boolean> allowCubification;
 	public static volatile SingularAttribute<TableReport, DatasourceContainer> metadataDatasourceContainer;
-	public static volatile SingularAttribute<TableReport, Boolean> cube;
 	public static volatile ListAttribute<TableReport, AdditionalColumnSpec> additionalColumns;
 	public static volatile SingularAttribute<TableReport, Boolean> hideParents;
 

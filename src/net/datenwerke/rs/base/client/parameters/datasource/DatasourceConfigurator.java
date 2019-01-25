@@ -44,9 +44,12 @@ import com.sencha.gxt.data.shared.loader.ListLoadConfig;
 import com.sencha.gxt.data.shared.loader.ListLoadResult;
 import com.sencha.gxt.data.shared.loader.ListLoadResultBean;
 import com.sencha.gxt.data.shared.loader.ListLoader;
+import com.sencha.gxt.data.shared.loader.PagingLoadConfig;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 
 import net.datenwerke.gxtdto.client.dialog.error.SimpleErrorDialog;
+import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.forms.simpleform.actions.ShowHideFieldAction;
 import net.datenwerke.gxtdto.client.forms.simpleform.actions.SimpleFormAction;
@@ -61,8 +64,10 @@ import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFC
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.lists.SFFCDynamicListInPopup;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.lists.SFFCEditableDropDown;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.gxtdto.client.model.ListStringBaseModel;
 import net.datenwerke.gxtdto.client.stores.LoadableListStore;
 import net.datenwerke.gxtdto.client.utils.modelkeyprovider.BasicObjectModelKeyProvider;
+import net.datenwerke.rs.base.client.datasources.config.DatabaseDatasourceConfigConfigurator.DatabaseSpecificFieldConfigExecution;
 import net.datenwerke.rs.base.client.parameters.datasource.dto.BoxLayoutModeDto;
 import net.datenwerke.rs.base.client.parameters.datasource.dto.BoxLayoutPackModeDto;
 import net.datenwerke.rs.base.client.parameters.datasource.dto.DatasourceParameterDataDto;
@@ -74,7 +79,10 @@ import net.datenwerke.rs.base.client.parameters.datasource.dto.SingleSelectionMo
 import net.datenwerke.rs.base.client.parameters.datasource.dto.pa.DatasourceParameterDataDtoPA;
 import net.datenwerke.rs.base.client.parameters.datasource.dto.pa.DatasourceParameterDefinitionDtoPA;
 import net.datenwerke.rs.base.client.parameters.locale.RsMessages;
+import net.datenwerke.rs.base.client.reportengines.table.TableReportUtilityDao;
+import net.datenwerke.rs.base.client.reportengines.table.dto.ColumnDto;
 import net.datenwerke.rs.core.client.datasourcemanager.dto.DatasourceContainerDto;
+import net.datenwerke.rs.core.client.datasourcemanager.helper.forms.simpleform.SFFCDatasourceSpecificConfig;
 import net.datenwerke.rs.core.client.parameters.config.ParameterConfiguratorImpl;
 import net.datenwerke.rs.core.client.parameters.dto.DatatypeDto;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterDefinitionDto;
@@ -93,20 +101,22 @@ public class DatasourceConfigurator extends ParameterConfiguratorImpl<Datasource
 	private final DatasourceParameterDao datasourceParamDao;
 	private final Provider<DatasourceEditComponentForInstance> editComponentForInstanceProvider;
 	private final DatasourceParameterUiService dsParamService;
+	private final TableReportUtilityDao tableReportDao;
+	private final EnterpriseUiService entpriseService;
+	
 	private String singleDefaultValuesKey;
 	private String multiDefaultValuesKey;
 	private ListStore<DatasourceParameterDataDto> parameterDataStore;
 	private DatasourceEditComponentForInstance editComponentConfigurator;
 	private ScheduledCommand reloadCommand;
-	private EnterpriseUiService entpriseService;
-	
 	
 	@Inject
 	public DatasourceConfigurator(
 			DatasourceParameterDao rpcService,
 		Provider<DatasourceEditComponentForInstance> editComponentForInstanceProvider,
 		DatasourceParameterUiService dsParamService,
-		EnterpriseUiService entpriseService
+		EnterpriseUiService entpriseService,
+		TableReportUtilityDao tableReportDao
 		){
 		
 		/* store objects */
@@ -114,6 +124,7 @@ public class DatasourceConfigurator extends ParameterConfiguratorImpl<Datasource
 		this.editComponentForInstanceProvider = editComponentForInstanceProvider;
 		this.dsParamService = dsParamService;
 		this.entpriseService = entpriseService;
+		this.tableReportDao = tableReportDao;
 	}
 	
 
@@ -138,13 +149,54 @@ public class DatasourceConfigurator extends ParameterConfiguratorImpl<Datasource
 		return BaseIcon.DATABASE.toImageResource();
 	}
 
-	public Widget getEditComponentForDefinition(final DatasourceParameterDefinitionDto definition) {
+	@Override
+	public Widget getEditComponentForDefinition(final DatasourceParameterDefinitionDto definition, final ReportDto report) {
 		final SimpleForm form = SimpleForm.getInlineInstance();
 
 		/* data source */
 		String dataOriginDatasourceKey = form.addField(
 			DatasourceContainerDto.class,
-			DatasourceParameterDefinitionDtoPA.INSTANCE.datasourceContainer(), RsMessages.INSTANCE.datasource() 
+			DatasourceParameterDefinitionDtoPA.INSTANCE.datasourceContainer(), RsMessages.INSTANCE.datasource(),
+			new SFFCDatasourceSpecificConfig(){
+
+				@Override
+				public DatabaseSpecificFieldConfigExecution getConfigExecution() {
+					return new DatabaseSpecificFieldConfigExecution(){
+						@Override
+						public void executeGetColumns(String query, final AsyncCallback<List<String>> callback) {
+							/* fake report */
+							DatasourceContainerDto dsContainer = (DatasourceContainerDto) form.getValue(DatasourceParameterDefinitionDtoPA.INSTANCE.datasourceContainer().getPath());
+							
+							tableReportDao.loadColumnDefinition(report, dsContainer, query, null, new RsAsyncCallback<List<ColumnDto>>(){
+								@Override
+								public void onSuccess(List<ColumnDto> result) {
+									List<String> columns = new ArrayList<String>();
+									for(ColumnDto col : result)
+										columns.add(col.getName());
+									callback.onSuccess(columns);
+								}
+								@Override
+								public void onFailure(Throwable caught) {
+									callback.onFailure(caught);
+								}
+								
+							});
+						}
+						
+						@Override
+						public void executeGetData(
+								PagingLoadConfig loadConfig,
+								String query,
+								AsyncCallback<PagingLoadResult<ListStringBaseModel>> callback) {
+							DatasourceContainerDto dsContainer = (DatasourceContainerDto) form.getValue(DatasourceParameterDefinitionDtoPA.INSTANCE.datasourceContainer().getPath());
+							
+							tableReportDao.loadData(report, dsContainer, loadConfig, query, callback);
+						}
+						
+					};
+				}
+				
+			}
 		);
 		
 		String postProcessKey = "";

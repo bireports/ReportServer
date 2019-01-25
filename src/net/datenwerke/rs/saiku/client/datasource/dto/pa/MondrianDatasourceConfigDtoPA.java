@@ -46,7 +46,7 @@ public interface MondrianDatasourceConfigDtoPA extends DatasourceDefinitionConfi
 
 
 	/* Properties */
-	public ValueProvider<MondrianDatasourceConfigDto,String> cube();
+	public ValueProvider<MondrianDatasourceConfigDto,String> cubeName();
 
 
 }

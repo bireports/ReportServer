@@ -32,7 +32,7 @@ public class Saiku2PDF extends Export2PDF {
 
 	@Override
 	public boolean consumes(ReportDto report) {
-		return report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCube());
+		return report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCubeFlag());
 	}
 
 }

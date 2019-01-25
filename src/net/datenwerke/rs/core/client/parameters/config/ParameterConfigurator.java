@@ -53,7 +53,7 @@ public interface ParameterConfigurator<D extends ParameterDefinitionDto, I exten
 
 	public String getName();
 
-	public Widget getEditComponentForDefinition(D definition);
+	public Widget getEditComponentForDefinition(D definition, ReportDto report);
 	
 	public void updateDefinitionOnSubmit(D definition, Widget component);
 	

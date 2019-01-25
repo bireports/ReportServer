@@ -77,6 +77,8 @@ public class ScheduleAsFileAction extends AbstractAction {
 	private Long folderId;
 	private Long teamspaceId;
 	
+	@Transient private ExecutedReportFileReference reference;
+	
 	@Override
 	public void execute(AbstractJob job) throws ActionExecutionException {
 		if(! (job instanceof ReportExecuteJob))
@@ -89,15 +91,15 @@ public class ScheduleAsFileAction extends AbstractAction {
 		
 		PersistentCompiledReport pReport = compiledReportService.toPersistenReport(compiledReport, report);
 		
-		ExecutedReportFileReference ref = new ExecutedReportFileReference();
-		ref.setCompiledReport(pReport);
-		ref.setOutputFormat(rJob.getOutputFormat());
-		ref.setDescription(description);
+		reference = new ExecutedReportFileReference();
+		reference.setCompiledReport(pReport);
+		reference.setOutputFormat(rJob.getOutputFormat());
+		reference.setDescription(description);
 		
 		SimpleJuel juel = simpleJuelProvider.get();
 		juel.addReplacement("now", new SimpleDateFormat("yyyyMMddhhmm").format(Calendar.getInstance().getTime()));
 		String parsedName = null == name ? "" : juel.parse(name);
-		ref.setName(parsedName);
+		reference.setName(parsedName);
 		
 		folder = tsDiskService.getNodeById(folderId);
 		if(null == folder)
@@ -116,10 +118,14 @@ public class ScheduleAsFileAction extends AbstractAction {
 		if(null == folder || (! (folder instanceof TsDiskRoot ) && !(folder instanceof TsDiskFolder)))
 			throw new ActionExecutionException("could not load folder with id: " + folderId);
 		
-		folder.addChild(ref);
+		folder.addChild(reference);
 		
-		tsDiskService.persist(ref);
+		tsDiskService.persist(reference);
 		tsDiskService.merge(folder);
+	}
+	
+	public ExecutedReportFileReference getExecutedReportFileReference() {
+		return reference;
 	}
 
 	public String getName() {

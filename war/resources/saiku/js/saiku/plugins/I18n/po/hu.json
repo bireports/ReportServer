@@ -104,5 +104,8 @@
    "Zoom into table":"Tábla nagyítása",
    "You need to include at least one measure or a level on columns for a valid query.": "Az érvényes lekérdezéshez legalább egy intézkedést vagy szintet kell tartalmaznia az oszlopokban.",
    "You need to include at least one level on rows for a valid query.": "Egy érvényes lekérdezéshez legalább egy szintet kell feltöltenie a sorokra.",
-   "Reset Cube": "Reset Cube"
-}
+   "Reset Cube": "Reset Cube",
+   "Deep Avg": "Mély Átlag",
+   "None": "semmi",
+   "Grand Total": "Teljes összeg"
+} 

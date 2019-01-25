@@ -50,7 +50,7 @@ public class ImportUIStartup {
 		waitOnEventService.callbackOnEvent(AdministrationUIService.REPORTSERVER_EVENT_HAS_ADMIN_RIGHTS, new SynchronousCallbackOnEventTrigger(){
 			public void execute(final WaitOnEventTicket ticket) {
 				if(securityService.hasRight(ImportGenericTargetIdentifier.class, ReadDto.class))
-					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(importAdminModule), HookHandlerService.PRIORITY_HIGH + 8);
+					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(importAdminModule), HookHandlerService.PRIORITY_HIGH + 80);
 
 				waitOnEventService.signalProcessingDone(ticket);
 			}

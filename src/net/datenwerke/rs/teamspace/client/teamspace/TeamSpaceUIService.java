@@ -38,6 +38,10 @@ import com.sencha.gxt.data.shared.loader.ListLoader;
  */
 public interface TeamSpaceUIService {
 
+	public interface TeamSpaceOperationSuccessHandler{
+		public void onSuccess(TeamSpaceDto teamSpace);
+	}
+	
 	/**
 	 * Tells if the current user is an admin
 	 * @return
@@ -65,4 +69,14 @@ public interface TeamSpaceUIService {
 	ListLoader<ListLoadConfig, ListLoadResult<TeamSpaceDto>> getAllTeamSpacesLoader();
 
 	boolean hasTeamSpaceRemoveRight();
+	
+	public void gotoTeamSpace(TeamSpaceDto selectedItem);
+
+	void displayAddSpaceDialog(TeamSpaceOperationSuccessHandler successHandler);
+
+	public void notifyOfDeletion(TeamSpaceDto deleted);
+
+	public void notifyOfAddition(TeamSpaceDto added);
+
+	public void notifyOfUpdate(TeamSpaceDto updated);
 }

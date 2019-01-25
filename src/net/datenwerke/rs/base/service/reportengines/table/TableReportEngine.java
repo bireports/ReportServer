@@ -508,7 +508,7 @@ public class TableReportEngine extends ReportEngine<TableDataSource, TableOutput
 			throws ReportExecutorException {
 		super.isExecutable(report, additionalParameters, user, outputFormat, configs);
 		
-		if(((TableReport) report).getColumns().isEmpty() && ! ((TableReport) report).isCube())
+		if(((TableReport) report).getColumns().isEmpty() && ! ((TableReport) report).isCubeFlag())
 			throw new ReportExecutorException(ReportEnginesMessages.INSTANCE.exceptionNoColumnsSelected());
 	}
 	

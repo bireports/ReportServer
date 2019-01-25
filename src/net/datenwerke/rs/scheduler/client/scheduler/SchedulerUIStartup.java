@@ -129,7 +129,7 @@ public class SchedulerUIStartup {
 		waitOnEventService.callbackOnEvent(AdministrationUIService.REPORTSERVER_EVENT_HAS_ADMIN_RIGHTS, new SynchronousCallbackOnEventTrigger(){
 			public void execute(final WaitOnEventTicket ticket) {
 				if(securityService.hasRight(SchedulingAdminViewGenericTargetIdentifier.class, ReadDto.class))
-					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(adminModuleProvider),  HookHandlerService.PRIORITY_LOW);
+					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(adminModuleProvider),  HookHandlerService.PRIORITY_HIGH + 110);
 
 				waitOnEventService.signalProcessingDone(ticket);
 			}

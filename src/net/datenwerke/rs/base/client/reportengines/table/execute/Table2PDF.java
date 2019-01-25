@@ -35,6 +35,6 @@ public class Table2PDF extends Export2PDF {
 
 	
 	public boolean consumes(ReportDto report) {
-		return report instanceof TableReportDto && !((TableReportDto)report).isCube();
+		return report instanceof TableReportDto && !((TableReportDto)report).isCubeFlag();
 	}
 }

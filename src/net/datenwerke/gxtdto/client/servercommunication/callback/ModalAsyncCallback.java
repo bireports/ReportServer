@@ -36,9 +36,9 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 public abstract class ModalAsyncCallback<T> extends NotamCallback<T> {
 
-	private String waitTitle;
-	private String waitMessage;
-	private String progressText;
+	private String waitTitle = BaseMessages.INSTANCE.waitMsg();
+	private String waitMessage = BaseMessages.INSTANCE.waitMsg();
+	private String progressText = BaseMessages.INSTANCE.progressMsg();
 
 	private int delay = 0;
 	
@@ -55,9 +55,12 @@ public abstract class ModalAsyncCallback<T> extends NotamCallback<T> {
 		super(null);
 		
 		this.delay = delay;
-		this.waitTitle =  waitTitle;
-		this.waitMessage =  waitMessage;
-		this.progressText =  progressText;
+		if(null != waitTitle)
+			this.waitTitle =  waitTitle;
+		if(null != waitMessage)
+			this.waitMessage =  waitMessage;
+		if(null != progressText)
+			this.progressText =  progressText;
 		
 		showMessageBox();
 	}
@@ -65,9 +68,12 @@ public abstract class ModalAsyncCallback<T> extends NotamCallback<T> {
 	public ModalAsyncCallback(String errorTitle, String errorText, String successTitle, String successText, String waitTitle, String waitMessage, String progressText) {
 		super(errorTitle, errorText, successTitle, successText);
 		
-		this.waitTitle = waitTitle;
-		this.waitMessage = waitMessage;
-		this.progressText = progressText;
+		if(null != waitTitle)
+			this.waitTitle = waitTitle;
+		if(null != waitMessage)
+			this.waitMessage = waitMessage;
+		if(null != progressText)
+			this.progressText = progressText;
 		
 		showMessageBox();
 	}
@@ -75,9 +81,12 @@ public abstract class ModalAsyncCallback<T> extends NotamCallback<T> {
 	public ModalAsyncCallback(String successText, String waitTitle, String waitMessage, String progressText) {
 		super(successText);
 		
-		this.waitTitle = waitTitle;
-		this.waitMessage = waitMessage;
-		this.progressText = progressText;
+		if(null != waitTitle)
+			this.waitTitle = waitTitle;
+		if(null != waitMessage)
+			this.waitMessage = waitMessage;
+		if(null != progressText)
+			this.progressText = progressText;
 		
 		showMessageBox();
 	}

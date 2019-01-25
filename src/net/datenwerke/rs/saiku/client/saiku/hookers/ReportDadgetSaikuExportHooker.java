@@ -86,7 +86,7 @@ public class ReportDadgetSaikuExportHooker extends ReportDadgetDefaultExportHook
 	@Override
 	public boolean consumes(ReportDadgetDto dadget) {
 		ReportDto report = dadget.getReport();
-		return null == report || (report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCube()));
+		return null == report || (report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCubeFlag()));
 	}
 
 	@Override
@@ -229,7 +229,7 @@ public class ReportDadgetSaikuExportHooker extends ReportDadgetDefaultExportHook
 
 	@Override
 	protected boolean isSupportedReport(ReportDto report) {
-		return null != report && (report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCube()));
+		return null != report && (report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCubeFlag()));
 	}
 
 }

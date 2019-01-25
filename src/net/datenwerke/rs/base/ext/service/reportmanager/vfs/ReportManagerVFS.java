@@ -64,6 +64,14 @@ public class ReportManagerVFS extends TreeBasedVirtualFileSystem<AbstractReportM
 		else
 			return ((Report)node).getName();
 	}
+	
+	@Override
+	protected void doRename(AbstractReportManagerNode node, String name) {
+		if(node instanceof ReportFolder)
+			((ReportFolder)node).setName(name);
+		else
+			 ((Report)node).setName(name);
+	}
 
 	@Override
 	protected AbstractReportManagerNode instantiateFolder(String folder) {

@@ -59,5 +59,5 @@ public interface TeamSpaceRpcServiceAsync {
 	void loadAllTeamSpaces(AsyncCallback<ListLoadResult<TeamSpaceDto>> callback);
 
 	void reloadTeamSpaceForEdit(TeamSpaceDto teamSpaceDto, AsyncCallback<TeamSpaceDto> callback);
-
+	
 }

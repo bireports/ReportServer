@@ -88,6 +88,17 @@ public class TeamSpace2DtoGenerator implements Poso2DtoGenerator<TeamSpace,TeamS
 			/*  set name */
 			dto.setName(StringEscapeUtils.escapeXml(StringUtils.left(poso.getName(),8192)));
 
+			/*  set owner */
+			Object tmpDtoUserDtogetOwner = dtoServiceProvider.get().createDto(poso.getOwner(), referenced, referenced);
+			dto.setOwner((UserDto)tmpDtoUserDtogetOwner);
+			/* ask for a dto with higher view if generated */
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onDtoCreation(tmpDtoUserDtogetOwner, poso.getOwner(), new net.datenwerke.gxtdto.server.dtomanager.CallbackOnDtoCreation(){
+				public void callback(Object refDto){
+					if(null != refDto)
+						dto.setOwner((UserDto)refDto);
+				}
+			});
+
 		}
 		if(here.compareTo(DtoView.NORMAL) >= 0){
 			/*  set apps */
@@ -108,17 +119,6 @@ public class TeamSpace2DtoGenerator implements Poso2DtoGenerator<TeamSpace,TeamS
 				}
 				dto.setApps(col_apps);
 			}
-
-			/*  set owner */
-			Object tmpDtoUserDtogetOwner = dtoServiceProvider.get().createDto(poso.getOwner(), referenced, referenced);
-			dto.setOwner((UserDto)tmpDtoUserDtogetOwner);
-			/* ask for a dto with higher view if generated */
-			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onDtoCreation(tmpDtoUserDtogetOwner, poso.getOwner(), new net.datenwerke.gxtdto.server.dtomanager.CallbackOnDtoCreation(){
-				public void callback(Object refDto){
-					if(null != refDto)
-						dto.setOwner((UserDto)refDto);
-				}
-			});
 
 		}
 		if(here.compareTo(DtoView.ALL) >= 0){

@@ -40,13 +40,9 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
-import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.container.NorthSouthContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.DialogHideEvent;
-import com.sencha.gxt.widget.core.client.event.DialogHideEvent.DialogHideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -67,7 +63,7 @@ import net.datenwerke.gf.client.managerhelper.mainpanel.MainPanelView;
 import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwSplitButton;
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
-import net.datenwerke.gxtdto.client.baseex.widget.mb.DwConfirmMessageBox;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.impl.DwRemoveButton;
 import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
 import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
@@ -184,11 +180,9 @@ public class ReportPropertiesView extends MainPanelView {
 		
 		toolbar.add(new SeparatorToolItem());
 		
-		DwSplitButton removeButton = new DwSplitButton(BaseMessages.INSTANCE.remove());
-		removeButton.setIcon(BaseIcon.DELETE);
-		removeButton.addSelectHandler(new SelectHandler() {
+		DwRemoveButton removeButton = new DwRemoveButton(){
 			@Override
-			public void onSelect(SelectEvent event) {
+			protected void onRemove() {
 				List<ReportStringPropertyDto> selectedItems = grid.getSelectionModel().getSelectedItems();
 				
 				for(ReportStringPropertyDto r : selectedItems){
@@ -200,37 +194,20 @@ public class ReportPropertiesView extends MainPanelView {
 					}
 				}
 			}
-		});
-		toolbar.add(removeButton);
-		
-		MenuItem removeAllButton = new DwMenuItem(BaseMessages.INSTANCE.removeAll(), BaseIcon.DELETE);
-		removeAllButton.addSelectionHandler(new SelectionHandler<Item>() {
-
+			
 			@Override
-			public void onSelection(SelectionEvent<Item> event) {
-				ConfirmMessageBox cmb = new DwConfirmMessageBox(BaseMessages.INSTANCE.confirmDeleteTitle(), BaseMessages.INSTANCE.confirmDeleteMsg(""));
-				cmb.addDialogHideHandler(new DialogHideHandler() {
-					@Override
-					public void onDialogHide(DialogHideEvent event) {
-						if (event.getHideButton() == PredefinedButton.YES){ 
-							for(ReportStringPropertyDto r : grid.getStore().getAll()){
-								if(addedProperties.remove(r))
-									propertiesStore.remove(r);
-								else {
-									removedProperties.add(r);
-									propertiesStore.update(r);
-								}
-							}
-						}
+			protected void onRemoveAll() {
+				for(ReportStringPropertyDto r : grid.getStore().getAll()){
+					if(addedProperties.remove(r))
+						propertiesStore.remove(r);
+					else {
+						removedProperties.add(r);
+						propertiesStore.update(r);
 					}
-				});
-				cmb.show();
+				}
 			}
-		});
-		
-		Menu remMenu = new DwMenu();
-		remMenu.add(removeAllButton);
-		removeButton.setMenu(remMenu);
+		};
+		toolbar.add(removeButton);
 		
 		toolbar.add(new FillToolItem());
 		

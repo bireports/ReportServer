@@ -38,8 +38,6 @@ public interface JxlsReportMessages extends Messages{
 
 	String fileName();
 
-	String jxlsDownloadToolbarButtonText();
-
 
 
 }

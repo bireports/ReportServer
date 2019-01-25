@@ -26,6 +26,9 @@ package net.datenwerke.rs.terminal.service.terminal.vfs.hooks;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
+import com.google.inject.Provider;
 
 import net.datenwerke.hookhandler.shared.hookhandler.interfaces.Hook;
 import net.datenwerke.rs.terminal.service.terminal.TerminalSession;
@@ -34,8 +37,6 @@ import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocationInfo;
 import net.datenwerke.rs.terminal.service.terminal.vfs.VFSObjectInfo;
 import net.datenwerke.rs.terminal.service.terminal.vfs.exceptions.VFSException;
 import net.datenwerke.treedb.service.treedb.TreeDBManager;
-
-import com.google.inject.Provider;
 
 public interface VirtualFileSystemManagerHook extends Hook, Serializable {
 
@@ -75,7 +76,7 @@ public interface VirtualFileSystemManagerHook extends Hook, Serializable {
 
 	VFSLocation createFolder(VFSLocation location, String folder);
 
-	void moveFilesTo(VFSLocation source, VFSLocation target);
+	List<VFSLocation> moveFilesTo(VFSLocation source, VFSLocation target);
 
 	void copyFilesTo(VFSLocation source, VFSLocation target, boolean deep) throws VFSException;
 
@@ -116,4 +117,6 @@ public interface VirtualFileSystemManagerHook extends Hook, Serializable {
 	VFSLocation create(VFSLocation vfsLocation) throws VFSException;
 
 	void writeIntoLocation(VFSLocation vfsLocation, byte[] uploadData) throws VFSException;
+	
+	VFSLocation rename(VFSLocation vfsLocation, String name);
 }

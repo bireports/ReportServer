@@ -91,6 +91,42 @@ public class DatabaseDatasourceDto extends DatasourceDefinitionDto {
 		}
 	};
 
+	private String jdbcProperties;
+	private  boolean jdbcProperties_m;
+	public static final String PROPERTY_JDBC_PROPERTIES = "dpi-databasedatasource-jdbcproperties";
+
+	private transient static PropertyAccessor<DatabaseDatasourceDto, String> jdbcProperties_pa = new PropertyAccessor<DatabaseDatasourceDto, String>() {
+		@Override
+		public void setValue(DatabaseDatasourceDto container, String object) {
+			container.setJdbcProperties(object);
+		}
+
+		@Override
+		public String getValue(DatabaseDatasourceDto container) {
+			return container.getJdbcProperties();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return String.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "jdbcProperties";
+		}
+
+		@Override
+		public void setModified(DatabaseDatasourceDto container, boolean modified) {
+			container.jdbcProperties_m = modified;
+		}
+
+		@Override
+		public boolean isModified(DatabaseDatasourceDto container) {
+			return container.isJdbcPropertiesModified();
+		}
+	};
+
 	private String password;
 	private  boolean password_m;
 	public static final String PROPERTY_PASSWORD = "dpi-databasedatasource-password";
@@ -286,6 +322,55 @@ public class DatabaseDatasourceDto extends DatasourceDefinitionDto {
 
 	public static PropertyAccessor<DatabaseDatasourceDto, String> getDatabaseDescriptorPropertyAccessor()  {
 		return databaseDescriptor_pa;
+	}
+
+
+	public String getJdbcProperties()  {
+		if(! isDtoProxy()){
+			return this.jdbcProperties;
+		}
+
+		if(isJdbcPropertiesModified())
+			return this.jdbcProperties;
+
+		if(! GWT.isClient())
+			return null;
+
+		String _value = dtoManager.getProperty(this, instantiatePropertyAccess().jdbcProperties());
+
+		return _value;
+	}
+
+
+	public void setJdbcProperties(String jdbcProperties)  {
+		/* old value */
+		String oldValue = null;
+		if(GWT.isClient())
+			oldValue = getJdbcProperties();
+
+		/* set new value */
+		this.jdbcProperties = jdbcProperties;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(jdbcProperties_pa, oldValue, jdbcProperties, this.jdbcProperties_m));
+
+		/* set indicator */
+		this.jdbcProperties_m = true;
+
+		this.fireObjectChangedEvent(DatabaseDatasourceDtoPA.INSTANCE.jdbcProperties(), oldValue);
+	}
+
+
+	public boolean isJdbcPropertiesModified()  {
+		return jdbcProperties_m;
+	}
+
+
+	public static PropertyAccessor<DatabaseDatasourceDto, String> getJdbcPropertiesPropertyAccessor()  {
+		return jdbcProperties_pa;
 	}
 
 
@@ -534,6 +619,8 @@ public class DatabaseDatasourceDto extends DatasourceDefinitionDto {
 	public void clearModified()  {
 		this.databaseDescriptor = null;
 		this.databaseDescriptor_m = false;
+		this.jdbcProperties = null;
+		this.jdbcProperties_m = false;
 		this.password = null;
 		this.password_m = false;
 		this.url = null;
@@ -550,6 +637,8 @@ public class DatabaseDatasourceDto extends DatasourceDefinitionDto {
 			return true;
 		if(databaseDescriptor_m)
 			return true;
+		if(jdbcProperties_m)
+			return true;
 		if(password_m)
 			return true;
 		if(url_m)
@@ -565,6 +654,7 @@ public class DatabaseDatasourceDto extends DatasourceDefinitionDto {
 	public List<PropertyAccessor> getPropertyAccessors()  {
 		List<PropertyAccessor> list = super.getPropertyAccessors();
 		list.add(databaseDescriptor_pa);
+		list.add(jdbcProperties_pa);
 		list.add(password_pa);
 		list.add(url_pa);
 		list.add(username_pa);
@@ -577,6 +667,8 @@ public class DatabaseDatasourceDto extends DatasourceDefinitionDto {
 		List<PropertyAccessor> list = super.getModifiedPropertyAccessors();
 		if(databaseDescriptor_m)
 			list.add(databaseDescriptor_pa);
+		if(jdbcProperties_m)
+			list.add(jdbcProperties_pa);
 		if(password_m)
 			list.add(password_pa);
 		if(url_m)
@@ -596,6 +688,7 @@ public class DatabaseDatasourceDto extends DatasourceDefinitionDto {
 		}
 		if(view.compareTo(DtoView.NORMAL) >= 0){
 			list.add(databaseDescriptor_pa);
+			list.add(jdbcProperties_pa);
 			list.add(password_pa);
 			list.add(url_pa);
 			list.add(username_pa);

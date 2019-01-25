@@ -101,5 +101,8 @@
   " Login ":"Login",
   "You need to include at least one measure or a level on columns for a valid query.": "Musisz włączyć co najmniej jedną miarę lub poziom na kolumnach dla prawidłowego zapytania.",
   "You need to include at least one level on rows for a valid query.": "Do prawidłowego kwerendy należy dołączyć wiersze w co najmniej jednym poziomie.",
-  "Reset Cube": "Zresetuj moduł"
+  "Reset Cube": "Zresetuj moduł",
+  "Deep Avg" : "Głęboka Średnia",
+  "None": "Nic",
+  "Grand Total": "Łączna suma"
 }

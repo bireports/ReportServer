@@ -46,7 +46,7 @@ public class ReportDadgetExporter extends ReportDadgetDefaultExportHooker {
 
 	@Override
 	protected boolean isSupportedReport(ReportDto report) {
-		return report instanceof JasperReportDto || (report instanceof TableReportDto && ! ((TableReportDto)report).isCube());
+		return report instanceof JasperReportDto || (report instanceof TableReportDto && ! ((TableReportDto)report).isCubeFlag());
 	}
 
 	@Override

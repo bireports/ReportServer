@@ -139,6 +139,9 @@ public class Dto2DatabaseDatasourceGenerator implements Dto2PosoGenerator<Databa
 		} catch(NullPointerException e){
 		}
 
+		/*  set jdbcProperties */
+		poso.setJdbcProperties(dto.getJdbcProperties() );
+
 		/*  set name */
 		poso.setName(dto.getName() );
 
@@ -170,6 +173,11 @@ public class Dto2DatabaseDatasourceGenerator implements Dto2PosoGenerator<Databa
 				poso.setFlags(dto.getFlags() );
 			} catch(NullPointerException e){
 			}
+		}
+
+		/*  set jdbcProperties */
+		if(dto.isJdbcPropertiesModified()){
+			poso.setJdbcProperties(dto.getJdbcProperties() );
 		}
 
 		/*  set name */
@@ -214,6 +222,9 @@ public class Dto2DatabaseDatasourceGenerator implements Dto2PosoGenerator<Databa
 		} catch(NullPointerException e){
 		}
 
+		/*  set jdbcProperties */
+		poso.setJdbcProperties(dto.getJdbcProperties() );
+
 		/*  set name */
 		poso.setName(dto.getName() );
 
@@ -245,6 +256,11 @@ public class Dto2DatabaseDatasourceGenerator implements Dto2PosoGenerator<Databa
 				poso.setFlags(dto.getFlags() );
 			} catch(NullPointerException e){
 			}
+		}
+
+		/*  set jdbcProperties */
+		if(dto.isJdbcPropertiesModified()){
+			poso.setJdbcProperties(dto.getJdbcProperties() );
 		}
 
 		/*  set name */

@@ -43,5 +43,7 @@ public interface ConnectionPoolConfig {
 	Properties getProperties();
 	
 	Date getLastUpdated();
+	
+	Properties getJdbcProperties();
 
 }

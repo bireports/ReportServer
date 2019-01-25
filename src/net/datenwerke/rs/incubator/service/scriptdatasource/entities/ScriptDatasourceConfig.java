@@ -23,6 +23,7 @@
  
 package net.datenwerke.rs.incubator.service.scriptdatasource.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
@@ -57,6 +58,7 @@ public class ScriptDatasourceConfig extends DatasourceDefinitionConfig {
 	private String script = "";
 	
 	@ExposeToClient(disableHtmlEncode=true)
+	@Column(length = 4096)
 	private String queryWrapper = "";
 
 	public String getQueryWrapper() {

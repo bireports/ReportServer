@@ -471,6 +471,16 @@ public class UITree extends DwTreePanel<AbstractNodeDto>{
 		}
 	}
 	
+	public void reload(AbstractNodeDto node){
+		if(null == loader)
+			loader = tmpLoader;
+
+		if(null != loader) {
+			getStore().removeChildren(node);
+			loader.load(node);
+		}
+	}
+	
 	/**
 	 * TODO: http://www.sencha.com/forum/showthread.php?235044-Trees-can-have-quot-unsynchronized-quot-TreeStores-gt-NullPointers&p=866077#post866077
 	 */

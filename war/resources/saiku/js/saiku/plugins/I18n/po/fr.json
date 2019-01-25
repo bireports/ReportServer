@@ -99,6 +99,8 @@
    "Reset query":"Recommencer la requête",
    "You need to include at least one measure or a level on columns for a valid query.": "Vous devez inclure au moins une mesure ou un niveau sur les colonnes pour une requête valide.",
    "You need to include at least one level on rows for a valid query.": "Vous devez inclure au moins un niveau sur les lignes pour une requête valide.",
-   "Reset Cube": "Réinitialiser le cube"
-
+   "Reset Cube": "Réinitialiser le cube",
+   "Deep Avg": "Faible Moyenne",
+   "None": "Aucun",
+   "Grand Total": "somme finale"
 }

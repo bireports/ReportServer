@@ -716,10 +716,10 @@ abstract public class TeamSpaceDto extends RsDto implements IdedDto {
 		if(view.compareTo(DtoView.LIST) >= 0){
 			list.add(description_pa);
 			list.add(name_pa);
+			list.add(owner_pa);
 		}
 		if(view.compareTo(DtoView.NORMAL) >= 0){
 			list.add(apps_pa);
-			list.add(owner_pa);
 		}
 		if(view.compareTo(DtoView.ALL) >= 0){
 			list.add(members_pa);

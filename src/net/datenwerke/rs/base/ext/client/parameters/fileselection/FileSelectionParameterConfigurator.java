@@ -27,6 +27,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import com.sencha.gxt.data.shared.event.StoreAddEvent;
+import com.sencha.gxt.data.shared.event.StoreClearEvent;
+import com.sencha.gxt.data.shared.event.StoreDataChangeEvent;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent;
+import com.sencha.gxt.data.shared.event.StoreHandlers;
+import com.sencha.gxt.data.shared.event.StoreRecordChangeEvent;
+import com.sencha.gxt.data.shared.event.StoreRemoveEvent;
+import com.sencha.gxt.data.shared.event.StoreSortEvent;
+import com.sencha.gxt.data.shared.event.StoreUpdateEvent;
+import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
+
 import net.datenwerke.gf.client.download.dto.DownloadProperties;
 import net.datenwerke.gf.client.fileselection.FileSelectionConfig;
 import net.datenwerke.gf.client.fileselection.FileSelectionWidget;
@@ -37,7 +53,6 @@ import net.datenwerke.gf.client.upload.fileselectionsource.FileUploadSource;
 import net.datenwerke.gf.client.upload.filter.FileUploadFilter;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.resources.BaseResources;
 import net.datenwerke.rs.base.client.parameters.locale.RsMessages;
 import net.datenwerke.rs.base.ext.client.parameters.fileselection.dto.FileSelectionParameterDefinitionDto;
 import net.datenwerke.rs.base.ext.client.parameters.fileselection.dto.FileSelectionParameterInstanceDto;
@@ -60,22 +75,6 @@ import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskGeneralRefer
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.helper.fileselector.TeamSpaceFileSelectorSource;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
-import com.sencha.gxt.data.shared.event.StoreAddEvent;
-import com.sencha.gxt.data.shared.event.StoreClearEvent;
-import com.sencha.gxt.data.shared.event.StoreDataChangeEvent;
-import com.sencha.gxt.data.shared.event.StoreFilterEvent;
-import com.sencha.gxt.data.shared.event.StoreHandlers;
-import com.sencha.gxt.data.shared.event.StoreRecordChangeEvent;
-import com.sencha.gxt.data.shared.event.StoreRemoveEvent;
-import com.sencha.gxt.data.shared.event.StoreSortEvent;
-import com.sencha.gxt.data.shared.event.StoreUpdateEvent;
-import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
-
 @Singleton
 public class FileSelectionParameterConfigurator extends ParameterConfiguratorImpl<FileSelectionParameterDefinitionDto, FileSelectionParameterInstanceDto> {
 
@@ -93,7 +92,7 @@ public class FileSelectionParameterConfigurator extends ParameterConfiguratorImp
 	}
 
 	@Override
-	public Widget getEditComponentForDefinition(FileSelectionParameterDefinitionDto definition) {
+	public Widget getEditComponentForDefinition(FileSelectionParameterDefinitionDto definition, ReportDto report) {
 		final SimpleForm form = SimpleForm.getInlineInstance();
 		
 		form.beginRow(1,-1);

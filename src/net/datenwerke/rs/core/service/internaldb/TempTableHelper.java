@@ -44,6 +44,8 @@ import org.slf4j.LoggerFactory;
 
 import net.datenwerke.dbpool.DbPoolService;
 import net.datenwerke.dbpool.config.ConnectionPoolConfig;
+import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
+import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterSet;
 import net.datenwerke.rs.utils.juel.SimpleJuel;
 
 public class TempTableHelper {
@@ -57,6 +59,8 @@ public class TempTableHelper {
 	private static DbPoolService dbPoolService;
 
 	private final static String PRAEFIX = "RS_TMPTBL_";
+	public final static String PARAMETER_TMP_TABLE = "_RS_TMP_TABLENAME";
+	public final static String PARAMETER_QUERY = "_RS_query";
 
 	public static interface CleanupCallback {
 		public void doCleanup(TempTableHelper helper, String table, int uptoRev);
@@ -181,6 +185,16 @@ public class TempTableHelper {
 			queryParser.addReplacement(alias, getTableName(alias));
 
 		return queryParser.parse(query);
+	}
+	
+	public void setParameterValues(Report report, ParameterSet parameters, TempTableResult tempTableResult) {
+		for(String alias : tempTableResult.getTableHelper().getTableAliases()) {
+			String tableName = tempTableResult.getTableHelper().getTableName(alias);
+			parameters.addVariable(PARAMETER_TMP_TABLE, tableName);
+		}
+		
+		String query = tempTableResult.getFinalQuery();
+		parameters.addVariable(PARAMETER_QUERY, query);
 	}
 	
 	public String processQuery(String query, int forRev) {

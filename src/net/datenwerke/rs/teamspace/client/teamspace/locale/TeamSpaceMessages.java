@@ -52,9 +52,7 @@ public interface TeamSpaceMessages extends Messages {
 	String editTeamSpaceHeading(String name);
 	
 	String editTeamSpaceMembersAddMember();
-	String editTeamSpaceMembersGridFirstnameColumn();
 
-	String editTeamSpaceMembersGridLastnameColumn();
 	String editTeamSpaceMembersGridOUColumn();
 	
 	String editTeamSpaceMembersGridRoleColumn();
@@ -101,6 +99,7 @@ public interface TeamSpaceMessages extends Messages {
 	String noAccess();
 	String noSpaceExists();
 	String createNewSpace();
-	String owner(String name);
+	String owner();
+	String editTeamSpaceMembersAddGroupMember();
 
 }

@@ -41,6 +41,7 @@ import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.rs.core.client.parameters.config.ParameterConfiguratorImpl;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterDefinitionDto;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.enterprise.client.EnterpriseUiService;
 import net.datenwerke.rs.fileserver.client.fileserver.dto.FileServerFileDto;
 import net.datenwerke.rs.fileserver.client.fileserver.provider.annotations.FileServerTreeBasic;
@@ -74,7 +75,8 @@ public class ScriptParameterConfigurator extends ParameterConfiguratorImpl<Scrip
 		this.eneterpriseService = eneterpriseService;
 	}
 	
-	public Widget getEditComponentForDefinition(ScriptParameterDefinitionDto definition) {
+	@Override
+	public Widget getEditComponentForDefinition(ScriptParameterDefinitionDto definition, ReportDto report) {
 		SimpleForm form = SimpleForm.getInlineInstance();
 		
 		form.beginRow();

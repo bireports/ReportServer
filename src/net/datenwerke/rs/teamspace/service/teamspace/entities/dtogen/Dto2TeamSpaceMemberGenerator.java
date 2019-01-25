@@ -43,8 +43,8 @@ import net.datenwerke.rs.teamspace.service.teamspace.entities.TeamSpaceRole;
 import net.datenwerke.rs.teamspace.service.teamspace.entities.dtogen.Dto2TeamSpaceMemberGenerator;
 import net.datenwerke.rs.utils.entitycloner.annotation.TransientID;
 import net.datenwerke.rs.utils.reflection.ReflectionService;
-import net.datenwerke.security.client.usermanager.dto.UserDto;
-import net.datenwerke.security.service.usermanager.entities.User;
+import net.datenwerke.security.client.usermanager.dto.AbstractUserManagerNodeDto;
+import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
 
 /**
  * Dto2PosoGenerator for TeamSpaceMember
@@ -130,65 +130,65 @@ public class Dto2TeamSpaceMemberGenerator implements Dto2PosoGenerator<TeamSpace
 	}
 
 	protected void mergePlainDto2Poso(TeamSpaceMemberDto dto, final TeamSpaceMember poso)  throws ExpectedException {
+		/*  set folk */
+		AbstractUserManagerNodeDto tmpDto_folk = dto.getFolk();
+		if(null != tmpDto_folk && null != tmpDto_folk.getId()){
+			if(null != poso.getFolk() && null != poso.getFolk().getId() && ! poso.getFolk().getId().equals(tmpDto_folk.getId())){
+				AbstractUserManagerNode newPropertyValue = (AbstractUserManagerNode)dtoServiceProvider.get().loadPoso(tmpDto_folk);
+				dto2PosoSupervisor.referencedObjectRemoved(dto, poso, poso.getFolk(), newPropertyValue, "folk");
+				poso.setFolk(newPropertyValue);
+			} else if(null == poso.getFolk()){
+				poso.setFolk((AbstractUserManagerNode)dtoServiceProvider.get().loadPoso(tmpDto_folk));
+			}
+		} else if(null != tmpDto_folk && null == tmpDto_folk.getId()){
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_folk, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
+				public void callback(Object refPoso){
+					if(null == refPoso)
+						throw new IllegalArgumentException("referenced dto should have an id (folk)");
+					poso.setFolk((AbstractUserManagerNode)refPoso);
+				}
+			});
+		} else if(null == tmpDto_folk){
+			dto2PosoSupervisor.referencedObjectRemoved(dto, poso, poso.getFolk(), null, "folk");
+			poso.setFolk(null);
+		}
+
 		/*  set role */
 		TeamSpaceRoleDto tmpDto_role = dto.getRole();
 		poso.setRole((TeamSpaceRole)dtoServiceProvider.get().createPoso(tmpDto_role));
 
-		/*  set user */
-		UserDto tmpDto_user = dto.getUser();
-		if(null != tmpDto_user && null != tmpDto_user.getId()){
-			if(null != poso.getUser() && null != poso.getUser().getId() && ! poso.getUser().getId().equals(tmpDto_user.getId())){
-				User newPropertyValue = (User)dtoServiceProvider.get().loadPoso(tmpDto_user);
-				dto2PosoSupervisor.referencedObjectRemoved(dto, poso, poso.getUser(), newPropertyValue, "user");
-				poso.setUser(newPropertyValue);
-			} else if(null == poso.getUser()){
-				poso.setUser((User)dtoServiceProvider.get().loadPoso(tmpDto_user));
-			}
-		} else if(null != tmpDto_user && null == tmpDto_user.getId()){
-			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_user, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
-				public void callback(Object refPoso){
-					if(null == refPoso)
-						throw new IllegalArgumentException("referenced dto should have an id (user)");
-					poso.setUser((User)refPoso);
-				}
-			});
-		} else if(null == tmpDto_user){
-			dto2PosoSupervisor.referencedObjectRemoved(dto, poso, poso.getUser(), null, "user");
-			poso.setUser(null);
-		}
-
 	}
 
 	protected void mergeProxy2Poso(TeamSpaceMemberDto dto, final TeamSpaceMember poso)  throws ExpectedException {
+		/*  set folk */
+		if(dto.isFolkModified()){
+			AbstractUserManagerNodeDto tmpDto_folk = dto.getFolk();
+			if(null != tmpDto_folk && null != tmpDto_folk.getId()){
+				if(null != poso.getFolk() && null != poso.getFolk().getId() && ! poso.getFolk().getId().equals(tmpDto_folk.getId())){
+					AbstractUserManagerNode newPropertyValue = (AbstractUserManagerNode)dtoServiceProvider.get().loadPoso(tmpDto_folk);
+					dto2PosoSupervisor.referencedObjectRemoved(dto, poso, poso.getFolk(), newPropertyValue, "folk");
+					poso.setFolk(newPropertyValue);
+				} else if(null == poso.getFolk()){
+					poso.setFolk((AbstractUserManagerNode)dtoServiceProvider.get().loadPoso(tmpDto_folk));
+				}
+			} else if(null != tmpDto_folk && null == tmpDto_folk.getId()){
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_folk, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
+					public void callback(Object refPoso){
+						if(null == refPoso)
+							throw new IllegalArgumentException("referenced dto should have an id (folk)");
+						poso.setFolk((AbstractUserManagerNode)refPoso);
+					}
+			});
+			} else if(null == tmpDto_folk){
+				dto2PosoSupervisor.referencedObjectRemoved(dto, poso, poso.getFolk(), null, "folk");
+				poso.setFolk(null);
+			}
+		}
+
 		/*  set role */
 		if(dto.isRoleModified()){
 			TeamSpaceRoleDto tmpDto_role = dto.getRole();
 			poso.setRole((TeamSpaceRole)dtoServiceProvider.get().createPoso(tmpDto_role));
-		}
-
-		/*  set user */
-		if(dto.isUserModified()){
-			UserDto tmpDto_user = dto.getUser();
-			if(null != tmpDto_user && null != tmpDto_user.getId()){
-				if(null != poso.getUser() && null != poso.getUser().getId() && ! poso.getUser().getId().equals(tmpDto_user.getId())){
-					User newPropertyValue = (User)dtoServiceProvider.get().loadPoso(tmpDto_user);
-					dto2PosoSupervisor.referencedObjectRemoved(dto, poso, poso.getUser(), newPropertyValue, "user");
-					poso.setUser(newPropertyValue);
-				} else if(null == poso.getUser()){
-					poso.setUser((User)dtoServiceProvider.get().loadPoso(tmpDto_user));
-				}
-			} else if(null != tmpDto_user && null == tmpDto_user.getId()){
-			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_user, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
-					public void callback(Object refPoso){
-						if(null == refPoso)
-							throw new IllegalArgumentException("referenced dto should have an id (user)");
-						poso.setUser((User)refPoso);
-					}
-			});
-			} else if(null == tmpDto_user){
-				dto2PosoSupervisor.referencedObjectRemoved(dto, poso, poso.getUser(), null, "user");
-				poso.setUser(null);
-			}
 		}
 
 	}
@@ -201,79 +201,79 @@ public class Dto2TeamSpaceMemberGenerator implements Dto2PosoGenerator<TeamSpace
 	}
 
 	protected void mergePlainDto2UnmanagedPoso(TeamSpaceMemberDto dto, final TeamSpaceMember poso)  throws ExpectedException {
-		/*  set role */
-		TeamSpaceRoleDto tmpDto_role = dto.getRole();
-		poso.setRole((TeamSpaceRole)dtoServiceProvider.get().createPoso(tmpDto_role));
-
-		/*  set user */
-		UserDto tmpDto_user = dto.getUser();
-		if(null != tmpDto_user && null != tmpDto_user.getId()){
-			User newPropertyValue = (User)dtoServiceProvider.get().loadPoso(tmpDto_user);
-			poso.setUser(newPropertyValue);
-			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_user, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
+		/*  set folk */
+		AbstractUserManagerNodeDto tmpDto_folk = dto.getFolk();
+		if(null != tmpDto_folk && null != tmpDto_folk.getId()){
+			AbstractUserManagerNode newPropertyValue = (AbstractUserManagerNode)dtoServiceProvider.get().loadPoso(tmpDto_folk);
+			poso.setFolk(newPropertyValue);
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_folk, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
 				public void callback(Object refPoso){
 					if(null != refPoso)
-						poso.setUser((User)refPoso);
+						poso.setFolk((AbstractUserManagerNode)refPoso);
 				}
 			});
-		} else if(null != tmpDto_user && null == tmpDto_user.getId()){
-			final UserDto tmpDto_user_final = tmpDto_user;
-			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_user, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
+		} else if(null != tmpDto_folk && null == tmpDto_folk.getId()){
+			final AbstractUserManagerNodeDto tmpDto_folk_final = tmpDto_folk;
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_folk, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
 				public void callback(Object refPoso){
 					if(null == refPoso){
 						try{
-							poso.setUser((User)dtoServiceProvider.get().createUnmanagedPoso(tmpDto_user_final));
+							poso.setFolk((AbstractUserManagerNode)dtoServiceProvider.get().createUnmanagedPoso(tmpDto_folk_final));
 						} catch(ExpectedException e){
 							throw new RuntimeException(e);
 						}
 					} else {
-						poso.setUser((User)refPoso);
+						poso.setFolk((AbstractUserManagerNode)refPoso);
 					}
 				}
 			});
-		} else if(null == tmpDto_user){
-			poso.setUser(null);
+		} else if(null == tmpDto_folk){
+			poso.setFolk(null);
 		}
+
+		/*  set role */
+		TeamSpaceRoleDto tmpDto_role = dto.getRole();
+		poso.setRole((TeamSpaceRole)dtoServiceProvider.get().createPoso(tmpDto_role));
 
 	}
 
 	protected void mergeProxy2UnmanagedPoso(TeamSpaceMemberDto dto, final TeamSpaceMember poso)  throws ExpectedException {
-		/*  set role */
-		if(dto.isRoleModified()){
-			TeamSpaceRoleDto tmpDto_role = dto.getRole();
-			poso.setRole((TeamSpaceRole)dtoServiceProvider.get().createPoso(tmpDto_role));
-		}
-
-		/*  set user */
-		if(dto.isUserModified()){
-			UserDto tmpDto_user = dto.getUser();
-			if(null != tmpDto_user && null != tmpDto_user.getId()){
-				User newPropertyValue = (User)dtoServiceProvider.get().loadPoso(tmpDto_user);
-				poso.setUser(newPropertyValue);
-			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_user, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
+		/*  set folk */
+		if(dto.isFolkModified()){
+			AbstractUserManagerNodeDto tmpDto_folk = dto.getFolk();
+			if(null != tmpDto_folk && null != tmpDto_folk.getId()){
+				AbstractUserManagerNode newPropertyValue = (AbstractUserManagerNode)dtoServiceProvider.get().loadPoso(tmpDto_folk);
+				poso.setFolk(newPropertyValue);
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_folk, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
 					public void callback(Object refPoso){
 						if(null != refPoso)
-							poso.setUser((User)refPoso);
+							poso.setFolk((AbstractUserManagerNode)refPoso);
 					}
 			});
-			} else if(null != tmpDto_user && null == tmpDto_user.getId()){
-				final UserDto tmpDto_user_final = tmpDto_user;
-			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_user, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
+			} else if(null != tmpDto_folk && null == tmpDto_folk.getId()){
+				final AbstractUserManagerNodeDto tmpDto_folk_final = tmpDto_folk;
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onPosoCreation(tmpDto_folk, new net.datenwerke.gxtdto.server.dtomanager.CallbackOnPosoCreation(){
 					public void callback(Object refPoso){
 						if(null == refPoso){
 							try{
-								poso.setUser((User)dtoServiceProvider.get().createUnmanagedPoso(tmpDto_user_final));
+								poso.setFolk((AbstractUserManagerNode)dtoServiceProvider.get().createUnmanagedPoso(tmpDto_folk_final));
 							} catch(ExpectedException e){
 								throw new RuntimeException(e);
 							}
 						} else {
-							poso.setUser((User)refPoso);
+							poso.setFolk((AbstractUserManagerNode)refPoso);
 						}
 					}
 			});
-			} else if(null == tmpDto_user){
-				poso.setUser(null);
+			} else if(null == tmpDto_folk){
+				poso.setFolk(null);
 			}
+		}
+
+		/*  set role */
+		if(dto.isRoleModified()){
+			TeamSpaceRoleDto tmpDto_role = dto.getRole();
+			poso.setRole((TeamSpaceRole)dtoServiceProvider.get().createPoso(tmpDto_role));
 		}
 
 	}

@@ -63,7 +63,7 @@ public class ReportExportViaSessionHooker implements ReportExportViaSessionHook 
 			}
 			if(null != origReport)
 				((SaikuReportVariant) adjustedReport).setHideParents(origReport.isHideParents());
-		} else if(null != executorToken && adjustedReport instanceof TableReportVariant && ((TableReport)adjustedReport).isCube()){
+		} else if(null != executorToken && adjustedReport instanceof TableReportVariant && ((TableReport)adjustedReport).isCubeFlag()){
 			SaikuReport origReport = saikuSessionContainer.get().getReport(executorToken.getToken());
 			ThinQuery query = saikuSessionContainer.get().getQueryForReport(origReport);
 			if(null != query){

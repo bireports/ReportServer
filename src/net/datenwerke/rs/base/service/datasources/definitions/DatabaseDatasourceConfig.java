@@ -52,7 +52,7 @@ public class DatabaseDatasourceConfig extends DatasourceDefinitionConfig {
 	 */
 	private static final long serialVersionUID = -2133375471305510767L;
 	
-	@ExposeToClient(disableHtmlEncode=true)
+	@ExposeToClient(allowArbitraryLobSize=true,disableHtmlEncode=true)
 	@Lob
 	@Type(type = "net.datenwerke.rs.utils.hibernate.RsClobType")
 	protected String query;

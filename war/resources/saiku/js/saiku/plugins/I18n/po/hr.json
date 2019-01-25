@@ -67,5 +67,8 @@
     "Tags": "Oznake",
     "You need to include at least one measure or a level on columns for a valid query.": "Za valjani upit morate uključiti najmanje jednu mjeru ili razinu na stupce.",
     "You need to include at least one level on rows for a valid query.": "Za valjani upit morate uključiti barem jednu razinu na retke.",
-    "Reset Cube": "Poništi kocku"
+    "Reset Cube": "Poništi kocku",
+    "Deep Avg": "Niski Prosjek",
+    "None": "Nijedan",
+    "Grand Total": "Ukupno"
 }

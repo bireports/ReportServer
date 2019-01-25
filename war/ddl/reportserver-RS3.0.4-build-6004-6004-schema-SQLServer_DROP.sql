@@ -1148,15 +1148,6 @@
     alter table RS_TEAMSPACE_2_APP_A 
         drop constraint FK_brj64tyuakbemq6xeyjohq8s5;
 
-    alter table RS_TEAMSPACE_2_MEMBER 
-        drop constraint FK_j6p1u1dx4vo2m8nv0jssdukul;
-
-    alter table RS_TEAMSPACE_2_MEMBER 
-        drop constraint FK_fiyxn4jmrjyqyt21ykqymwbh5;
-
-    alter table RS_TEAMSPACE_2_MEMBER_A 
-        drop constraint FK_ng4n8pkvlfmsdvijid7lbjeme;
-
     alter table RS_TEAMSPACE_A 
         drop constraint FK_rejb26cb8ewfmmv2um3myil7q;
 
@@ -1176,7 +1167,10 @@
         drop constraint FK_neaevm02cgidd1ficvhda6ied;
 
     alter table RS_TEAMSPACE_MEMBER 
-        drop constraint FK_10q292y1oxchluq48pe24h3mt;
+        drop constraint FK_fy25hc5otirwwptajgifrbn2q;
+
+    alter table RS_TEAMSPACE_MEMBER 
+        drop constraint FK_hidouigp2cvecq4okjdpmv9je;
 
     alter table RS_TEAMSPACE_MEMBER_A 
         drop constraint FK_ehoe66nogdhk6u7w72uqd9jgo;
@@ -1960,10 +1954,6 @@
     drop table RS_TEAMSPACE_2_APP;
 
     drop table RS_TEAMSPACE_2_APP_A;
-
-    drop table RS_TEAMSPACE_2_MEMBER;
-
-    drop table RS_TEAMSPACE_2_MEMBER_A;
 
     drop table RS_TEAMSPACE_A;
 

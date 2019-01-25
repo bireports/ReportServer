@@ -1531,18 +1531,6 @@
         drop 
         foreign key FK_brj64tyuakbemq6xeyjohq8s5;
 
-    alter table RS_TEAMSPACE_2_MEMBER 
-        drop 
-        foreign key FK_j6p1u1dx4vo2m8nv0jssdukul;
-
-    alter table RS_TEAMSPACE_2_MEMBER 
-        drop 
-        foreign key FK_fiyxn4jmrjyqyt21ykqymwbh5;
-
-    alter table RS_TEAMSPACE_2_MEMBER_A 
-        drop 
-        foreign key FK_ng4n8pkvlfmsdvijid7lbjeme;
-
     alter table RS_TEAMSPACE_A 
         drop 
         foreign key FK_rejb26cb8ewfmmv2um3myil7q;
@@ -1569,7 +1557,11 @@
 
     alter table RS_TEAMSPACE_MEMBER 
         drop 
-        foreign key FK_10q292y1oxchluq48pe24h3mt;
+        foreign key FK_fy25hc5otirwwptajgifrbn2q;
+
+    alter table RS_TEAMSPACE_MEMBER 
+        drop 
+        foreign key FK_hidouigp2cvecq4okjdpmv9je;
 
     alter table RS_TEAMSPACE_MEMBER_A 
         drop 
@@ -2390,10 +2382,6 @@
     drop table if exists RS_TEAMSPACE_2_APP;
 
     drop table if exists RS_TEAMSPACE_2_APP_A;
-
-    drop table if exists RS_TEAMSPACE_2_MEMBER;
-
-    drop table if exists RS_TEAMSPACE_2_MEMBER_A;
 
     drop table if exists RS_TEAMSPACE_A;
 

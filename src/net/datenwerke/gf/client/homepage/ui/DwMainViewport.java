@@ -26,6 +26,7 @@ package net.datenwerke.gf.client.homepage.ui;
 
 import java.util.Collection;
 
+import net.datenwerke.gf.client.homepage.modules.ClientMainModule;
 import net.datenwerke.gf.client.homepage.modules.ClientTempModule;
 import net.datenwerke.gf.client.homepage.modules.ui.ModuleManagerModuleSelector;
 import net.datenwerke.gf.client.homepage.modules.ui.ModuleManagerPanel;
@@ -120,4 +121,7 @@ public class DwMainViewport extends Viewport {
 		mask(BaseMessages.INSTANCE.loadingMsg());
 	}
 
+	public void showModule(ClientMainModule module) {
+		moduleSelector.showModule(module);
+	}
 }

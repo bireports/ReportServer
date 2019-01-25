@@ -27,7 +27,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -117,5 +116,5 @@ public class TempTableServiceImpl implements TempTableService {
 		String dsName = configService.getConfigFailsafe(InternalDbModule.CONFIG_FILE).getString(TempTableService.PROPERTY_KEY_DEFAULT_DATASOURCE, "ReportServer Data Source");
 		return ((DatabaseDatasource)datasourceService.getDatasourceByName(dsName));
 	}
-	
+
 }

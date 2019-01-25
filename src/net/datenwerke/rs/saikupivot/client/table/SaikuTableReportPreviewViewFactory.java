@@ -56,7 +56,7 @@ public class SaikuTableReportPreviewViewFactory extends PreviewViewFactory {
 
 	@Override
 	public boolean consumes(ReportDto report) {
-		return (report instanceof TableReportDto) && ((TableReportDto)report).isCube();
+		return (report instanceof TableReportDto) && ((TableReportDto)report).isCubeFlag();
 	}
 
 }

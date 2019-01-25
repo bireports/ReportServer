@@ -67,7 +67,7 @@ public class CubifyHooker implements ReportExecutorViewToolbarHook {
 			return false;
 		
 		final TableReportDto list = (TableReportDto) report;
-		if(! enterpriseService.isEnterprise() || list.isCube() || ! list.isAllowCubification())
+		if(! enterpriseService.isEnterprise() || list.isCubeFlag() || ! list.isAllowCubification())
 			return false;
 		
 		/* add cubify button */
@@ -83,7 +83,7 @@ public class CubifyHooker implements ReportExecutorViewToolbarHook {
 					@Override
 					public void onDialogHide(DialogHideEvent event) {
 						if (event.getHideButton() == PredefinedButton.YES){
-							list.setCube(true);
+							list.setCubeFlag(true);
 							mainPanel.reload();
 						}
 					}

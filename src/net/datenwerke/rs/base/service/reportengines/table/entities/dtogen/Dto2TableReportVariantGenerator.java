@@ -243,9 +243,9 @@ public class Dto2TableReportVariantGenerator implements Dto2PosoGenerator<TableR
 		}
 		poso.setColumns(new_col_columns);
 
-		/*  set cube */
+		/*  set cubeFlag */
 		try{
-			poso.setCube(dto.isCube() );
+			poso.setCubeFlag(dto.isCubeFlag() );
 		} catch(NullPointerException e){
 		}
 
@@ -448,10 +448,10 @@ public class Dto2TableReportVariantGenerator implements Dto2PosoGenerator<TableR
 			poso.setColumns(new_col_columns);
 		}
 
-		/*  set cube */
-		if(dto.isCubeModified()){
+		/*  set cubeFlag */
+		if(dto.isCubeFlagModified()){
 			try{
-				poso.setCube(dto.isCube() );
+				poso.setCubeFlag(dto.isCubeFlag() );
 			} catch(NullPointerException e){
 			}
 		}
@@ -609,9 +609,9 @@ public class Dto2TableReportVariantGenerator implements Dto2PosoGenerator<TableR
 		}
 		poso.setColumns(col_columns);
 
-		/*  set cube */
+		/*  set cubeFlag */
 		try{
-			poso.setCube(dto.isCube() );
+			poso.setCubeFlag(dto.isCubeFlag() );
 		} catch(NullPointerException e){
 		}
 
@@ -704,10 +704,10 @@ public class Dto2TableReportVariantGenerator implements Dto2PosoGenerator<TableR
 			poso.setColumns(col_columns);
 		}
 
-		/*  set cube */
-		if(dto.isCubeModified()){
+		/*  set cubeFlag */
+		if(dto.isCubeFlagModified()){
 			try{
-				poso.setCube(dto.isCube() );
+				poso.setCubeFlag(dto.isCubeFlag() );
 			} catch(NullPointerException e){
 			}
 		}

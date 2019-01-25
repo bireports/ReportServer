@@ -123,7 +123,7 @@ public class BlatextParameterDefinition2DtoGenerator implements Poso2DtoGenerato
 			dto.setN(poso.getN() );
 
 			/*  set value */
-			dto.setValue(new HtmlPolicyBuilder().allowCommonInlineFormattingElements().allowCommonBlockElements().allowStyling().allowAttributes("size").onElements("font").toFactory().sanitize(poso.getValue() ));
+			dto.setValue(new HtmlPolicyBuilder().allowCommonInlineFormattingElements().allowCommonBlockElements().allowStyling().allowAttributes("size", "color").onElements("font").toFactory().sanitize(poso.getValue() ));
 
 		}
 

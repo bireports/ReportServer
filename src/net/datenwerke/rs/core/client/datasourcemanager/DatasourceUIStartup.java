@@ -97,7 +97,7 @@ public class DatasourceUIStartup {
 		waitOnEventService.callbackOnEvent(AdministrationUIService.REPORTSERVER_EVENT_HAS_ADMIN_RIGHTS, new SynchronousCallbackOnEventTrigger(){
 			public void execute(final WaitOnEventTicket ticket) {
 				if(securityService.hasRight(DatasourceManagerGenericTargetIdentifier.class, ReadDto.class)){
-					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(adminModuleProvider),  HookHandlerService.PRIORITY_HIGH + 2);
+					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(adminModuleProvider),  HookHandlerService.PRIORITY_HIGH + 20);
 				}
 				waitOnEventService.signalProcessingDone(ticket);
 			}

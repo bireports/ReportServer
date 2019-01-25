@@ -34,6 +34,7 @@ public class DatabaseDatasource__ extends net.datenwerke.rs.core.service.datasou
 	public static final String connectionConfigFactoryProvider = "connectionConfigFactoryProvider";
 	public static final String databaseDescriptor = "databaseDescriptor";
 	public static final String dbHelperServiceProvider = "dbHelperServiceProvider";
+	public static final String jdbcProperties = "jdbcProperties";
 	public static final String password = "password";
 	public static final String pbeServiceProvider = "pbeServiceProvider";
 	public static final String serialVersionUID = "serialVersionUID";

@@ -34,6 +34,7 @@ import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.gxtdto.client.utilityservices.submittracker.SubmitCompleteCallback;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceDao;
+import net.datenwerke.rs.teamspace.client.teamspace.TeamSpaceUIService.TeamSpaceOperationSuccessHandler;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
 import net.datenwerke.rs.teamspace.client.teamspace.hooks.TeamSpaceEditDialogHook;
 import net.datenwerke.rs.teamspace.client.teamspace.locale.TeamSpaceMessages;
@@ -62,7 +63,7 @@ public class EditTeamSpaceDialogCreator {
 		this.tsDao = tsDao;
 	}
 
-	public void displayDialog(final TeamSpaceMainComponent teamSpaceMainComponent, final TeamSpaceDto currentSpace) {
+	public void displayDialog(final TeamSpaceDto currentSpace, final TeamSpaceOperationSuccessHandler successHandler) {
 		tsDao.reloadTeamSpaceForEdit(currentSpace, new RsAsyncCallback<TeamSpaceDto>(){
 			@Override
 			public void onSuccess(TeamSpaceDto result) {
@@ -71,7 +72,7 @@ public class EditTeamSpaceDialogCreator {
 				dialog.setPerformSubmitsConsecutively(true);
 				dialog.continueOnFailure(true);
 				dialog.setSize(640, 480);
-				dialog.setHeadingText(TeamSpaceMessages.INSTANCE.editTeamSpaceHeading(currentSpace.getName() + " (" + currentSpace.getId() + ") "));
+				dialog.setHeadingText(TeamSpaceMessages.INSTANCE.editTeamSpaceHeading(currentSpace.toDisplayTitle() + " (" + currentSpace.getId() + ") "));
 				dialog.setHeaderIcon(BaseIcon.GROUP_PROPERTIES);
 				dialog.setMaskOnSubmit(TeamSpaceMessages.INSTANCE.editTeamSpaceWindowServerRequestMask());
 				dialog.setModal(true);
@@ -84,7 +85,7 @@ public class EditTeamSpaceDialogCreator {
 							@Override
 							public void onSuccess(TeamSpaceDto result) {
 								dialog.hide();
-								teamSpaceMainComponent.loadSpace(result);
+								successHandler.onSuccess(result);
 							}
 						});
 					}

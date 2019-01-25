@@ -54,7 +54,8 @@ public class SFFCTeamSpaceMemberAsUser implements SFFCBaseModel<UserDto> {
 		ListStore<UserDto> store = new ListStore<UserDto>(userPa.dtoId());
 		
 		for(TeamSpaceMemberDto member : teamSpace.getMembers())
-			store.add(member.getUser());
+			if(member.getFolk() instanceof UserDto)
+				store.add((UserDto) member.getFolk());
 		
 		return store;
 	}

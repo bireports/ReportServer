@@ -29,6 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Singleton;
+import com.sencha.gxt.widget.core.client.form.Validator;
+
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCAllowBlank;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCStringValidator;
@@ -42,7 +49,6 @@ import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCStrin
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCTextArea;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCStaticDropdownList;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.resources.BaseResources;
 import net.datenwerke.rs.base.client.parameters.locale.RsMessages;
 import net.datenwerke.rs.base.client.parameters.string.dto.TextParameterDefinitionDto;
 import net.datenwerke.rs.base.client.parameters.string.dto.TextParameterInstanceDto;
@@ -59,13 +65,6 @@ import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.core.client.reportmanager.locale.ReportmanagerMessages;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
-import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.EditorError;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Singleton;
-import com.sencha.gxt.widget.core.client.form.Validator;
-
 /**
  * 
  *
@@ -74,7 +73,8 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 public class TextParameterConfigurator extends ParameterConfiguratorImpl<TextParameterDefinitionDto, TextParameterInstanceDto> {
 
 	
-	public Widget getEditComponentForDefinition(TextParameterDefinitionDto definition) {
+	@Override
+	public Widget getEditComponentForDefinition(TextParameterDefinitionDto definition, ReportDto report) {
 		final SimpleForm form = SimpleForm.getInlineInstance();
 		
 		form.beginRow();

@@ -23,9 +23,23 @@
  
 package net.datenwerke.rs.base.service.datasources.definitions;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Properties;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.apache.commons.codec.binary.Hex;
+import org.hibernate.annotations.Type;
+import org.hibernate.envers.Audited;
+
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
 
 import net.datenwerke.dbpool.config.ConnectionPoolConfig;
 import net.datenwerke.dbpool.config.ConnectionPoolConfigFactory;
@@ -45,13 +59,6 @@ import net.datenwerke.rs.core.service.datasourcemanager.interfaces.ParameterAwar
 import net.datenwerke.rs.utils.instancedescription.annotations.InstanceDescription;
 import net.datenwerke.security.service.crypto.pbe.PbeService;
 import net.datenwerke.security.service.crypto.pbe.encrypt.EncryptionService;
-
-import org.apache.commons.codec.binary.Hex;
-import org.hibernate.envers.Audited;
-
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
 
 /**
  * Used to define data sources that can be used in ReportServer.
@@ -99,6 +106,7 @@ public class DatabaseDatasource extends DatasourceDefinition implements Paramete
 
 	@ExposeToClient
 	@Field
+	@Column(length = 1024)
 	private String url;
 
 	@ExposeToClient
@@ -110,6 +118,11 @@ public class DatabaseDatasource extends DatasourceDefinition implements Paramete
 			mergeDtoValueBack=true
 			)
 	private String password;
+	
+	@ExposeToClient(disableHtmlEncode = true)
+	@Lob
+	@Type(type = "net.datenwerke.rs.utils.hibernate.RsClobType")
+	private String jdbcProperties;
 
 	@ExposeToClient
 	private String databaseDescriptor;
@@ -150,6 +163,13 @@ public class DatabaseDatasource extends DatasourceDefinition implements Paramete
 
 		this.password = new String(Hex.encodeHex(encrypted));
 	}
+	
+	public String getJdbcProperties() {
+		return jdbcProperties;
+	}
+	public void setJdbcProperties(String jdbcProperties) {
+		this.jdbcProperties = jdbcProperties;
+	}
 
 	public void setDatabaseDescriptor(String databaseDescriptor) {
 		this.databaseDescriptor = databaseDescriptor;
@@ -183,8 +203,22 @@ public class DatabaseDatasource extends DatasourceDefinition implements Paramete
 		config.setJdbcUrl(getUrl());
 		config.setDriver(dbHelperServiceProvider.get().getDatabaseHelper(getDatabaseDescriptor()).getDriver());
 		config.setLastUpdated(getLastUpdated());
+		config.setJdbcProperties(parseJdbcProperties());
 
 		return config;
+	}
+	
+	protected Properties parseJdbcProperties() {
+		if(null != jdbcProperties && ! "".equals(jdbcProperties.trim())){
+			Properties props = new Properties();
+			try {
+				props.load(new StringReader(jdbcProperties));
+			} catch (IOException e) {
+				throw new IllegalStateException("Could not parse jdbc jdbcProperties.", e);
+			}
+			return props;
+		}
+		return null;
 	}
 
 	@Override

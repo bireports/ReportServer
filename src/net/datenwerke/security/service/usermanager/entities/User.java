@@ -128,7 +128,7 @@ public class User extends AbstractUserManagerNode {
 	private String email;
 
 	@ExposeToClient
-	@Column(length = 40)
+	@Column(length = 128)
 	@Field
 	private String username;
 

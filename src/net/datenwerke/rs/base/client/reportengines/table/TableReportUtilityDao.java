@@ -25,6 +25,13 @@ package net.datenwerke.rs.base.client.reportengines.table;
 
 import java.util.List;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
+import com.sencha.gxt.data.shared.loader.ListLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoadConfig;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+
 import net.datenwerke.gxtdto.client.dtomanager.Dao;
 import net.datenwerke.gxtdto.client.dtomanager.callback.DaoAsyncCallback;
 import net.datenwerke.gxtdto.client.model.ListStringBaseModel;
@@ -35,13 +42,8 @@ import net.datenwerke.rs.base.client.reportengines.table.dto.TableReportInformat
 import net.datenwerke.rs.base.client.reportengines.table.helpers.filter.FilterType;
 import net.datenwerke.rs.base.client.reportengines.table.helpers.filter.SelectorPanelLoadConfig;
 import net.datenwerke.rs.base.client.reportengines.table.rpc.TableReportUtilityServiceAsync;
-
-import com.google.gwt.http.client.Request;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
-import com.sencha.gxt.data.shared.loader.ListLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoadConfig;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import net.datenwerke.rs.core.client.datasourcemanager.dto.DatasourceContainerDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 
 /**
  * 
@@ -79,17 +81,19 @@ public class TableReportUtilityDao extends Dao {
 		return rpcService.getReportInformation(tableReport, executeToken, daoCallback);
 	}
 
-	public void loadColumnDefinition(TableReportDto report, String query, String executeToken, 
+	public void loadColumnDefinition(ReportDto report, DatasourceContainerDto containerDto, String query, String executeToken, 
 			AsyncCallback<List<ColumnDto>> callback) {
 		report = unproxy(report);
-		rpcService.loadColumnDefinition(report, query, executeToken, transformAndKeepCallback(callback));
+		containerDto = unproxy(containerDto);
+		rpcService.loadColumnDefinition(report, containerDto, query, executeToken, transformAndKeepCallback(callback));
 	}
 
-	public void loadData(TableReportDto report,
+	public void loadData(ReportDto report, DatasourceContainerDto containerDto, 
 			PagingLoadConfig loadConfig, String query,
 			AsyncCallback<PagingLoadResult<ListStringBaseModel>> callback) {
 		report = unproxy(report);
-		rpcService.loadData(report, loadConfig, query, transformAndKeepCallback(callback));
+		containerDto = unproxy(containerDto);
+		rpcService.loadData(report, containerDto, loadConfig, query, transformAndKeepCallback(callback));
 	}
 	
 }

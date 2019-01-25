@@ -31,7 +31,7 @@ import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
 @GeneratedType("net.datenwerke.entityservices.metadatagenerator.EntityMetadataProcessor")
 public class MondrianDatasourceConfig__ extends net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinitionConfig__ implements net.datenwerke.entityservices.metadatagenerator.interfaces.EntityMetadataProvider {
 
-	public static final String cube = "cube";
+	public static final String cubeName = "cubeName";
 	public static final String serialVersionUID = "serialVersionUID";
 
 }

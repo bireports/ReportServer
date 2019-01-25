@@ -131,6 +131,8 @@ public class ReportExecutorUIServiceImpl implements ReportExecutorUIService {
 	
 	@Override
 	public void executeReport(ReportDto report, final ExecutorEventHandler eventHandler, final ExecuteReportConfiguration config, final ReportViewConfiguration... viewConfigs) {
+		History.newItem(ReportExecutorUIModule.REPORT_EXECUTOR_HISTORY_TOKEN + "/uuid:" + report.getUuid(), false);
+		
 		viewportService.setLoadingMask();
 		
 		reportExecutorDao.loadFullReportForExecution(report, true, new RsAsyncCallback<ReportDto>(){

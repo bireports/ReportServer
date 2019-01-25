@@ -671,10 +671,6 @@
 
     drop table RS_TEAMSPACE_2_APP_A;
 
-    drop table RS_TEAMSPACE_2_MEMBER;
-
-    drop table RS_TEAMSPACE_2_MEMBER_A;
-
     drop table RS_TEAMSPACE_A;
 
     drop table RS_TEAMSPACE_APP;

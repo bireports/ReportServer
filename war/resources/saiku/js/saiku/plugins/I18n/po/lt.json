@@ -169,5 +169,8 @@
    "Zoom into table" : "Pasirinkti lentelės dalį",
    "You need to include at least one measure or a level on columns for a valid query.": "Galiojančiai užklausai turite įtraukti bent vieną priemonę arba lygį stulpeliuose.",
    "You need to include at least one level on rows for a valid query.": "Reikiamoje užklausoje turite pridėti bent vieną eilutę.",
-   "Reset Cube": "Atstatyti kubą"
+   "Reset Cube": "Atstatyti kubą",
+   "Deep Avg": "Gilus Vidurkis",
+   "None": "niekas",
+   "Grand Total": "Iš viso"
 }

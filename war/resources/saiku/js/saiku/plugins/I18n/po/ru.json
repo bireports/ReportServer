@@ -119,5 +119,8 @@
   "Close Others":"Закрыть остальные",
   "You need to include at least one measure or a level on columns for a valid query.": "Вам нужно включить хотя бы одну меру или уровень в столбцы для действительного запроса.",
   "You need to include at least one level on rows for a valid query.": "Вы должны включить хотя бы один уровень в строки для действительного запроса.",
-  "Reset Cube": "Сбросить куб"
+  "Reset Cube": "Сбросить куб",
+  "Deep Avg": "Глубокое среднее",
+  "None": "ничего",
+  "Grand Total": "Общий итог"
 }

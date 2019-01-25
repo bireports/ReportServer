@@ -45,6 +45,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -58,6 +59,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.olap4j.OlapConnection;
 import org.saiku.repository.IRepositoryObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,7 @@ import com.qmino.miredot.annotations.ReturnType;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
+import net.datenwerke.rs.saiku.service.saiku.OlapUtilService;
 import net.datenwerke.rs.saiku.service.saiku.SaikuSessionContainer;
 import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReport;
 import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReportVariant;
@@ -133,11 +136,16 @@ public class BasicRepositoryResource2 implements Serializable {
 	//	this.sessionService = sessionService;
 	//  }
 
-	private Provider<SaikuSessionContainer> saikuSessioncontainer;
+	private final Provider<SaikuSessionContainer> saikuSessioncontainer;
+	private final Provider<EntityManager> entityManagerProvider;
+	private final OlapUtilService olapUtilService;
 
 	@Inject
-	public BasicRepositoryResource2(Provider<SaikuSessionContainer> saikuSessioncontainer) {
+	public BasicRepositoryResource2(Provider<SaikuSessionContainer> saikuSessioncontainer, Provider<EntityManager> entityManagerProvider,
+			OlapUtilService olapUtilService) {
 		this.saikuSessioncontainer = saikuSessioncontainer;
+		this.entityManagerProvider = entityManagerProvider;
+		this.olapUtilService = olapUtilService;
 		
 		log.info("loaded basicRepositoryResource2");
 	}
@@ -177,9 +185,27 @@ public class BasicRepositoryResource2 implements Serializable {
 	@Path("/resource/reset")
 	public boolean reset(@PathParam("username") String username) {
 		SaikuReport report = saikuSessioncontainer.get().getReport(username);
-
+		
+		if (report.getId() != null) {
+			/* We reload the schema definition from the db. */
+			EntityManager em  = entityManagerProvider.get();
+			SaikuReport managedReport = em.find(report.getClass(), report.getId());
+			managedReport.setQueryXml(null);
+			saikuSessioncontainer.get().putReport(username, managedReport);
+			try {
+				/*
+				 * We have a hibernate session so we load data we know we need before putting it into the session.
+				 */
+				olapUtilService.getOlapConnection(managedReport);
+				managedReport.getParent();
+				
+				em.detach(report);
+			} catch (Exception e) {
+				throw new RuntimeException("Could not reset for " + username , e);
+			}
+		}
+		
 		report.setQueryXml(null);
-
 		return true;
 
 	}

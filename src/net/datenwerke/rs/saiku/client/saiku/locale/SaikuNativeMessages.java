@@ -172,5 +172,5 @@ public interface SaikuNativeMessages extends Messages {
 	String Yes();
 	String YouneedtoputatleastonelevelormeasureonColumnsandRowsforavalidquery();
 	String YouNeedToPutAtLeastOneLevelOrMeasureOnColumnsAndRowsForAValidQuery();
-
+	String DeepAvg();
 }

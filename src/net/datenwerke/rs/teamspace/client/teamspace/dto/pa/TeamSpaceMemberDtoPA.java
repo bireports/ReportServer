@@ -33,7 +33,7 @@ import net.datenwerke.dtoservices.dtogenerator.annotations.CorrespondingPoso;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceMemberDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
-import net.datenwerke.security.client.usermanager.dto.UserDto;
+import net.datenwerke.security.client.usermanager.dto.AbstractUserManagerNodeDto;
 
 /**
  * This file was automatically created by DtoAnnotationProcessor, version 0.1
@@ -49,9 +49,9 @@ public interface TeamSpaceMemberDtoPA extends PropertyAccess<TeamSpaceMemberDto>
 	public ModelKeyProvider<TeamSpaceMemberDto> dtoId();
 
 	/* Properties */
+	public ValueProvider<TeamSpaceMemberDto,AbstractUserManagerNodeDto> folk();
 	public ValueProvider<TeamSpaceMemberDto,Long> id();
 	public ValueProvider<TeamSpaceMemberDto,TeamSpaceRoleDto> role();
-	public ValueProvider<TeamSpaceMemberDto,UserDto> user();
 
 
 }

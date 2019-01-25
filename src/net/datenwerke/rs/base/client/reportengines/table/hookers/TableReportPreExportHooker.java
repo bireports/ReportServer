@@ -32,7 +32,7 @@ public class TableReportPreExportHooker implements ReportExporterPreExportHook {
 
 	@Override
 	public String isExportable(ReportDto report) {
-		if(report instanceof TableReportDto && !((TableReportDto)report).isCube()){
+		if(report instanceof TableReportDto && !((TableReportDto)report).isCubeFlag()){
 			if(((TableReportDto) report).getColumns().isEmpty()){
 				return ReportexecutorMessages.INSTANCE.noColumnsSelected();
 			}

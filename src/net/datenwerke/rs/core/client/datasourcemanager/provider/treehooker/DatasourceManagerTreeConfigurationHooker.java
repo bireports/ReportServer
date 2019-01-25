@@ -27,6 +27,7 @@ import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.inject.Inject;
 import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
+import com.sencha.gxt.widget.core.client.menu.SeparatorMenuItem;
 
 import net.datenwerke.gf.client.managerhelper.hooks.TreeConfiguratorHook;
 import net.datenwerke.gf.client.managerhelper.tree.ManagerHelperTree;
@@ -34,6 +35,7 @@ import net.datenwerke.gf.client.treedb.helper.menu.AvailabilityCallback;
 import net.datenwerke.gf.client.treedb.helper.menu.DeleteMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.DuplicateMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.InsertMenuItem;
+import net.datenwerke.gf.client.treedb.helper.menu.ReloadMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.TreeDBUIMenuProvider;
 import net.datenwerke.gf.client.treedb.icon.IconMapping;
 import net.datenwerke.gf.client.treedb.icon.TreeDBUIIconProvider;
@@ -86,6 +88,8 @@ public class DatasourceManagerTreeConfigurationHooker implements
 		MenuItem insertItem = generateInsertMenu();
 		folderMenu.add(insertItem);
 		folderMenu.add(new DeleteMenuItem(treeHandler));
+		folderMenu.add(new SeparatorMenuItem());
+		folderMenu.add(new ReloadMenuItem());
 		
 		/* DSDDB */
 		for(DatasourceDefinitionConfigProviderHook config : hookHandler.getHookers(DatasourceDefinitionConfigProviderHook.class)){

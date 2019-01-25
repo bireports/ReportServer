@@ -126,15 +126,15 @@ public class Dto2MondrianDatasourceConfigGenerator implements Dto2PosoGenerator<
 	}
 
 	protected void mergePlainDto2Poso(MondrianDatasourceConfigDto dto, final MondrianDatasourceConfig poso)  throws ExpectedException {
-		/*  set cube */
-		poso.setCube(dto.getCube() );
+		/*  set cubeName */
+		poso.setCubeName(dto.getCubeName() );
 
 	}
 
 	protected void mergeProxy2Poso(MondrianDatasourceConfigDto dto, final MondrianDatasourceConfig poso)  throws ExpectedException {
-		/*  set cube */
-		if(dto.isCubeModified()){
-			poso.setCube(dto.getCube() );
+		/*  set cubeName */
+		if(dto.isCubeNameModified()){
+			poso.setCubeName(dto.getCubeName() );
 		}
 
 	}
@@ -147,15 +147,15 @@ public class Dto2MondrianDatasourceConfigGenerator implements Dto2PosoGenerator<
 	}
 
 	protected void mergePlainDto2UnmanagedPoso(MondrianDatasourceConfigDto dto, final MondrianDatasourceConfig poso)  throws ExpectedException {
-		/*  set cube */
-		poso.setCube(dto.getCube() );
+		/*  set cubeName */
+		poso.setCubeName(dto.getCubeName() );
 
 	}
 
 	protected void mergeProxy2UnmanagedPoso(MondrianDatasourceConfigDto dto, final MondrianDatasourceConfig poso)  throws ExpectedException {
-		/*  set cube */
-		if(dto.isCubeModified()){
-			poso.setCube(dto.getCube() );
+		/*  set cubeName */
+		if(dto.isCubeNameModified()){
+			poso.setCubeName(dto.getCubeName() );
 		}
 
 	}

@@ -23,17 +23,20 @@
  
 package net.datenwerke.gxtdto.client.baseex.widget;
 
-import net.datenwerke.gxtdto.client.theme.CssClassConstant;
-
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.AccordionLayoutAppearance;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+
+import net.datenwerke.gxtdto.client.theme.CssClassConstant;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
 public class DwContentPanel extends ContentPanel {
 
@@ -58,12 +61,24 @@ public class DwContentPanel extends ContentPanel {
 	private boolean scrollContainer;
 
 	public DwContentPanel(){
-		super();
+		this((ContentPanelAppearance) GWT.create(ContentPanelAppearance.class));
+	}
+	
+	public DwContentPanel(ContentPanelAppearance appearance) {
+		super(appearance);
 		
 		getElement().addClassName(getCssName());
 		getAppearance().getHeaderElem(getElement()).addClassName(getCssHeaderName());
 		getAppearance().getBodyWrap(getElement()).addClassName(getCssBodyName());
 		getAppearance().getContentElem(getElement()).addClassName(getCssContentName());
+	}
+	
+	public static DwContentPanel newAccordeonInstance() {
+		return new DwContentPanel(GWT.<AccordionLayoutAppearance>create(AccordionLayoutAppearance.class));
+	}
+	
+	public void setHeaderIcon(BaseIcon icon) {
+		getHeader().setIcon(icon.toImageResource());
 	}
 	
 	public String getCssName() {

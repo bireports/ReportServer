@@ -79,6 +79,7 @@ public class PropertiesDialog extends DwWindow {
 		
 		/* init */
 		initializeUI();
+		setCenterOnShow(true);
 	}
 
 	protected void initializeUI() {
@@ -118,18 +119,6 @@ public class PropertiesDialog extends DwWindow {
 		});
 	}
 	
-	@Override
-	protected void onShow() {
-		super.onShow();
-		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-			
-			@Override
-			public void execute() {
-				center();
-			}
-		});
-	}
-
 	protected void cancelClicked() {
 		String msg = cancelButtonClicked.buttonClicked();
 		if(null != msg){

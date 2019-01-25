@@ -71,7 +71,7 @@ public class BirtReportDatasourceConfig2DtoGenerator implements Poso2DtoGenerato
 		}
 		if(here.compareTo(DtoView.NORMAL) >= 0){
 			/*  set queryWrapper */
-			dto.setQueryWrapper(StringEscapeUtils.escapeXml(StringUtils.left(poso.getQueryWrapper(),8192)));
+			dto.setQueryWrapper(poso.getQueryWrapper() );
 
 			/*  set report */
 			Object tmpDtoBirtReportDtogetReport = dtoServiceProvider.get().createDto(poso.getReport(), referenced, referenced);

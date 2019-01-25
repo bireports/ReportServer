@@ -186,7 +186,7 @@ public class Saiku2ChartHTML extends ReportExporterImpl {
 	
 	@Override
 	public boolean consumes(ReportDto report) {
-		return report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCube());
+		return report instanceof SaikuReportDto || (report instanceof TableReportDto && ((TableReportDto)report).isCubeFlag());
 	}
 
 	@Override

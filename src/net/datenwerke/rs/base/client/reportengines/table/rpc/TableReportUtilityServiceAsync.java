@@ -25,6 +25,12 @@ package net.datenwerke.rs.base.client.reportengines.table.rpc;
 
 import java.util.List;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.data.shared.loader.ListLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoadConfig;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+
 import net.datenwerke.gxtdto.client.model.ListStringBaseModel;
 import net.datenwerke.gxtdto.client.model.StringBaseModel;
 import net.datenwerke.rs.base.client.reportengines.table.dto.ColumnDto;
@@ -32,12 +38,8 @@ import net.datenwerke.rs.base.client.reportengines.table.dto.TableReportDto;
 import net.datenwerke.rs.base.client.reportengines.table.dto.TableReportInformation;
 import net.datenwerke.rs.base.client.reportengines.table.helpers.filter.FilterType;
 import net.datenwerke.rs.base.client.reportengines.table.helpers.filter.SelectorPanelLoadConfig;
-
-import com.google.gwt.http.client.Request;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.sencha.gxt.data.shared.loader.ListLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoadConfig;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import net.datenwerke.rs.core.client.datasourcemanager.dto.DatasourceContainerDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 
 public interface TableReportUtilityServiceAsync {
 
@@ -53,11 +55,12 @@ public interface TableReportUtilityServiceAsync {
 			String executeToken, 
 			AsyncCallback<PagingLoadResult<StringBaseModel>> callback);
 
-	void loadColumnDefinition(TableReportDto report, String query, String executeToken, 
+	void loadColumnDefinition(ReportDto report, DatasourceContainerDto containerDto, String query, String executeToken, 
 			AsyncCallback<List<ColumnDto>> transformAndKeepCallback);
 
 	void loadData(
-			TableReportDto report,
+			ReportDto report,
+			DatasourceContainerDto containerDto,
 			PagingLoadConfig loadConfig,
 			String query,
 			AsyncCallback<PagingLoadResult<ListStringBaseModel>> transformAndKeepCallback);

@@ -23,10 +23,16 @@
  
 package net.datenwerke.rs.terminal.service.terminal.vfs.hooks;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.hibernate.proxy.HibernateProxy;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocation;
 import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocationInfo;
@@ -45,11 +51,6 @@ import net.datenwerke.security.service.treedb.SecuredTreeDBManagerImpl;
 import net.datenwerke.security.service.treedb.entities.SecuredAbstractNode;
 import net.datenwerke.treedb.service.treedb.AbstractNode;
 import net.datenwerke.treedb.service.treedb.TreeDBManager;
-
-import org.hibernate.proxy.HibernateProxy;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public abstract class TreeBasedVirtualFileSystem<N extends AbstractNode<N>> extends VirtualFileSystemManagerHookImpl {
 
@@ -323,11 +324,13 @@ public abstract class TreeBasedVirtualFileSystem<N extends AbstractNode<N>> exte
 	}
 	
 	@Override
-	public void doMoveFilesTo(VFSLocation sources, VFSLocation target) {
+	public List<VFSLocation> doMoveFilesTo(VFSLocation sources, VFSLocation target) {
 		N newParent = getNodeByLocation(target);
 		
 		/* check rights */
 		checkWrite(newParent);
+		
+		List<VFSLocation> movedFiles = new ArrayList<>();
 		
 		for(VFSLocation source : sources.resolveWildcards(terminalSession.getFileSystem())){
 			N sourceNode = getNodeByLocation(source);
@@ -336,7 +339,11 @@ public abstract class TreeBasedVirtualFileSystem<N extends AbstractNode<N>> exte
 			checkRead(sourceNode);
 			
 			treeDBManagerProvider.get().move(sourceNode, newParent);
+			
+			movedFiles.add(target.newSubLocation(sourceNode.getId(), true));
 		}
+		
+		return movedFiles;
 	}
 	
 	@Override
@@ -375,6 +382,20 @@ public abstract class TreeBasedVirtualFileSystem<N extends AbstractNode<N>> exte
 		else
 			treeDBManagerProvider.get().remove(node);
 	}
+	
+	@Override
+	public VFSLocation rename(VFSLocation location, String name) {
+		N node = getNodeByLocation(location);
+		
+		/* check rights */
+		checkWrite(node);
+		
+		doRename(node, name);
+		
+		return location.getParentLocation().newSubLocation(node.getId(), true);
+	}
+	
+	abstract protected void doRename(N node, String name);
 	
 	@Override
 	public Provider<? extends TreeDBManager> getTreeDBManagerProvider() {

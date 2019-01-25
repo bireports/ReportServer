@@ -671,10 +671,6 @@
 
     drop table RS_TEAMSPACE_2_APP_A cascade constraints;
 
-    drop table RS_TEAMSPACE_2_MEMBER cascade constraints;
-
-    drop table RS_TEAMSPACE_2_MEMBER_A cascade constraints;
-
     drop table RS_TEAMSPACE_A cascade constraints;
 
     drop table RS_TEAMSPACE_APP cascade constraints;

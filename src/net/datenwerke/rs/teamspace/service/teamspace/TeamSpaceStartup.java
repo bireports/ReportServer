@@ -23,13 +23,16 @@
  
 package net.datenwerke.rs.teamspace.service.teamspace;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.eximport.hooks.ExporterProviderHook;
 import net.datenwerke.eximport.hooks.ImporterProviderHook;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.eximport.service.eximport.hooks.ExportAllHook;
 import net.datenwerke.rs.eximport.service.eximport.hooks.ImportAllHook;
-import net.datenwerke.rs.teamspace.service.teamspace.eventhandler.UserForceRemoveEventHandler;
-import net.datenwerke.rs.teamspace.service.teamspace.eventhandler.UserRemoveEventHandler;
+import net.datenwerke.rs.teamspace.service.teamspace.eventhandler.UserNodeForceRemoveEventHandler;
+import net.datenwerke.rs.teamspace.service.teamspace.eventhandler.UserNodeRemoveEventHandler;
 import net.datenwerke.rs.teamspace.service.teamspace.eximport.TeamSpaceExporter;
 import net.datenwerke.rs.teamspace.service.teamspace.eximport.TeamSpaceImporter;
 import net.datenwerke.rs.teamspace.service.teamspace.eximport.hookers.ExportAllTeamspacesHooker;
@@ -45,10 +48,7 @@ import net.datenwerke.rs.utils.eventbus.EventBus;
 import net.datenwerke.security.service.eventlogger.jpa.ForceRemoveEntityEvent;
 import net.datenwerke.security.service.eventlogger.jpa.RemoveEntityEvent;
 import net.datenwerke.security.service.security.SecurityService;
-import net.datenwerke.security.service.usermanager.entities.User;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
 
 /**
  * 
@@ -62,8 +62,8 @@ public class TeamSpaceStartup {
 		SecurityService securityService,
 		EventBus eventBus,
 		
-		UserRemoveEventHandler userRemoveEventHandler,
-		UserForceRemoveEventHandler userForceRemoveEventHandler,
+		UserNodeRemoveEventHandler userNodeRemoveEventHandler,
+		UserNodeForceRemoveEventHandler userNodeForceRemoveEventHandler,
 		
 		Provider<TeamspaceModCommand> teamspaceModProvider,
 		
@@ -73,11 +73,12 @@ public class TeamSpaceStartup {
 		Provider<ImportAllTeamspacesHooker> importAllTeamspaces,
 		
 		Provider<AddUsersSubCommand> addUsersToTeamspaceProvider,
-		Provider<SetRoleSubCommand> setRoleInTeamspaceProvider
+		Provider<SetRoleSubCommand> setRoleInTeamspaceProvider,
+		final Provider<TeamSpaceService> teamSpaceServiceProvider
 		){
 		
-		eventBus.attachObjectEventHandler(RemoveEntityEvent.class, User.class, userRemoveEventHandler);
-		eventBus.attachObjectEventHandler(ForceRemoveEntityEvent.class, User.class, userForceRemoveEventHandler);
+		eventBus.attachObjectEventHandler(RemoveEntityEvent.class, AbstractUserManagerNode.class, userNodeRemoveEventHandler);
+		eventBus.attachObjectEventHandler(ForceRemoveEntityEvent.class, AbstractUserManagerNode.class, userNodeForceRemoveEventHandler);
 		
 		hookHandler.attachHooker(TerminalCommandHook.class, teamspaceModProvider);
 		hookHandler.attachHooker(TeamspaceModSubCommandHook.class, addUsersToTeamspaceProvider);
@@ -90,6 +91,7 @@ public class TeamSpaceStartup {
 		hookHandler.attachHooker(ImportAllHook.class, importAllTeamspaces);
 		
 		registerSecurityTargets(securityService);
+		
 	}
 	
 	private void registerSecurityTargets(SecurityService securityService) {

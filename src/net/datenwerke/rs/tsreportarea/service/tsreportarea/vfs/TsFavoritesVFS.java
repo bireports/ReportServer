@@ -69,6 +69,14 @@ public class TsFavoritesVFS extends TreeBasedVirtualFileSystem<AbstractTsDiskNod
 		else
 			return node.getName();
 	}
+	
+	@Override
+	protected void doRename(AbstractTsDiskNode node, String name) {
+		if(node instanceof TsDiskRoot)
+			((TsDiskRoot)node).getTeamSpace().setName(name);
+		else
+			node.setName(name);
+	}
 
 	@Override
 	protected AbstractTsDiskNode instantiateFolder(String folder) {

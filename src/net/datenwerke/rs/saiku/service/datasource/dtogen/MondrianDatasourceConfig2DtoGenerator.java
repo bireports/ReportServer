@@ -68,8 +68,8 @@ public class MondrianDatasourceConfig2DtoGenerator implements Poso2DtoGenerator<
 
 		}
 		if(here.compareTo(DtoView.NORMAL) >= 0){
-			/*  set cube */
-			dto.setCube(StringEscapeUtils.escapeXml(StringUtils.left(poso.getCube(),8192)));
+			/*  set cubeName */
+			dto.setCubeName(StringEscapeUtils.escapeXml(StringUtils.left(poso.getCubeName(),8192)));
 
 		}
 

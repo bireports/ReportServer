@@ -28,6 +28,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Window;
+import com.sencha.gxt.widget.core.client.WindowManager;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -57,6 +58,8 @@ public class DwWindow extends Window {
 	
 	@CssClassConstant
 	public static final String CSS_BBAR = "rs-w-bbar";	
+	
+	private boolean centerOnShow;	
 	
 	public DwWindow() {
 		this(GWT.<WindowAppearance>create(WindowAppearance.class));
@@ -183,5 +186,31 @@ public class DwWindow extends Window {
 
 	public void setHeaderIcon(BaseIcon icon) {
 		getHeader().setIcon(icon.toImageResource());
+	}
+	
+	public void setCenterOnShow(boolean center) {
+		centerOnShow = center;
+	}
+	
+	@Override
+	public void show() {
+		super.show();
+		if(centerOnShow){
+			Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					center();
+					forceLayout();
+				}
+			});
+		}
+	}
+	
+	@Override
+	protected void afterShow() {
+		super.afterShow();
+		
+		// don't switch windows via tab
+		WindowManager.get().unregister(this);
 	}
 }

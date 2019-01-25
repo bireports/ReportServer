@@ -67,7 +67,7 @@ public class SecurityUIStartup {
 		waitOnEventService.callbackOnEvent(AdministrationUIService.REPORTSERVER_EVENT_HAS_ADMIN_RIGHTS, new SynchronousCallbackOnEventTrigger(){
 			public void execute(final WaitOnEventTicket ticket) {
 				if(securityService.hasRight(GenericSecurityTargetAdminViewGenericTargetIdentifier.class, ReadDto.class))
-					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(genericSecurityViewAdminModule),  HookHandlerService.PRIORITY_HIGH  + 6);
+					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(genericSecurityViewAdminModule),  HookHandlerService.PRIORITY_HIGH  + 70);
 
 				waitOnEventService.signalProcessingDone(ticket);
 			}

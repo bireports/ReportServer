@@ -59,9 +59,16 @@ public class BirtUtilServiceImpl implements BirtUtilService {
 			birtHelper.loadReportDesign(new ByteArrayInputStream(reportFile.getContent().getBytes()));
 			
 			for(IParameterDefn pd : birtHelper.getParameterDefinitions()){
+				
 				BirtParameterProposal bpp = new BirtParameterProposal();
 				bpp.setKey(pd.getName());
 				bpp.setName(StringUtils.isEmpty(pd.getDisplayName()) ? pd.getName() : pd.getDisplayName());
+				
+				if (null != bpp.getKey() && 
+						( bpp.getKey().trim().equals("_RS_TMP_TABLENAME")  || bpp.getKey().trim().equals("_RS_query") )) {
+					// these values are set automatically. We don't want to extract them and show them to the user.
+					continue;
+				}
 		
 				switch(pd.getDataType()){
 				case IParameterDefn.TYPE_STRING:

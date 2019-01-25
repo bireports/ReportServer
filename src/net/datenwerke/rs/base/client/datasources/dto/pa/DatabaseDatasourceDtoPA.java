@@ -48,6 +48,7 @@ public interface DatabaseDatasourceDtoPA extends DatasourceDefinitionDtoPA {
 
 	/* Properties */
 	public ValueProvider<DatabaseDatasourceDto,String> databaseDescriptor();
+	public ValueProvider<DatabaseDatasourceDto,String> jdbcProperties();
 	public ValueProvider<DatabaseDatasourceDto,String> password();
 	public ValueProvider<DatabaseDatasourceDto,String> url();
 	public ValueProvider<DatabaseDatasourceDto,String> username();

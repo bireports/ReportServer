@@ -50,7 +50,7 @@ public class VariantCreatedAdjustSaikuQueryHooker implements VariantCreatorHook 
 		} else if (referenceReport instanceof TableReport && adjustedReport instanceof TableReport
 				&& variant instanceof TableReport) {
 
-			if (((TableReport) variant).isCube()) {
+			if (((TableReport) variant).isCubeFlag()) {
 
 				if (((TableReport) adjustedReport).getCubeXml() != null) {
 					((TableReport) variant).setCubeXml(((TableReport) adjustedReport).getCubeXml());

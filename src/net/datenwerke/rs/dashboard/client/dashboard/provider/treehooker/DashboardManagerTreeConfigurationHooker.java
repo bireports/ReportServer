@@ -23,14 +23,22 @@
  
 package net.datenwerke.rs.dashboard.client.dashboard.provider.treehooker;
 
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.inject.Inject;
+import com.sencha.gxt.widget.core.client.menu.Menu;
+import com.sencha.gxt.widget.core.client.menu.MenuItem;
+import com.sencha.gxt.widget.core.client.menu.SeparatorMenuItem;
+
 import net.datenwerke.gf.client.managerhelper.hooks.TreeConfiguratorHook;
 import net.datenwerke.gf.client.managerhelper.tree.ManagerHelperTree;
 import net.datenwerke.gf.client.treedb.helper.menu.DeleteMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.DuplicateMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.InsertMenuItem;
+import net.datenwerke.gf.client.treedb.helper.menu.ReloadMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.TreeDBUIMenuProvider;
 import net.datenwerke.gf.client.treedb.icon.IconMapping;
 import net.datenwerke.gf.client.treedb.icon.TreeDBUIIconProvider;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
 import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.rs.dashboard.client.dashboard.DashboardTreeManagerDao;
@@ -41,12 +49,6 @@ import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardNodeDto;
 import net.datenwerke.rs.dashboard.client.dashboard.locale.DashboardMessages;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-
-import com.google.gwt.event.dom.client.DoubleClickEvent;
-import com.google.inject.Inject;
-import com.sencha.gxt.widget.core.client.menu.Menu;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
-import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 public class DashboardManagerTreeConfigurationHooker implements
 		TreeConfiguratorHook {
@@ -82,6 +84,8 @@ public class DashboardManagerTreeConfigurationHooker implements
 		MenuItem insertItem = generateInsertMenu();
 		folderMenu.add(insertItem);
 		folderMenu.add(new DeleteMenuItem(treeHandler));
+		folderMenu.add(new SeparatorMenuItem());
+		folderMenu.add(new ReloadMenuItem());
 		
 		/* File */
 		Menu fileMenu = menuProvider.createOrGetMenuFor(DadgetNodeDto.class);

@@ -66,4 +66,5 @@ public interface UserVariablesMessages extends Messages {
 
 	public String listVariableText();
 	public String stringVariableText();
+	public String definedAt();
 }

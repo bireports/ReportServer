@@ -34,7 +34,7 @@ import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceMemberDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
 import net.datenwerke.rs.teamspace.service.teamspace.entities.TeamSpaceMember;
 import net.datenwerke.rs.teamspace.service.teamspace.entities.dtogen.TeamSpaceMember2DtoGenerator;
-import net.datenwerke.security.client.usermanager.dto.UserDto;
+import net.datenwerke.security.client.usermanager.dto.AbstractUserManagerNodeDto;
 
 /**
  * Poso2DtoGenerator for TeamSpaceMember
@@ -68,14 +68,14 @@ public class TeamSpaceMember2DtoGenerator implements Poso2DtoGenerator<TeamSpace
 
 		}
 		if(here.compareTo(DtoView.LIST) >= 0){
-			/*  set user */
-			Object tmpDtoUserDtogetUser = dtoServiceProvider.get().createDto(poso.getUser(), referenced, referenced);
-			dto.setUser((UserDto)tmpDtoUserDtogetUser);
+			/*  set folk */
+			Object tmpDtoAbstractUserManagerNodeDtogetFolk = dtoServiceProvider.get().createDto(poso.getFolk(), referenced, referenced);
+			dto.setFolk((AbstractUserManagerNodeDto)tmpDtoAbstractUserManagerNodeDtogetFolk);
 			/* ask for a dto with higher view if generated */
-			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onDtoCreation(tmpDtoUserDtogetUser, poso.getUser(), new net.datenwerke.gxtdto.server.dtomanager.CallbackOnDtoCreation(){
+			((DtoMainService)dtoServiceProvider.get()).getCreationHelper().onDtoCreation(tmpDtoAbstractUserManagerNodeDtogetFolk, poso.getFolk(), new net.datenwerke.gxtdto.server.dtomanager.CallbackOnDtoCreation(){
 				public void callback(Object refDto){
 					if(null != refDto)
-						dto.setUser((UserDto)refDto);
+						dto.setFolk((AbstractUserManagerNodeDto)refDto);
 				}
 			});
 

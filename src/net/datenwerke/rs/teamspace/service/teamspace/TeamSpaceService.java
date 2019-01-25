@@ -29,6 +29,7 @@ import net.datenwerke.rs.teamspace.service.teamspace.entities.TeamSpace;
 import net.datenwerke.rs.teamspace.service.teamspace.entities.TeamSpaceApp;
 import net.datenwerke.rs.teamspace.service.teamspace.entities.TeamSpaceMember;
 import net.datenwerke.rs.teamspace.service.teamspace.entities.TeamSpaceRole;
+import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
 import net.datenwerke.security.service.usermanager.entities.User;
 
 /**
@@ -94,10 +95,10 @@ public interface TeamSpaceService {
 	Collection<TeamSpace> getTeamSpaces();
 
 	/**
-	 * Returns the user's {@link TeamSpace}s
+	 * Returns the {@link TeamSpace}s that can be accessed by a given folk 
 	 * 
 	 * @param user The {@link User}
-	 * @return A {@link Collection} of the {@link User}'s {@link TeamSpace}s
+	 * @return A {@link Collection} of {@link TeamSpace}s
 	 */
 	Collection<TeamSpace> getTeamSpaces(User user);
 
@@ -255,7 +256,7 @@ public interface TeamSpaceService {
 	 * @param teamSpace The {@link TeamSpace}
 	 * @return true if the given {@link User} is a guest in the given {@link TeamSpace}; false otherwise
 	 */
-	boolean isGuest(User user, TeamSpace teamSpace);
+	boolean isGuest(User folk, TeamSpace teamSpace);
 
 	/**
 	 * Tests if the current user is a user of the given {@link TeamSpace}
@@ -272,7 +273,7 @@ public interface TeamSpaceService {
 	 * @param teamSpace The {@link TeamSpace}
 	 * @return true if the given {@link User} is a user of the given {@link TeamSpace}; false otherwise
 	 */
-	boolean isUser(User user, TeamSpace teamSpace);
+	boolean isUser(User folk, TeamSpace teamSpace);
 
 	/**
 	 * Tests if the current user is an admin of the given {@link TeamSpace}
@@ -337,7 +338,7 @@ public interface TeamSpaceService {
 
 	TeamSpaceAppDefinition getAppDefinitionById(String appId);
 
-	TeamSpaceMember getMemberFor(TeamSpace teamSpace, User user);
+	TeamSpaceMember getMemberFor(TeamSpace teamSpace, AbstractUserManagerNode folk);
 
 	void forceRemove(TeamSpace teamSpace);
 
@@ -352,4 +353,7 @@ public interface TeamSpaceService {
 	 * @return
 	 */
 	boolean isOwner(TeamSpace teamSpace);
+	
+	Collection<TeamSpace> getTeamSpacesWithMemberFor(AbstractUserManagerNode folk);
+
 }

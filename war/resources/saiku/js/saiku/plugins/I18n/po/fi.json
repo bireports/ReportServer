@@ -224,5 +224,8 @@
    "&nbsp;Open Date Filter&nbsp;":"Avaa päivämääräsuodatin",
    "You need to include at least one measure or a level on columns for a valid query.": "Sinun on sisällytettävä vähintään yksi mitta tai taso sarakkeisiin kelvolliselle kyselylle.",
    "You need to include at least one level on rows for a valid query.": "Sinun on sisällettävä vähintään yksi taso riveihin kelvolliselle kyselylle.",
-   "Reset Cube": "Nollaa kuutio"
+   "Reset Cube": "Nollaa kuutio",
+   "Deep Avg": "Alhainen Keskiarvo",
+   "None": "Ei mitään",
+   "Grand Total": "Loppusumma"
 }

@@ -432,6 +432,13 @@ public class VFSLocation implements Serializable {
 			getFilesystemManager().delete(this);
 	}
 
+	public VFSLocation rename(String name) {
+		if(isVirtualLocation())
+			throw new IllegalStateException("Cannot rename a virtual location");
+		
+		return getFilesystemManager().rename(this, name);
+	}
+	
 	public boolean create() throws VFSException {
 		if(exists() || isRoot() || isFileSystemRoot() || isWildcardLocation())
 			return false;

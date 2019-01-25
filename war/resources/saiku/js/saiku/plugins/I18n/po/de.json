@@ -151,5 +151,8 @@
    " Add ": "Hinzufügen",
    "You need to include at least one measure or a level on columns for a valid query.": "Sie müssen mindestens eine Kennzahl oder eine Ebene für Spalten angeben, um eine gültige Abfrage zu erstellen.",
    "You need to include at least one level on rows for a valid query.": "Sie müssen mindestens eine Ebene für Zeilen angeben, um eine gültige Abfrage zu erstellen.",
-   "Reset Cube": "Cube zurücksetzen"
+   "Reset Cube": "Cube zurücksetzen",
+   "Deep Avg": "Tiefer Durchschnitt",
+   "None":"Nichts",
+   "Grand Total":"Gesamtbetrag"
 }

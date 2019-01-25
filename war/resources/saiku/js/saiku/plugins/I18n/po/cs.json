@@ -121,5 +121,8 @@
   " Cancel ": "Zrušit",
   "You need to include at least one measure or a level on columns for a valid query.": "Chcete-li zadat platný dotaz, musíte v sloupcích zahrnout alespoň jedno opatření nebo úroveň.",
   "You need to include at least one level on rows for a valid query.": "Musíte zahrnout alespoň jednu úroveň na řádky platného dotazu.",
-  "Reset Cube": "Reset Cube"
+  "Reset Cube": "Reset Cube",
+  "Deep Avg": "Nízké Průměr",
+  "None":"Žádný",
+  "Grand Total":"Celkový součet"
 }

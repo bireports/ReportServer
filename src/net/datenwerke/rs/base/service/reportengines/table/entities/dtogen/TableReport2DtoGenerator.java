@@ -100,8 +100,8 @@ public class TableReport2DtoGenerator implements Poso2DtoGenerator<TableReport,T
 		dto.setDtoView(here);
 
 		if(here.compareTo(DtoView.FTO) >= 0){
-			/*  set cube */
-			dto.setCube(poso.isCube() );
+			/*  set cubeFlag */
+			dto.setCubeFlag(poso.isCubeFlag() );
 
 		}
 		if(here.compareTo(DtoView.MINIMAL) >= 0){

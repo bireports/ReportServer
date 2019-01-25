@@ -55,6 +55,7 @@ import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterProposalDto;
 import net.datenwerke.rs.core.client.parameters.helper.DefaultValueSetter;
 import net.datenwerke.rs.core.client.parameters.helper.ParameterFieldWrapperForFrontend;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.core.client.reportmanager.locale.ReportmanagerMessages;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
@@ -92,7 +93,8 @@ public class DateTimeConfigurator extends ParameterConfiguratorImpl<DateTimePara
 		return BaseIcon.CALENDAR.toImageResource();
 	}
 
-	public Widget getEditComponentForDefinition(DateTimeParameterDefinitionDto definition) {
+	@Override
+	public Widget getEditComponentForDefinition(DateTimeParameterDefinitionDto definition, ReportDto report) {
 		final SimpleForm form = SimpleForm.getInlineInstance();
 		form.setHeight(300);
 		

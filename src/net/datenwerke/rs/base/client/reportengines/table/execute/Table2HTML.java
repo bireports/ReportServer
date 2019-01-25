@@ -35,6 +35,6 @@ public class Table2HTML extends Export2HTML {
 
 	
 	public boolean consumes(ReportDto report) {
-		return report instanceof TableReportDto && !((TableReportDto)report).isCube();
+		return report instanceof TableReportDto && !((TableReportDto)report).isCubeFlag();
 	}
 }

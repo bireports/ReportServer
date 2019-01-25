@@ -24,34 +24,48 @@
 package net.datenwerke.rs.teamspace.client.teamspace.dto;
 
 import net.datenwerke.gf.base.client.dtogenerator.RsDto;
+import net.datenwerke.security.client.usermanager.dto.GroupDto;
+import net.datenwerke.security.client.usermanager.dto.OrganisationalUnitDto;
 import net.datenwerke.security.client.usermanager.dto.UserDto;
+import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownGroup;
 import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownUser;
 
 
-public class StrippedDownTeamSpaceMemberDto extends RsDto {
+public class StrippedDownTeamSpaceMemberDto extends RsDto implements Comparable<StrippedDownTeamSpaceMemberDto> {
 
+	public static enum Type{
+		GROUP,
+		OU,
+		USER
+	}
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4457293462541571533L;
 
-	public static final String PROPERTY_USER_ID = "userID";
-	public static final String PROPERTY_ROLE = "role";
-	public static final String PROPERTY_FIRSTNAME = "firstname";
-	public static final String PROPERTY_LASTNAME = "lastname";
-
-	private Long userId;
+	private Long folkId;
 	private TeamSpaceRoleDto role;
+	
+	private String name;
 	private String firstname;
 	private String lastname;
 	private boolean owner;
+	private Type type;
 
-	public Long getUserId() {
-		return userId;
+	public Type getType() {
+		return type;
+	}
+	public void setType(Type type) {
+		this.type = type;
+	}
+	
+	public Long getFolkId() {
+		return folkId;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setFolkId(Long folkId) {
+		this.folkId = folkId;
 	}
 
 	public TeamSpaceRoleDto getRole() {
@@ -64,6 +78,15 @@ public class StrippedDownTeamSpaceMemberDto extends RsDto {
 
 	public String getFirstname() {
 		return firstname;
+	}
+	
+	public String getName() {
+		if(null == name)
+			return getLastname() + ", " + getFirstname();
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setFirstname(String firstname) {
@@ -80,7 +103,7 @@ public class StrippedDownTeamSpaceMemberDto extends RsDto {
 
 	@Override
 	public int hashCode() {
-		return getUserId().hashCode();
+		return getFolkId().hashCode();
 	}
 
 	@Override
@@ -88,14 +111,14 @@ public class StrippedDownTeamSpaceMemberDto extends RsDto {
 		if(! (obj instanceof StrippedDownTeamSpaceMemberDto))
 			return false;
 
-		return getUserId().equals(((StrippedDownTeamSpaceMemberDto)obj).getUserId());
+		return getFolkId().equals(((StrippedDownTeamSpaceMemberDto)obj).getFolkId());
 	}
 
 	public static StrippedDownTeamSpaceMemberDto createFrom(
 			StrippedDownUser user) {
 		StrippedDownTeamSpaceMemberDto member = new StrippedDownTeamSpaceMemberDto();
 
-		member.setUserId(user.getId());
+		member.setFolkId(user.getId());
 		member.setFirstname(user.getFirstname());
 		member.setLastname(user.getLastname());
 		member.setRole(TeamSpaceRoleDto.GUEST);
@@ -103,10 +126,22 @@ public class StrippedDownTeamSpaceMemberDto extends RsDto {
 		return member;
 	}
 
+	public static StrippedDownTeamSpaceMemberDto createFrom(StrippedDownGroup group) {
+		StrippedDownTeamSpaceMemberDto member = new StrippedDownTeamSpaceMemberDto();
+
+		member.setFolkId(group.getId());
+		member.setType(Type.GROUP);
+		member.setName(group.getName());
+		member.setRole(TeamSpaceRoleDto.GUEST);
+
+		return member;
+	}
+	
 	public static StrippedDownTeamSpaceMemberDto createForOwner(UserDto user) {
 		StrippedDownTeamSpaceMemberDto member = new StrippedDownTeamSpaceMemberDto();
 
-		member.setUserId(user.getId());
+		member.setFolkId(user.getId());
+		member.setType(Type.USER);
 		member.setFirstname(user.getFirstname());
 		member.setLastname(user.getLastname());
 		member.setRole(TeamSpaceRoleDto.ADMIN);
@@ -119,10 +154,20 @@ public class StrippedDownTeamSpaceMemberDto extends RsDto {
 	public static StrippedDownTeamSpaceMemberDto createFrom(TeamSpaceMemberDto member) {
 		StrippedDownTeamSpaceMemberDto sMember = new StrippedDownTeamSpaceMemberDto();
 
-		sMember.setUserId(member.getUser().getId());
-		sMember.setFirstname(member.getUser().getFirstname());
-		sMember.setLastname(member.getUser().getLastname());
+		sMember.setFolkId(member.getFolk().getId());
 		sMember.setRole(member.getRole());
+
+		if(member.getFolk() instanceof UserDto){
+			sMember.setFirstname(((UserDto)member.getFolk()).getFirstname());
+			sMember.setLastname(((UserDto)member.getFolk()).getLastname());
+			sMember.setType(Type.USER);
+		} else if(member.getFolk() instanceof GroupDto){
+			sMember.setName(((GroupDto)member.getFolk()).getName());
+			sMember.setType(Type.GROUP);
+		} else if(member.getFolk() instanceof OrganisationalUnitDto){
+			sMember.setName(((OrganisationalUnitDto)member.getFolk()).getName());
+			sMember.setType(Type.OU);
+		}
 
 		return sMember;
 	}
@@ -130,11 +175,20 @@ public class StrippedDownTeamSpaceMemberDto extends RsDto {
 	public StrippedDownUser getStrippedUser() {
 		StrippedDownUser user = new StrippedDownUser();
 
-		user.setId(getUserId());
+		user.setId(getFolkId());
 		user.setFirstname(getFirstname());
 		user.setLastname(getLastname());
 
 		return user;
+	}
+	
+	public StrippedDownGroup getStrippedGroup() {
+		StrippedDownGroup group = new StrippedDownGroup();
+
+		group.setId(getFolkId());
+		group.setName(getName());
+
+		return group;
 	}
 
 	public boolean isOwner() {
@@ -145,5 +199,13 @@ public class StrippedDownTeamSpaceMemberDto extends RsDto {
 		this.owner = owner;
 	}
 
+	@Override
+	public int compareTo(StrippedDownTeamSpaceMemberDto o) {
+		int compareToType = o.getType().compareTo(getType()) ;
+		if(compareToType != 0)
+			return compareToType;
+		
+		return null != getName() ? getName().compareTo(o.getName()) : null != o.getName() ? -1 : 0;
+	}
 
 }

@@ -29,6 +29,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.WidgetComponent;
+import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
+import com.sencha.gxt.widget.core.client.container.HBoxLayoutContainer;
+
 import net.datenwerke.gf.client.history.ParentAwareSubmoduleHook;
 import net.datenwerke.gf.client.history.ParentModule;
 import net.datenwerke.gf.client.homepage.hooks.ClientMainModuleProviderHook;
@@ -38,23 +52,6 @@ import net.datenwerke.gf.client.homepage.ui.DwMainViewport;
 import net.datenwerke.gxtdto.client.eventbus.events.SubmoduleDisplayRequest;
 import net.datenwerke.gxtdto.client.eventbus.handlers.SubmoduleDisplayRequestHandler;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.sencha.gxt.core.client.util.Margins;
-import com.sencha.gxt.widget.core.client.WidgetComponent;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
-import com.sencha.gxt.widget.core.client.container.HBoxLayoutContainer;
 
 /**
  * 
@@ -280,8 +277,13 @@ public class ModuleManagerModuleSelector implements ClientModuleSelector, Parent
 		}
 	}
 
-
-
-
+	public void showModule(ClientMainModule module) {
+		for(int i = 0; i < modules.size(); i++)
+			if(module == modules.get(i)){
+				selectModule(modules.get(i));
+				break;
+			}
+				
+	}
 
 }

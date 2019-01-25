@@ -547,7 +547,8 @@ var WorkspaceDropZone = Backbone.View.extend({
                             "show_totals_sum": {name: "Sum", i18n: true},
                             "show_totals_min": {name: "Min", i18n: true},
                             "show_totals_max": {name: "Max", i18n: true},
-                            "show_totals_avg": {name: "Avg", i18n: true}
+                            "show_totals_avg": {name: "Avg", i18n: true},
+                            "show_totals_deep_avg": {name: "Deep Avg", i18n: true}
                         }},
                         "cancel" : { name: "Cancel", i18n: true }
 

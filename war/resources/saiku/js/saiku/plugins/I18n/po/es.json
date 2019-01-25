@@ -91,12 +91,12 @@
    "Use Result":"Usar resultado",
    "Swapping axes...":"Intercambiando ejes...",
    "Edit query":"Editar consulta",
-   "Zoom into table":"Mas Zoom",
-   "Open":"Abir",
+   "Zoom into table":"Más Zoom",
+   "Open":"Abrir",
    "Edit":"Editar",
    "Delete":"Eliminar",
    "New Folder":"Nueva Carpeta",
-   " Open ":"Abir",
+   " Open ":"Abrir",
    "Duplicate":"Duplicado",
    "es":"Es",
    "Add":"Añadir",
@@ -104,5 +104,8 @@
    " Cancel ":"Cancelar",
    "You need to include at least one measure or a level on columns for a valid query.": "Debe incluir al menos una medida o un nivel en las columnas para una consulta válida.",
    "You need to include at least one level on rows for a valid query.": "Debe incluir al menos un nivel en las filas para una consulta válida.",
-   "Reset Cube": "Restablecer Cubo"
-}
+   "Reset Cube": "Reestablecer Cubo",
+   "Deep Avg": "Promedio profundo",
+   "None": "Ninguna",
+   "Grand Total": "Gran total"
+} 

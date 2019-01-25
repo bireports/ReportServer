@@ -30,7 +30,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,6 +37,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -57,6 +58,9 @@ import net.datenwerke.rs.teamspace.service.teamspace.TeamSpaceService;
 import net.datenwerke.rs.teamspace.service.teamspace.entities.dtogen.TeamSpace2DtoPostProcessor;
 import net.datenwerke.rs.utils.entitycloner.annotation.EnclosedEntity;
 import net.datenwerke.rs.utils.entitycloner.annotation.EntityClonerIgnore;
+import net.datenwerke.security.service.usermanager.UserManagerService;
+import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
+import net.datenwerke.security.service.usermanager.entities.Group;
 import net.datenwerke.security.service.usermanager.entities.User;
 
 /**
@@ -77,6 +81,9 @@ public class TeamSpace {
 
 	@Inject
 	private static TeamSpaceService teamspaceService;
+	
+	@Inject
+	private static UserManagerService userManagerService;
 
 	
 	@JoinTable(name="TEAMSPACE_2_APP")
@@ -85,15 +92,14 @@ public class TeamSpace {
     @OneToMany(cascade={CascadeType.ALL})
 	private Set<TeamSpaceApp> apps = new HashSet<TeamSpaceApp>();
 	
-	@JoinTable(name="TEAMSPACE_2_MEMBER")
 	@ExposeToClient(mergeDtoValueBack=false, view=DtoView.ALL)
 	@EnclosedEntity
-    @OneToMany(cascade={CascadeType.ALL}, orphanRemoval=true)
+	@OneToMany(cascade={CascadeType.ALL}, orphanRemoval=true, mappedBy=TeamSpaceMember__.teamSpace)
 	private Set<TeamSpaceMember> members = new HashSet<TeamSpaceMember>();
 	
-	@ExposeToClient(mergeDtoValueBack=false)
+	@ExposeToClient(mergeDtoValueBack=false, view=DtoView.LIST)
 	@EntityClonerIgnore
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne
 	private User owner;
 	
 	@ExposeToClient(
@@ -121,6 +127,11 @@ public class TeamSpace {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 
+	@PrePersist @PreUpdate
+	final private void prePersist(){
+		for(TeamSpaceMember member : members)
+			member.setTeamSpace(this);
+	}
 	
 	public Long getVersion() {
 		return version;
@@ -156,6 +167,7 @@ public class TeamSpace {
 
 	public void addMember(TeamSpaceMember member){
 		this.members.add(member);
+		member.setTeamSpace(this);
 	}
 	
 	public boolean removeMember(TeamSpaceMember member){
@@ -168,16 +180,18 @@ public class TeamSpace {
 		this.members.clear();
 		if(null != members)
 			this.members.addAll(members);
+		for(TeamSpaceMember member : this.members)
+			member.setTeamSpace(this);
 	}
 
 	/**
-	 * Use {@link TeamSpaceService#getMemberFor(TeamSpace, User)} instead
+	 * Use {@link TeamSpaceService#getMemberFor(TeamSpace, AbstractUserManagerNode folk)} instead
 	 * @param user
 	 * @return
 	 */
 	@Deprecated
-	public TeamSpaceMember getMember(User user) {
-		return teamspaceService.getMemberFor(this, user);
+	public TeamSpaceMember getMember(AbstractUserManagerNode folk) {
+		return teamspaceService.getMemberFor(this, folk);
 	}
 
 	
@@ -188,7 +202,11 @@ public class TeamSpace {
 	public Collection<User> getMembersAndOwner(){
 		Collection<User> users = new HashSet<User>();
 		for(TeamSpaceMember member : getMembers())
-			users.add(member.getUser());
+			if(member.getFolk() instanceof User)
+				users.add((User) member.getFolk());
+			else if (member.getFolk() instanceof Group) 
+				users.addAll(userManagerService.getAllTransitiveUsers((Group)member.getFolk()));
+		
 		users.add(getOwner());
 		return users;
 	}
@@ -212,9 +230,16 @@ public class TeamSpace {
 		if(null == user)
 			return false;
 		
-		for(TeamSpaceMember member : members)
-			if(user.equals(member.getUser()))
-				return true;
+		for(TeamSpaceMember member : members) {
+			if (member.getFolk() instanceof User) {
+				if(user.equals(member.getFolk()))
+					return true;
+			} else if (member.getFolk() instanceof Group)  {
+				Set<User> groupUsers = userManagerService.getAllTransitiveUsers((Group)member.getFolk());
+				if (groupUsers.contains(user))
+					return true;
+			}
+		}
 				
 		return isOwner(user);
 	}

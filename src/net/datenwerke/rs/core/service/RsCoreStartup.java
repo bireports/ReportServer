@@ -53,7 +53,8 @@ public class RsCoreStartup {
 		Provider<BlockUserMaintenanceTask> blockTask,
 		
 		RegisterPdfFontsOnConfigReload pdfFontOnReloadLoader,
-		RegisterPdfFontsOnStartup pdfFontOnStartupLoader
+		RegisterPdfFontsOnStartup pdfFontOnStartupLoader,
+		Provider<EnvironmentAfterStartupInformation> afterStartupInfoProvider
 		){
 		
 		
@@ -68,5 +69,6 @@ public class RsCoreStartup {
 		hookHandler.attachHooker(ReloadConfigNotificationHook.class, pdfFontOnReloadLoader);
 		hookHandler.attachHooker(LateInitHook.class, pdfFontOnStartupLoader);
 		
+		hookHandler.attachHooker(LateInitHook.class, afterStartupInfoProvider);
 	}
 }

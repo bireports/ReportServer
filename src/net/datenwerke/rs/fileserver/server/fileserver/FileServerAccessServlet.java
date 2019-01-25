@@ -46,7 +46,6 @@ import net.datenwerke.rs.fileserver.service.fileserver.FileServerService;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.AbstractFileServerNode;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFile;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFolder;
-import net.datenwerke.rs.utils.filename.FileNameService;
 import net.datenwerke.rs.utils.misc.HttpUtils;
 import net.datenwerke.rs.utils.zip.ZipUtilsService;
 import net.datenwerke.rs.utils.zip.ZipUtilsService.FileFilter;
@@ -105,9 +104,9 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		if("true".equals(request.getParameter(KEY_FOLDER)) && "true".equals(request.getParameter(KEY_DOWNLOAD))){
 			if(null != request.getParameter(KEY_ID))
-				dwonloadFolderById(request, response);
+				downloadFolderById(request, response);
 			else if(null != request.getParameter(KEY_PATH))
-				dwonloadFolderByPath(request, response);
+				downloadFolderByPath(request, response);
 			else {
 				String requestURI = request.getRequestURI();
 				int indexOf = requestURI.indexOf(FileServerUiModule.FILE_ACCESS_SERVLET);
@@ -140,7 +139,7 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 		
 
 	@SecurityChecked(bypass=true)
-	protected void dwonloadFolderByPath(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	protected void downloadFolderByPath(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		FileServerService service = fileServerService.get();
 		AbstractFileServerNode folder = service.getNodeByPath(request.getParameter(KEY_PATH), false);
 		if(folder instanceof FileServerFolder)
@@ -148,7 +147,7 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 	}
 	
 	@SecurityChecked(bypass=true)
-	protected void dwonloadFolderById(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	protected void downloadFolderById(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		FileServerService service = fileServerService.get();
 		Long fileId = Long.parseLong(request.getParameter(KEY_ID)); //$NON-NLS-1$
 		
@@ -163,7 +162,8 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 		if(null == folder)
 			return;
 		
-		validateAccess(folder, request, response);
+		if(! validateAccess(folder, request, response))
+			return;
 		
 		response.setContentType("application/zip");
 		response.setHeader(HttpUtils.CONTENT_DISPOSITION, httpUtilsProvider.get().makeContentDispositionHeader(true, folder.getName() + ".zip"));
@@ -175,8 +175,7 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 			@Override
 			public boolean addNode(AbstractFileServerNode node) {
 				try{
-					validateAccess(node, request, response);
-					return true;
+					return validateAccess(node, request, response);
 				} catch(Exception e){
 				}
 				return false;
@@ -209,7 +208,8 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 		if(null == file)
 			return;
 		
-		validateAccess(file, request, response);
+		if(! validateAccess(file, request, response))
+			return;
 		
 		String content = file.getContentType()  == null ? "" : file.getContentType().toLowerCase();
 		if(null != request.getParameter(KEY_DOWNLOAD)){
@@ -295,7 +295,7 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 	}
 
 	@SecurityChecked(bypass=true)
-	private void validateAccess(AbstractFileServerNode node, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	private boolean validateAccess(AbstractFileServerNode node, HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		boolean access = false;
 		FileServerFolder folder = (FileServerFolder) node.getParent();
 		while(null != folder){
@@ -316,9 +316,10 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 		if(! access){
 			if(!isAuthenticated()){
 				requireLogin(req, resp);
-				return;
+				return false;
 			}
 			throw new ViolatedSecurityException();
 		}
+		return access;
 	}
 }

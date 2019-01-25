@@ -44,7 +44,7 @@ import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.TeamSpaceMemberDtoPA;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.posomap.TeamSpaceMemberDto2PosoMap;
 import net.datenwerke.rs.teamspace.service.teamspace.entities.TeamSpaceMember;
-import net.datenwerke.security.client.usermanager.dto.UserDto;
+import net.datenwerke.security.client.usermanager.dto.AbstractUserManagerNodeDto;
 
 /**
  * Dto for {@link TeamSpaceMember}
@@ -61,6 +61,42 @@ public class TeamSpaceMemberDto extends RsDto implements IdedDto {
 
 
 	/* Fields */
+	private AbstractUserManagerNodeDto folk;
+	private  boolean folk_m;
+	public static final String PROPERTY_FOLK = "dpi-teamspacemember-folk";
+
+	private transient static PropertyAccessor<TeamSpaceMemberDto, AbstractUserManagerNodeDto> folk_pa = new PropertyAccessor<TeamSpaceMemberDto, AbstractUserManagerNodeDto>() {
+		@Override
+		public void setValue(TeamSpaceMemberDto container, AbstractUserManagerNodeDto object) {
+			container.setFolk(object);
+		}
+
+		@Override
+		public AbstractUserManagerNodeDto getValue(TeamSpaceMemberDto container) {
+			return container.getFolk();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return AbstractUserManagerNodeDto.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "folk";
+		}
+
+		@Override
+		public void setModified(TeamSpaceMemberDto container, boolean modified) {
+			container.folk_m = modified;
+		}
+
+		@Override
+		public boolean isModified(TeamSpaceMemberDto container) {
+			return container.isFolkModified();
+		}
+	};
+
 	private Long id;
 	private  boolean id_m;
 	public static final String PROPERTY_ID = "dpi-teamspacemember-id";
@@ -133,46 +169,69 @@ public class TeamSpaceMemberDto extends RsDto implements IdedDto {
 		}
 	};
 
-	private UserDto user;
-	private  boolean user_m;
-	public static final String PROPERTY_USER = "dpi-teamspacemember-user";
-
-	private transient static PropertyAccessor<TeamSpaceMemberDto, UserDto> user_pa = new PropertyAccessor<TeamSpaceMemberDto, UserDto>() {
-		@Override
-		public void setValue(TeamSpaceMemberDto container, UserDto object) {
-			container.setUser(object);
-		}
-
-		@Override
-		public UserDto getValue(TeamSpaceMemberDto container) {
-			return container.getUser();
-		}
-
-		@Override
-		public Class<?> getType() {
-			return UserDto.class;
-		}
-
-		@Override
-		public String getPath() {
-			return "user";
-		}
-
-		@Override
-		public void setModified(TeamSpaceMemberDto container, boolean modified) {
-			container.user_m = modified;
-		}
-
-		@Override
-		public boolean isModified(TeamSpaceMemberDto container) {
-			return container.isUserModified();
-		}
-	};
-
 
 	public TeamSpaceMemberDto() {
 		super();
 	}
+
+	public AbstractUserManagerNodeDto getFolk()  {
+		if(! isDtoProxy()){
+			return this.folk;
+		}
+
+		if(isFolkModified())
+			return this.folk;
+
+		if(! GWT.isClient())
+			return null;
+
+		AbstractUserManagerNodeDto _value = dtoManager.getProperty(this, instantiatePropertyAccess().folk());
+
+		if(_value instanceof HasObjectChangedEventHandler){
+			((HasObjectChangedEventHandler)_value).addObjectChangedHandler(new net.datenwerke.gxtdto.client.eventbus.handlers.ObjectChangedEventHandler(){
+				@Override
+				public void onObjectChangedEvent(net.datenwerke.gxtdto.client.eventbus.events.ObjectChangedEvent event){
+					if(! isFolkModified())
+						setFolk((AbstractUserManagerNodeDto) event.getObject());
+				}
+			}
+			);
+		}
+		return _value;
+	}
+
+
+	public void setFolk(AbstractUserManagerNodeDto folk)  {
+		/* old value */
+		AbstractUserManagerNodeDto oldValue = null;
+		if(GWT.isClient())
+			oldValue = getFolk();
+
+		/* set new value */
+		this.folk = folk;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(folk_pa, oldValue, folk, this.folk_m));
+
+		/* set indicator */
+		this.folk_m = true;
+
+		this.fireObjectChangedEvent(TeamSpaceMemberDtoPA.INSTANCE.folk(), oldValue);
+	}
+
+
+	public boolean isFolkModified()  {
+		return folk_m;
+	}
+
+
+	public static PropertyAccessor<TeamSpaceMemberDto, AbstractUserManagerNodeDto> getFolkPropertyAccessor()  {
+		return folk_pa;
+	}
+
 
 	public final Long getId()  {
 		return dtoId;
@@ -243,65 +302,6 @@ public class TeamSpaceMemberDto extends RsDto implements IdedDto {
 	}
 
 
-	public UserDto getUser()  {
-		if(! isDtoProxy()){
-			return this.user;
-		}
-
-		if(isUserModified())
-			return this.user;
-
-		if(! GWT.isClient())
-			return null;
-
-		UserDto _value = dtoManager.getProperty(this, instantiatePropertyAccess().user());
-
-		if(_value instanceof HasObjectChangedEventHandler){
-			((HasObjectChangedEventHandler)_value).addObjectChangedHandler(new net.datenwerke.gxtdto.client.eventbus.handlers.ObjectChangedEventHandler(){
-				@Override
-				public void onObjectChangedEvent(net.datenwerke.gxtdto.client.eventbus.events.ObjectChangedEvent event){
-					if(! isUserModified())
-						setUser((UserDto) event.getObject());
-				}
-			}
-			);
-		}
-		return _value;
-	}
-
-
-	public void setUser(UserDto user)  {
-		/* old value */
-		UserDto oldValue = null;
-		if(GWT.isClient())
-			oldValue = getUser();
-
-		/* set new value */
-		this.user = user;
-
-		if(! GWT.isClient())
-			return;
-
-		if(isTrackChanges())
-			addChange(new ChangeTracker(user_pa, oldValue, user, this.user_m));
-
-		/* set indicator */
-		this.user_m = true;
-
-		this.fireObjectChangedEvent(TeamSpaceMemberDtoPA.INSTANCE.user(), oldValue);
-	}
-
-
-	public boolean isUserModified()  {
-		return user_m;
-	}
-
-
-	public static PropertyAccessor<TeamSpaceMemberDto, UserDto> getUserPropertyAccessor()  {
-		return user_pa;
-	}
-
-
 	@Override
 	public void setDtoId(Object id)  {
 		setId((Long) id);
@@ -343,23 +343,23 @@ public class TeamSpaceMemberDto extends RsDto implements IdedDto {
 	}
 
 	public void clearModified()  {
+		this.folk = null;
+		this.folk_m = false;
 		this.id = null;
 		this.id_m = false;
 		this.role = null;
 		this.role_m = false;
-		this.user = null;
-		this.user_m = false;
 	}
 
 
 	public boolean isModified()  {
 		if(super.isModified())
 			return true;
+		if(folk_m)
+			return true;
 		if(id_m)
 			return true;
 		if(role_m)
-			return true;
-		if(user_m)
 			return true;
 		return false;
 	}
@@ -367,21 +367,21 @@ public class TeamSpaceMemberDto extends RsDto implements IdedDto {
 
 	public List<PropertyAccessor> getPropertyAccessors()  {
 		List<PropertyAccessor> list = super.getPropertyAccessors();
+		list.add(folk_pa);
 		list.add(id_pa);
 		list.add(role_pa);
-		list.add(user_pa);
 		return list;
 	}
 
 
 	public List<PropertyAccessor> getModifiedPropertyAccessors()  {
 		List<PropertyAccessor> list = super.getModifiedPropertyAccessors();
+		if(folk_m)
+			list.add(folk_pa);
 		if(id_m)
 			list.add(id_pa);
 		if(role_m)
 			list.add(role_pa);
-		if(user_m)
-			list.add(user_pa);
 		return list;
 	}
 
@@ -392,7 +392,7 @@ public class TeamSpaceMemberDto extends RsDto implements IdedDto {
 			list.add(id_pa);
 		}
 		if(view.compareTo(DtoView.LIST) >= 0){
-			list.add(user_pa);
+			list.add(folk_pa);
 		}
 		if(view.compareTo(DtoView.NORMAL) >= 0){
 			list.add(role_pa);
@@ -403,13 +403,13 @@ public class TeamSpaceMemberDto extends RsDto implements IdedDto {
 
 	public List<PropertyAccessor> getPropertyAccessorsForDtos()  {
 		List<PropertyAccessor> list = super.getPropertyAccessorsForDtos();
-		list.add(user_pa);
+		list.add(folk_pa);
 		return list;
 	}
 
 
 
-	net.datenwerke.security.client.usermanager.dto.UserDto wl_0;
+	net.datenwerke.security.client.usermanager.dto.AbstractUserManagerNodeDto wl_0;
 	net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto wl_1;
 
 }

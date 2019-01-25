@@ -43,10 +43,17 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.envers.Audited;
+
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
+
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
+import net.datenwerke.gf.base.service.annotations.Indexed;
 import net.datenwerke.gxtdto.client.dtomanager.DtoView;
-import net.datenwerke.rs.base.client.reportengines.jasper.locale.JasperMessages;
 import net.datenwerke.rs.base.client.reportengines.table.locale.TableMessages;
 import net.datenwerke.rs.base.service.reportengines.locale.ReportEnginesMessages;
 import net.datenwerke.rs.base.service.reportengines.table.TableReportUtils;
@@ -69,15 +76,6 @@ import net.datenwerke.rs.utils.entitydiff.annotations.EntityDiffGuides;
 import net.datenwerke.rs.utils.instancedescription.annotations.InstanceDescription;
 import net.datenwerke.security.service.usermanager.entities.User;
 import net.datenwerke.treedb.service.treedb.annotation.TreeDBAllowedChildren;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.envers.Audited;
-
-import net.datenwerke.gf.base.service.annotations.Indexed;
-
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
 
 /**
  * 
@@ -165,7 +163,7 @@ public class TableReport extends Report {
 	private String cubeXml;
 	
 	@ExposeToClient(view=DtoView.FTO)
-	private boolean cube = false;
+	private boolean cubeFlag = false;
 
 	@ExposeToClient
 	private boolean allowCubification = true;
@@ -253,9 +251,9 @@ public class TableReport extends Report {
 		
 		variant.setEnableSubtotals(((TableReport)adjustedReport).isEnableSubtotals());
 		
-		/* cube */
-		variant.setCube(((TableReport) adjustedReport).isCube());
-		if (((TableReport) adjustedReport).isCube())
+		/* cubeFlag */
+		variant.setCubeFlag(((TableReport) adjustedReport).isCubeFlag());
+		if (((TableReport) adjustedReport).isCubeFlag())
 			variant.setCubeXml(((TableReport)adjustedReport).getCubeXml());
 		variant.setHideParents(((TableReport) adjustedReport).isHideParents());
 		
@@ -374,12 +372,12 @@ public class TableReport extends Report {
 		this.distinctFlag = distinct;
 	}
 
-	public boolean isCube() {
-		return cube;
+	public boolean isCubeFlag() {
+		return cubeFlag;
 	}
 	
-	public void setCube(boolean cube) {
-		this.cube = cube;
+	public void setCubeFlag(boolean cube) {
+		this.cubeFlag = cube;
 	}
 	
 	public String getCubeXml() {

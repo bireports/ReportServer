@@ -43,7 +43,7 @@ public class MondrianDatasourceConfig extends DatasourceDefinitionConfig {
 	private static final long serialVersionUID = 2267825708465524128L;
 	
 	@ExposeToClient
-	private String cube;
+	private String cubeName;
 
 	
 	public MondrianDatasourceConfig() {
@@ -52,12 +52,12 @@ public class MondrianDatasourceConfig extends DatasourceDefinitionConfig {
 
 	
 	
-	public String getCube() {
-		return cube;
+	public String getCubeName() {
+		return cubeName;
 	}
 
-	public void setCube(String cube) {
-		this.cube = cube;
+	public void setCubeName(String cube) {
+		this.cubeName = cube;
 	}
 
 	

@@ -72,6 +72,10 @@ public class JxlsReportEngine extends ReportEngine<Connection, JxlsOutputGenerat
 		if(! consumes(report))
 			throw new IllegalArgumentException("Need a report of type JxlsReport."); //$NON-NLS-1$
 		JxlsReport bReport = (JxlsReport) report;
+		
+		if(null == bReport.getReportFile()){
+			throw new IllegalArgumentException("No file has been uploaded.");
+		}
 
 //		Connection con = dataSourceTransformer.transform(bReport, parameters);
 		Connection con = transformDatasource(Connection.class, bReport, parameters);

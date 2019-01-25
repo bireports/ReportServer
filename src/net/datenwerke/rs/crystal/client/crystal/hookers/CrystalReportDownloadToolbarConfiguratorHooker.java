@@ -23,26 +23,26 @@
  
 package net.datenwerke.rs.crystal.client.crystal.hookers;
 
+import com.google.gwt.core.client.GWT;
+import com.google.inject.Inject;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+
+import net.datenwerke.gf.client.fileselection.locale.FileSelectionMessages;
 import net.datenwerke.gf.client.managerhelper.hooks.MainPanelViewToolbarConfiguratorHook;
 import net.datenwerke.gf.client.managerhelper.mainpanel.FormView;
 import net.datenwerke.gf.client.managerhelper.mainpanel.MainPanelView;
 import net.datenwerke.gf.client.uiutils.ClientDownloadHelper;
-import net.datenwerke.gxtdto.client.resources.BaseResources;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.gxtdto.client.utilityservices.UtilsUIService;
 import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
 import net.datenwerke.rs.crystal.client.crystal.dto.CrystalReportDto;
 import net.datenwerke.rs.crystal.client.crystal.locale.CrystalMessages;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-
-import com.google.gwt.core.client.GWT;
-import com.google.inject.Inject;
-
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
-
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 public class CrystalReportDownloadToolbarConfiguratorHooker implements MainPanelViewToolbarConfiguratorHook {
 
@@ -76,6 +76,11 @@ public class CrystalReportDownloadToolbarConfiguratorHooker implements MainPanel
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				if(null == report.getReportFile()){
+					new DwAlertMessageBox(BaseMessages.INSTANCE.warning(), FileSelectionMessages.INSTANCE.noFileUploaded()).show();
+					return;
+				}
+				
 				String id = String.valueOf(report.getId());
 				String url = GWT.getModuleBaseURL() + "CrystalRptDownload?id=" + id; //$NON-NLS-1$
 				ClientDownloadHelper.triggerDownload(url);

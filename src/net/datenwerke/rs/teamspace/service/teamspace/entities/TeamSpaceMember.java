@@ -24,7 +24,6 @@
 package net.datenwerke.rs.teamspace.service.teamspace.entities;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,13 +31,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.envers.Audited;
+
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
 import net.datenwerke.gxtdto.client.dtomanager.DtoView;
 import net.datenwerke.rs.utils.entitycloner.annotation.EntityClonerIgnore;
-import net.datenwerke.security.service.usermanager.entities.User;
-
-import org.hibernate.envers.Audited;
+import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
 
 /**
  * 
@@ -59,8 +58,12 @@ public class TeamSpaceMember {
 		view=DtoView.LIST
 	)
 	@EntityClonerIgnore
-	@ManyToOne(fetch=FetchType.LAZY)
-	private User user;
+	@ManyToOne
+	private AbstractUserManagerNode folk;
+	
+	@EntityClonerIgnore
+	@ManyToOne
+	private TeamSpace teamSpace;
 	
 	@Version
 	private Long version;
@@ -72,12 +75,12 @@ public class TeamSpaceMember {
 	public TeamSpaceMember() {
 	}
 
-	public TeamSpaceMember(User user) {
-		this.user = user;
+	public TeamSpaceMember(AbstractUserManagerNode folk) {
+		this.folk = folk;
 	}
 	
-	public TeamSpaceMember(User user, TeamSpaceRole role) {
-		this.user = user;
+	public TeamSpaceMember(AbstractUserManagerNode folk, TeamSpaceRole role) {
+		this.folk = folk;
 		this.role = role;
 	}
 	
@@ -108,11 +111,19 @@ public class TeamSpaceMember {
 		return role;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setFolk(AbstractUserManagerNode folk) {
+		this.folk = folk;
 	}
-
-	public User getUser() {
-		return user;
+	
+	public AbstractUserManagerNode getFolk() {
+		return folk;
+	}
+	
+	public void setTeamSpace(TeamSpace teamSpace) {
+		this.teamSpace = teamSpace;
+	}
+	
+	public TeamSpace getTeamSpace() {
+		return teamSpace;
 	}
 }

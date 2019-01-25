@@ -26,19 +26,32 @@ package net.datenwerke.rs.teamspace.client.teamspace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.loader.ListLoadConfig;
 import com.sencha.gxt.data.shared.loader.ListLoadResult;
 import com.sencha.gxt.data.shared.loader.ListLoader;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
-import net.datenwerke.gf.client.login.LoginService;
+import net.datenwerke.gf.client.homepage.DwMainViewportUiService;
+import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
+import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCAllowBlank;
+import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCTextAreaImpl;
+import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
 import net.datenwerke.gxtdto.client.stores.LoadableListStore;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.decorator.TeamSpaceDtoDec;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.TeamSpaceDtoPA;
+import net.datenwerke.rs.teamspace.client.teamspace.locale.TeamSpaceMessages;
 import net.datenwerke.rs.teamspace.client.teamspace.security.TeamSpaceGenericTargetIdentifier;
 import net.datenwerke.rs.teamspace.client.teamspace.security.rights.TeamSpaceAdministratorDto;
+import net.datenwerke.rs.teamspace.client.teamspace.ui.TeamSpaceMainComponent;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.security.client.security.SecurityUIService;
 import net.datenwerke.security.client.security.dto.DeleteDto;
 import net.datenwerke.security.client.security.dto.WriteDto;
@@ -51,21 +64,24 @@ public class TeamSpaceUIServiceImpl implements TeamSpaceUIService {
 
 	private static TeamSpaceDtoPA tsPA = GWT.create(TeamSpaceDtoPA.class);
 	
-	private final LoginService loginService;
 	private final SecurityUIService securityService;
 	private final TeamSpaceDao tsDao;
+	private final DwMainViewportUiService viewportService;
+	private final Provider<TeamSpaceClientMainModule> teamSpaceClientModuleProvider;
 	
 	@Inject
 	public TeamSpaceUIServiceImpl(
-		LoginService loginService,
 		SecurityUIService securityService,
-		TeamSpaceDao tsDao
+		TeamSpaceDao tsDao,
+		DwMainViewportUiService viewportService,
+		Provider<TeamSpaceClientMainModule> teamSpaceClientModuleProvider
 		){
 		
 		/* store objects */
-		this.loginService = loginService;
 		this.securityService = securityService;
 		this.tsDao = tsDao;
+		this.viewportService = viewportService;
+		this.teamSpaceClientModuleProvider = teamSpaceClientModuleProvider;
 	}
 	
 	@Override
@@ -161,5 +177,93 @@ public class TeamSpaceUIServiceImpl implements TeamSpaceUIService {
 		return new LoadableListStore<ListLoadConfig, TeamSpaceDto, ListLoadResult<TeamSpaceDto>>(tsPA.dtoId(), getAllTeamSpacesLoader());
 	}
 	
+	@Override
+	public void gotoTeamSpace(TeamSpaceDto teamSpace) {
+		if(null != teamSpace){
+			TeamSpaceClientMainModule tsModule = teamSpaceClientModuleProvider.get();
+			
+			tsModule.getMainWidget().loadSpace(teamSpace);
+			viewportService.showModule(tsModule);
+			
+			tsModule.getMainWidget().delayedForceComponentLayout();
+		}
+	}
+	
+	@Override
+	public void displayAddSpaceDialog(final TeamSpaceOperationSuccessHandler successHandler) {
+		final DwWindow window = new DwWindow();
+		window.setSize(430, 340);
+		window.setHeadingText(TeamSpaceMessages.INSTANCE.newTeamSpaceHeading());
+		window.setHeaderIcon(BaseIcon.GROUP_ADD);
+		
+		/* create form */
+		final SimpleForm form = SimpleForm.getInlineInstance();
+		window.add(form, new MarginData(10));
+		
+		form.addField(String.class, 
+				TeamSpaceDtoPA.INSTANCE.name(), 
+				TeamSpaceMessages.INSTANCE.newTeamSpaceNameLabel(),
+				new SFFCAllowBlank() {
+					@Override
+					public boolean allowBlank() {
+						return false;
+					}
+				});
+		
+		form.addField(String.class, 
+				TeamSpaceDtoPA.INSTANCE.description(), 
+				TeamSpaceMessages.INSTANCE.newTeamSpaceDescriptionLabel(),
+				new SFFCTextAreaImpl());
+		
+		/* create dummy teamspace and bind it to form */
+		final TeamSpaceDto dummy = new TeamSpaceDtoDec();
+		form.bind(dummy);
+		
+		/* create buttons */
+		window.addCancelButton();
+		
+		DwTextButton submitBtn = new DwTextButton(TeamSpaceMessages.INSTANCE.submitCreateTeamSpace());
+		window.addButton(submitBtn);
+		submitBtn.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				if(! form.isValid())
+					return;
+				window.hide();
+				tsDao.createNewTeamSpace(dummy, new NotamCallback<TeamSpaceDto>(TeamSpaceMessages.INSTANCE.newTeamSpaceCreatedMessage()){
+					@Override
+					public void doOnSuccess(TeamSpaceDto space) {
+						successHandler.onSuccess(space);
+					}
+				});
+			}
+		});
+		
+		window.show();
+	}
+
+	@Override
+	public void notifyOfDeletion(TeamSpaceDto deleted) {
+		TeamSpaceClientMainModule tsModule = teamSpaceClientModuleProvider.get();
+		
+		TeamSpaceMainComponent teamSpaceMainComponent = tsModule.getMainWidget();
+		teamSpaceMainComponent.notifyOfDeletion(deleted);
+	}
+
+	@Override
+	public void notifyOfAddition(TeamSpaceDto added) {
+		TeamSpaceClientMainModule tsModule = teamSpaceClientModuleProvider.get();
+		
+		TeamSpaceMainComponent teamSpaceMainComponent = tsModule.getMainWidget();
+		teamSpaceMainComponent.notifyOfAddition(added);		
+	}
+
+	@Override
+	public void notifyOfUpdate(TeamSpaceDto updated) {
+TeamSpaceClientMainModule tsModule = teamSpaceClientModuleProvider.get();
+		
+		TeamSpaceMainComponent teamSpaceMainComponent = tsModule.getMainWidget();
+		teamSpaceMainComponent.notifyOfUpdate(updated);		
+	}
 
 }

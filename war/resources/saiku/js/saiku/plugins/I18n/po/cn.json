@@ -111,5 +111,8 @@
   "Currently private to:": "当前属于",
   "You need to include at least one measure or a level on columns for a valid query.": "您需要在有效查詢的列上至少包含一個度量或級別",
   "You need to include at least one level on rows for a valid query.": "您需要在行上至少包含一個級別以進行有效的查詢",
-  "Reset Cube": "重置魔方"
+  "Reset Cube": "重置魔方",
+  "Deep Avg": "深度平均值",
+  "None":"沒有",
+  "Grand Total":"累計"
 }

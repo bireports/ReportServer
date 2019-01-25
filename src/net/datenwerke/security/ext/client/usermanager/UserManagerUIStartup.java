@@ -96,7 +96,7 @@ public class UserManagerUIStartup {
 		waitOnEventService.callbackOnEvent(AdministrationUIService.REPORTSERVER_EVENT_HAS_ADMIN_RIGHTS, new SynchronousCallbackOnEventTrigger(){
 			public void execute(final WaitOnEventTicket ticket) {
 				if(securityService.hasRight(UserManagerAdminViewGenericTargetIdentifier.class, ReadDto.class))
-					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(adminModuleProvider), HookHandlerService.PRIORITY_HIGH);
+					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(adminModuleProvider), HookHandlerService.PRIORITY_HIGH + 10);
 
 				waitOnEventService.signalProcessingDone(ticket);
 			}

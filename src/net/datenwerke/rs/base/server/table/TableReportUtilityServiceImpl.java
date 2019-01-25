@@ -50,6 +50,7 @@ import net.datenwerke.rs.base.client.reportengines.table.dto.TableReportInformat
 import net.datenwerke.rs.base.client.reportengines.table.helpers.filter.FilterType;
 import net.datenwerke.rs.base.client.reportengines.table.helpers.filter.SelectorPanelLoadConfig;
 import net.datenwerke.rs.base.client.reportengines.table.rpc.TableReportUtilityService;
+import net.datenwerke.rs.base.service.datasources.definitions.DatabaseDatasource;
 import net.datenwerke.rs.base.service.datasources.definitions.DatabaseDatasourceConfig;
 import net.datenwerke.rs.base.service.reportengines.table.SimpleDataSupplier;
 import net.datenwerke.rs.base.service.reportengines.table.TableReportUtils;
@@ -58,6 +59,8 @@ import net.datenwerke.rs.base.service.reportengines.table.entities.Order;
 import net.datenwerke.rs.base.service.reportengines.table.entities.TableReport;
 import net.datenwerke.rs.base.service.reportengines.table.output.object.RSTableModel;
 import net.datenwerke.rs.base.service.reportengines.table.output.object.RSTableRow;
+import net.datenwerke.rs.core.client.datasourcemanager.dto.DatasourceContainerDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceContainer;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinitionConfig;
@@ -276,22 +279,17 @@ public class TableReportUtilityServiceImpl extends SecuredRemoteServiceServlet i
 		}
 	)
 	@Override
-	public List<ColumnDto> loadColumnDefinition(@Named("report") TableReportDto reportDto, String query, String executeToken) throws ServerCallFailedException{
+	public List<ColumnDto> loadColumnDefinition(@Named("report") ReportDto referenceReportDto, DatasourceContainerDto containerDto, String query, String executeToken) throws ServerCallFailedException{
 		ArrayList<ColumnDto> columns = new ArrayList<ColumnDto>();
 
 		/* get real report and validate it*/
-		Report realReport = (Report) dtoService.createUnmanagedPoso(reportDto);
-		DatasourceContainer container = realReport.getDatasourceContainer();
+		Report realReport = (Report) dtoService.createUnmanagedPoso(referenceReportDto);
+		DatasourceContainer container = (DatasourceContainer) dtoService.createUnmanagedPoso(containerDto);
+
+		DatasourceDefinitionConfig dsConfig = container.getDatasourceConfig();
+		DatasourceDefinition ds = container.getDatasource();
 		
-		DatasourceDefinitionConfig dsConfig = null;
-		DatasourceDefinition ds = null;
-		
-		if(null != container){
-			dsConfig = realReport.getDatasourceContainer().getDatasourceConfig();
-			ds = realReport.getDatasourceContainer().getDatasource();
-		}
-		
-		if(! (ds instanceof DatasourceDefinition))
+		if(! (ds instanceof DatabaseDatasource))
 			throw new ServerCallFailedException("Expected Database");
 		if(! securityService.checkRights(ds, Read.class, Execute.class))
 			throw new ViolatedSecurityException();
@@ -299,6 +297,7 @@ public class TableReportUtilityServiceImpl extends SecuredRemoteServiceServlet i
 			throw new ServerCallFailedException("Expected Database");
 		
 		((DatabaseDatasourceConfig)dsConfig).setQuery(query);
+		realReport.setDatasourceContainer(container);
 		
 		try {
 			for(Column column : tableReportUtils.getReturnedPlainColumns((TableReport) realReport, executeToken)){
@@ -322,15 +321,16 @@ public class TableReportUtilityServiceImpl extends SecuredRemoteServiceServlet i
 			}
 		)
 	@Override
-	public PagingLoadResult<ListStringBaseModel> loadData(@Named("report") TableReportDto reportDto,
+	public PagingLoadResult<ListStringBaseModel> loadData(@Named("report") ReportDto referenceReportDto, DatasourceContainerDto containerDto,
 			PagingLoadConfig loadConfig, String query) throws ServerCallFailedException {
-		TableReport referenceReport = (TableReport) dtoService.createUnmanagedPoso(reportDto);
+		Report referenceReport = (Report) dtoService.createUnmanagedPoso(referenceReportDto);
+		DatasourceContainer container = (DatasourceContainer) dtoService.createUnmanagedPoso(containerDto);
 		
 		/* update query */
-		DatasourceDefinitionConfig dsConfig = referenceReport.getDatasourceContainer().getDatasourceConfig();
-		DatasourceDefinition ds = referenceReport.getDatasourceContainer().getDatasource();
+		DatasourceDefinitionConfig dsConfig = container.getDatasourceConfig();
+		DatasourceDefinition ds = container.getDatasource();
 		
-		if(! (ds instanceof DatasourceDefinition))
+		if(! (ds instanceof DatabaseDatasource))
 			throw new ServerCallFailedException("Expected Database");
 		if(! securityService.checkRights(ds, Read.class, Execute.class))
 			throw new ViolatedSecurityException();
@@ -338,6 +338,7 @@ public class TableReportUtilityServiceImpl extends SecuredRemoteServiceServlet i
 			throw new ServerCallFailedException("Expected Database");
 		
 		((DatabaseDatasourceConfig)dsConfig).setQuery(query);
+		referenceReport.setDatasourceContainer(container);
 		
 		ParameterSet parameters = getParameterSet(referenceReport);
 		try {

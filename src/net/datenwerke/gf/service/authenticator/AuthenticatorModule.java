@@ -50,7 +50,7 @@ import com.google.inject.servlet.ServletScopes;
  */
 public class AuthenticatorModule extends AbstractModule {
 
-	private static final String AUTHENTICATORS_PROPERTY_NAME = "rs.authenticator.pams";
+	public static final String AUTHENTICATORS_PROPERTY_NAME = "rs.authenticator.pams";
 	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 	
 	@Override

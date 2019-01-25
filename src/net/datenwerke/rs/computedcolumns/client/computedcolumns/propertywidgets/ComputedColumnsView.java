@@ -751,6 +751,10 @@ public class ComputedColumnsView extends ReportExecutorMainPanelView {
 							/* focus grid */
 							grid.focus();
 						}
+						public void onFailure(Throwable caught) {
+							super.onFailure(caught);
+							mainPanel.unmask();
+						};
 						
 					});
 				}

@@ -34,6 +34,7 @@ import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
 import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
 import net.datenwerke.gxtdto.client.utils.modelkeyprovider.DtoIdModelKeyProvider;
 import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog;
+import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog.RepositoryProviderConfig;
 import net.datenwerke.rs.core.client.reportmanager.hooks.ReportSelectionRepositoryProviderHookImpl;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
@@ -81,7 +82,7 @@ public class ReportSelectionTeamspaceRepositoryProvider extends
 	}
 
 	@Override
-	public void addCards(final ReportSelectionDialog dialog, ReportSelectionDialog.RepositoryProviderConfig... configs) {
+	public void addCards(final ReportSelectionDialog dialog, RepositoryProviderConfig[] configs) {
 		diskDao.getTeamSpacesWithFavoriteApp(new RsAsyncCallback<List<TeamSpaceDto>>(){
 			@Override
 			public void onSuccess(List<TeamSpaceDto> result) {

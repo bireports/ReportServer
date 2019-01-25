@@ -67,11 +67,12 @@ public class ScheduleAsFileEmailNotificationHooker implements SchedulerExecution
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 	
-	public static final String PROPERTY_TEAMSPACE = "teamspace";
-	public static final String PROPERTY_FOLDER = "folder";
-	public static final String PROPERTY_NAME = "name";
-	public static final String PROPERTY_DESCRIPTION = "description";
+	private static final String PROPERTY_TEAMSPACE = "teamspace";
+	private static final String PROPERTY_FOLDER = "folder";
+	private static final String PROPERTY_NAME = "name";
+	private static final String PROPERTY_DESCRIPTION = "description";
 	private static final String PROPERTY_REPORT = "report";
+	private static final String PROPERTY_FILENAME = "filename";
 	
 	public static final String PROPERTY_EXCEPTION = "exception";
 	public static final String PROPERTY_EXCEPTIONST= "trace";
@@ -143,7 +144,9 @@ public class ScheduleAsFileEmailNotificationHooker implements SchedulerExecution
 
 		datamap.put(PROPERTY_TEAMSPACE, new TeamSpaceForJuel(action.getTeamspace()));
 		datamap.put(PROPERTY_FOLDER, new DiskNodeForJuel(action.getFolder()));
-		datamap.put(PROPERTY_NAME, action.getName());
+		datamap.put(PROPERTY_NAME, action.getExecutedReportFileReference().getName());
+		datamap.put(PROPERTY_FILENAME, action.getExecutedReportFileReference().getName() + "." +
+				action.getExecutedReportFileReference().getCompiledReport().getCompiledReport().getFileExtension());
 		datamap.put(PROPERTY_DESCRIPTION, action.getDescription());
 		
 		if(null != e){

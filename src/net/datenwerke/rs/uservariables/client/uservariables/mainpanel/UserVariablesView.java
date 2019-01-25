@@ -236,12 +236,12 @@ public class UserVariablesView extends MainPanelView {
 	}
 
 	private Component createInheritedGrid() {
-		Grid<UserVariableInstanceDto> variableGrid = createGrid(inheritedVariableStore);
+		Grid<UserVariableInstanceDto> variableGrid = createGrid(inheritedVariableStore, true);
 		
 		return variableGrid;
 	}
 
-	private Grid<UserVariableInstanceDto> createGrid(ListStore<UserVariableInstanceDto> store) {
+	private Grid<UserVariableInstanceDto> createGrid(ListStore<UserVariableInstanceDto> store, boolean inherited) {
 		/* configure columns */
 		List<ColumnConfig<UserVariableInstanceDto,?>> columns = new ArrayList<ColumnConfig<UserVariableInstanceDto,?>>();
 		
@@ -282,6 +282,20 @@ public class UserVariablesView extends MainPanelView {
 		});
 		columns.add(descConfig);
 		
+		if(inherited){
+			ColumnConfig<UserVariableInstanceDto,AbstractUserManagerNodeDto> inheritedConfig = new ColumnConfig<UserVariableInstanceDto,AbstractUserManagerNodeDto>(uvInstPa.folk(), 160, UserVariablesMessages.INSTANCE.definedAt());
+			inheritedConfig.setMenuDisabled(true);
+			inheritedConfig.setCell(new AbstractCell<AbstractUserManagerNodeDto>() {
+				@Override
+				public void render(com.google.gwt.cell.client.Cell.Context context,
+						AbstractUserManagerNodeDto value, SafeHtmlBuilder sb) {
+					if(null != value)
+						sb.appendEscaped(value.toDisplayTitle());
+				}
+			});
+			columns.add(inheritedConfig);
+		}
+		
 		/* create grid */
 		Grid<UserVariableInstanceDto> grid = new Grid<UserVariableInstanceDto>(store, new ColumnModel<UserVariableInstanceDto>(columns));
 		grid.getView().setAutoExpandColumn(descConfig);
@@ -293,7 +307,7 @@ public class UserVariablesView extends MainPanelView {
 
 	private Component createHereGrid() {
 		/* create grid */
-		final Grid<UserVariableInstanceDto> variableGrid = createGrid(hereVariableStore);
+		final Grid<UserVariableInstanceDto> variableGrid = createGrid(hereVariableStore, false);
 		
 		/* listen to double click events */
 		variableGrid.addCellDoubleClickHandler(new CellDoubleClickHandler() {

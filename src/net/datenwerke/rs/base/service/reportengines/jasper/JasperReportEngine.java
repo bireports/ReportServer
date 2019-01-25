@@ -36,6 +36,7 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import net.datenwerke.rs.base.service.datasources.definitions.CsvDatasource;
 import net.datenwerke.rs.base.service.datasources.transformers.DatasourceTransformationService;
 import net.datenwerke.rs.base.service.reportengines.jasper.entities.JasperReport;
 import net.datenwerke.rs.base.service.reportengines.jasper.entities.JasperReportJRXMLFile;
@@ -57,12 +59,16 @@ import net.datenwerke.rs.base.service.reportengines.jasper.output.metadata.Jaspe
 import net.datenwerke.rs.base.service.reportengines.jasper.output.metadata.JasperMetadataExporterManager;
 import net.datenwerke.rs.base.service.reportengines.jasper.output.object.CompiledRSJasperReport;
 import net.datenwerke.rs.base.service.reportengines.jasper.util.JasperUtilsService;
+import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
+import net.datenwerke.rs.core.service.internaldb.TempTableHelper;
+import net.datenwerke.rs.core.service.internaldb.TempTableResult;
 import net.datenwerke.rs.core.service.reportmanager.engine.CompiledReport;
 import net.datenwerke.rs.core.service.reportmanager.engine.ReportEngine;
 import net.datenwerke.rs.core.service.reportmanager.engine.config.ReportExecutionConfig;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.core.service.reportmanager.exceptions.ReportExecutorException;
 import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterSet;
+import net.datenwerke.rs.incubator.service.scriptdatasource.entities.ScriptDatasource;
 import net.datenwerke.security.service.usermanager.entities.User;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -120,11 +126,21 @@ public class JasperReportEngine extends ReportEngine<JRDataSource, JasperOutputG
 			throw new IllegalArgumentException("Need a report of type JasperReport."); //$NON-NLS-1$
 		JasperReport jReport = (JasperReport) report;
 		
-//		JRDataSource ds = dataSourceTransformer.transform(jReport, parameters);
+		if(null == jReport.getMasterFile()){
+			throw new IllegalArgumentException("No file has been uploaded.");
+		}
+		
 		JRDataSource ds = transformDatasource(JRDataSource.class, jReport, parameters);
 		
+		Connection con = transformDatasource(Connection.class, report, parameters);
+		
+		DatasourceDefinition datasourceDef = report.getDatasourceContainer().getDatasource();
+		if (datasourceDef instanceof CsvDatasource || datasourceDef instanceof ScriptDatasource) {
+			processTempTableArguments(report, jReport, parameters);
+		}
+				
 		try{
-			CompiledReport result = executeReport(ds, jReport, parameters, outputFormat, user, configs);
+			CompiledReport result = executeReport(con, ds, jReport, parameters, outputFormat, user, configs);
 			return result;
 		} finally {
 			try {
@@ -138,9 +154,15 @@ public class JasperReportEngine extends ReportEngine<JRDataSource, JasperOutputG
 		}
 
 	}
-
-
-	private  CompiledRSJasperReport executeReport(JRDataSource datasource, final JasperReport report, ParameterSet parameters, String outputFormat,  User user, ReportExecutionConfig... configs) {
+	
+	private void processTempTableArguments(Report report, JasperReport jReport, ParameterSet parameters) {
+		TempTableResult tempTableResult = transformDatasource(TempTableResult.class, report, parameters);
+		
+		TempTableHelper tempTableHelper = tempTableResult.getTableHelper();
+		tempTableHelper.setParameterValues(jReport, parameters, tempTableResult);
+	}
+	
+	private CompiledRSJasperReport executeReport(Connection connection, JRDataSource datasource, final JasperReport report, ParameterSet parameters, String outputFormat,  User user, ReportExecutionConfig... configs) {
 		CompiledRSJasperReport resultObject = null;		
 		
 		/* get output format generator */
@@ -148,13 +170,10 @@ public class JasperReportEngine extends ReportEngine<JRDataSource, JasperOutputG
 		if(null == outputGenerator)
 			throw new IllegalArgumentException("Could not find output generator for format: " + outputFormat + ". This is very strange and probably a bug in ReportServer."); //$NON-NLS-1$ //$NON-NLS-2$
 
-		/* get jrxml */
-		String jrxml = report.getMasterFile().getContent();
-
 		/* get jasperdesign */
 		ByteArrayInputStream is;
 		try {
-			is = new ByteArrayInputStream(jrxml.getBytes("UTF-8")); //$NON-NLS-1$
+			is = new ByteArrayInputStream(report.getMasterFile().getContent().getBytes("UTF-8")); //$NON-NLS-1$
 		} catch (UnsupportedEncodingException e1) {
 			IllegalStateException ise = new IllegalStateException("Could not load JRXML as UTF-8: " + e1.getMessage()); //$NON-NLS-1$
 			ise.initCause(e1);
@@ -309,12 +328,13 @@ public class JasperReportEngine extends ReportEngine<JRDataSource, JasperOutputG
 			}
 
 			/* get jasper print */
-			JasperPrint jasperPrint;
-			if(datasource instanceof JasperDBDataSource){
-				jasperPrint = JasperFillManager.getInstance(context).fill(jasperReport, parameterMap, ((JasperDBDataSource) datasource).getConnection());
-			}else{
-				jasperPrint = JasperFillManager.getInstance(context).fill(jasperReport, parameterMap, datasource);
-			}
+			JasperPrint jasperPrint = JasperFillManager.getInstance(context).fill(jasperReport, parameterMap, connection);
+			
+//			if(datasource instanceof JasperDBDataSource){
+//				jasperPrint = JasperFillManager.getInstance(context).fill(jasperReport, parameterMap, ((JasperDBDataSource) datasource).getConnection());
+//			}else{
+//				jasperPrint = JasperFillManager.getInstance(context).fill(jasperReport, parameterMap, datasource);
+//			}
 			/* export to specified format */
 			resultObject = outputGenerator.exportReport(jasperPrint, outputFormat, report, user, configs);
 		} catch (JRException e) {

@@ -114,7 +114,7 @@ public class OlapUtilServiceImpl implements OlapUtilService {
 
 		OlapConnection olapConnection = getOlapConnection(datasource);
 
-		Cube cube = olapConnection.getOlapSchema().getCubes().get(datasourceConfig.getCube());
+		Cube cube = olapConnection.getOlapSchema().getCubes().get(datasourceConfig.getCubeName());
 
 		for(OlapCubeCacheHook cache : hookHandlerService.getHookers(OlapCubeCacheHook.class)){
 			cache.putCubeInCache(report, cube, olapConnection);

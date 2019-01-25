@@ -130,4 +130,7 @@ public interface BaseMessages extends Messages {
 	String duplicate();
 	String lastModified();
 	String informationOn(String displayTitle);
+	
+	String confirmPromptDescription(String operation);
+	String gotoLabel();
 }

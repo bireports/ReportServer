@@ -23,7 +23,9 @@
  
 package net.datenwerke.rs.scriptreport.service.scriptreport.parameter;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.el.ELContext;
@@ -34,6 +36,12 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.envers.Audited;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
 import net.datenwerke.rs.core.service.parameters.entities.ParameterDefinitionForJuel;
@@ -43,10 +51,6 @@ import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterSet;
 import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterValue;
 import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterValueImpl;
 import net.datenwerke.security.service.usermanager.entities.User;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.envers.Audited;
-import org.json.JSONObject;
 
 /**
  * 
@@ -96,21 +100,27 @@ public class ScriptParameterInstance extends ParameterInstance<ScriptParameterDe
 	
 	@Transient @Override
 	public void configureParameterMap(User user, Map<String, ParameterValue> parameterMap, ParameterSet parameterSet) {
-		String value;
+		Object value;
 		
 		if(getDefinition().isEditable() && ! isStillDefault())
 			value = this.getSelectedValue(user);
 		else
 			value = this.getDefaultValue(user, parameterSet);
 		
-		parameterMap.put(getKey(), new ParameterValueImpl(getKey(), value, String.class));
+		parameterMap.put(getKey(), new ParameterValueImpl(getKey(), (String)value, String.class));
 		
 		try{
-			JSONObject json = new JSONObject(value);
+			JSONObject json = new JSONObject((String)value);
 			Iterator keys = json.keys();
 			while(keys.hasNext()){
 				String key = (String) keys.next();
 				Object object = json.get(key);
+				
+				if(object instanceof JSONArray) {
+					object = toList((JSONArray)object);
+					value = object;
+				}
+				
 				if(null != object)
 					parameterMap.put(getKey() + "_" + key, new ParameterValueImpl(getKey() + "_" + key, value, object.getClass()));
 				else
@@ -152,6 +162,9 @@ public class ScriptParameterInstance extends ParameterInstance<ScriptParameterDe
 				String key = (String) keys.next();
 				Object object = json.get(key);
 				
+				if(object instanceof JSONArray)
+					object = toList((JSONArray)object);
+				
 				if(null != value)
 					vm.setVariable(getKey() + "_" + key, factory.createValueExpression(object, object.getClass()));
 				else
@@ -159,6 +172,19 @@ public class ScriptParameterInstance extends ParameterInstance<ScriptParameterDe
 			}
 		} catch(Exception ex) {
 		}
+	}
+	
+	private List toList(JSONArray jsonArray) {
+		List list = new ArrayList();
+		int len = jsonArray.length();
+		for (int i=0;i<len;i++) {
+			try {
+				list.add(jsonArray.get(i));
+			} catch (JSONException e) {
+				throw new IllegalStateException("Could not parse script parameter result.", e);
+			}
+		}
+		return list;
 	}
 
 }

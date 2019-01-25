@@ -188,6 +188,9 @@ public class Dto2DatabaseBundleGenerator implements Dto2PosoGenerator<DatabaseBu
 		} catch(NullPointerException e){
 		}
 
+		/*  set jdbcProperties */
+		poso.setJdbcProperties(dto.getJdbcProperties() );
+
 		/*  set keySource */
 		poso.setKeySource(dto.getKeySource() );
 
@@ -277,6 +280,11 @@ public class Dto2DatabaseBundleGenerator implements Dto2PosoGenerator<DatabaseBu
 			}
 		}
 
+		/*  set jdbcProperties */
+		if(dto.isJdbcPropertiesModified()){
+			poso.setJdbcProperties(dto.getJdbcProperties() );
+		}
+
 		/*  set keySource */
 		if(dto.isKeySourceModified()){
 			poso.setKeySource(dto.getKeySource() );
@@ -345,6 +353,9 @@ public class Dto2DatabaseBundleGenerator implements Dto2PosoGenerator<DatabaseBu
 		} catch(NullPointerException e){
 		}
 
+		/*  set jdbcProperties */
+		poso.setJdbcProperties(dto.getJdbcProperties() );
+
 		/*  set keySource */
 		poso.setKeySource(dto.getKeySource() );
 
@@ -399,6 +410,11 @@ public class Dto2DatabaseBundleGenerator implements Dto2PosoGenerator<DatabaseBu
 				poso.setFlags(dto.getFlags() );
 			} catch(NullPointerException e){
 			}
+		}
+
+		/*  set jdbcProperties */
+		if(dto.isJdbcPropertiesModified()){
+			poso.setJdbcProperties(dto.getJdbcProperties() );
 		}
 
 		/*  set keySource */

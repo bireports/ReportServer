@@ -37,6 +37,7 @@ import net.datenwerke.gf.client.treedb.helper.menu.DeleteMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.DuplicateMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.InfoMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.InsertMenuItem;
+import net.datenwerke.gf.client.treedb.helper.menu.ReloadMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.TreeDBUIMenuProvider;
 import net.datenwerke.gf.client.treedb.helper.menu.TreeMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.TreeMenuSelectionEvent;
@@ -99,6 +100,7 @@ public class ReportManagerTreeConfigurationHooker implements
 		folderMenu.add(new DeleteMenuItem(treeHandler));
 		folderMenu.add(new SeparatorMenuItem());
 		folderMenu.add(new InfoMenuItem());
+		folderMenu.add(new ReloadMenuItem());
 		
 		/* Reports */
 		for(ReportTypeConfigHook config : hookHandler.getHookers(ReportTypeConfigHook.class)){

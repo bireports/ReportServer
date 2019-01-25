@@ -23,6 +23,12 @@
  
 package net.datenwerke.rs.teamspace.client.teamspace;
 
+import com.google.gwt.event.shared.EventBus;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
+import net.datenwerke.gf.client.administration.AdministrationUIService;
+import net.datenwerke.gf.client.administration.hooks.AdminModuleProviderHook;
 import net.datenwerke.gf.client.homepage.hooks.ClientMainModuleProviderHook;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.eventbus.events.SubmoduleDisplayRequest;
@@ -47,10 +53,6 @@ import net.datenwerke.security.client.security.SecurityUIService;
 import net.datenwerke.security.client.security.dto.ReadDto;
 import net.datenwerke.security.client.security.hooks.GenericSecurityViewDomainHook;
 import net.datenwerke.security.client.security.hooks.GenericTargetProviderHook;
-
-import com.google.gwt.event.shared.EventBus;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 /**
  * 
@@ -80,6 +82,9 @@ public class TeamSpaceUIStartup {
 		
 		final EventBus eventBus,
 		final Provider<TeamSpaceMainComponent> teamSpaceMainComponentProvider,
+		
+		final Provider<TeamSpaceUIService> teamSpaceServiceProvider,
+		final Provider<TeamSpaceAdminModule> teamSpaceAdminModuleProvider,
 		
 		final TeamSpaceDao teamSpaceDao
 		){
@@ -114,6 +119,16 @@ public class TeamSpaceUIStartup {
 		
 		/* simpleform */
 		hookHandler.attachHooker(FormFieldProviderHook.class, teamSpaceProvider, HookHandlerService.PRIORITY_LOW);
+		
+		/* test if user has rights to see datasource manager admin view */
+		waitOnEventService.callbackOnEvent(AdministrationUIService.REPORTSERVER_EVENT_HAS_ADMIN_RIGHTS, new SynchronousCallbackOnEventTrigger(){
+			public void execute(final WaitOnEventTicket ticket) {
+				if(teamSpaceServiceProvider.get().isGlobalTsAdmin())
+					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(teamSpaceAdminModuleProvider.get()),  HookHandlerService.PRIORITY_HIGH + 60);
+				waitOnEventService.signalProcessingDone(ticket);
+			}
+		});
+		
 		
 		/* history */
 		/* attach to eventbus */

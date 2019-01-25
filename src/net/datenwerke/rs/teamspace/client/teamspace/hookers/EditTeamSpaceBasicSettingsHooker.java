@@ -87,7 +87,7 @@ public class EditTeamSpaceBasicSettingsHooker extends TeamSpaceEditDialogHookImp
 		SFFCReadOnly readOnly = teamSpaceUIService.isAdmin(teamSpace)?SFFCReadOnly.FALSE:SFFCReadOnly.TRUE;
 		
 		form = SimpleForm.getInlineInstance();
-		form.setHeight(300);
+		form.setHeight(200);
 		
 		form.addField(String.class, 
 				TeamSpaceDtoPA.INSTANCE.name(), 

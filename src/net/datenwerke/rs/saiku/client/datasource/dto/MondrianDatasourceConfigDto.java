@@ -51,19 +51,19 @@ public class MondrianDatasourceConfigDto extends DatasourceDefinitionConfigDto {
 
 
 	/* Fields */
-	private String cube;
-	private  boolean cube_m;
-	public static final String PROPERTY_CUBE = "dpi-mondriandatasourceconfig-cube";
+	private String cubeName;
+	private  boolean cubeName_m;
+	public static final String PROPERTY_CUBE_NAME = "dpi-mondriandatasourceconfig-cubename";
 
-	private transient static PropertyAccessor<MondrianDatasourceConfigDto, String> cube_pa = new PropertyAccessor<MondrianDatasourceConfigDto, String>() {
+	private transient static PropertyAccessor<MondrianDatasourceConfigDto, String> cubeName_pa = new PropertyAccessor<MondrianDatasourceConfigDto, String>() {
 		@Override
 		public void setValue(MondrianDatasourceConfigDto container, String object) {
-			container.setCube(object);
+			container.setCubeName(object);
 		}
 
 		@Override
 		public String getValue(MondrianDatasourceConfigDto container) {
-			return container.getCube();
+			return container.getCubeName();
 		}
 
 		@Override
@@ -73,17 +73,17 @@ public class MondrianDatasourceConfigDto extends DatasourceDefinitionConfigDto {
 
 		@Override
 		public String getPath() {
-			return "cube";
+			return "cubeName";
 		}
 
 		@Override
 		public void setModified(MondrianDatasourceConfigDto container, boolean modified) {
-			container.cube_m = modified;
+			container.cubeName_m = modified;
 		}
 
 		@Override
 		public boolean isModified(MondrianDatasourceConfigDto container) {
-			return container.isCubeModified();
+			return container.isCubeNameModified();
 		}
 	};
 
@@ -92,52 +92,52 @@ public class MondrianDatasourceConfigDto extends DatasourceDefinitionConfigDto {
 		super();
 	}
 
-	public String getCube()  {
+	public String getCubeName()  {
 		if(! isDtoProxy()){
-			return this.cube;
+			return this.cubeName;
 		}
 
-		if(isCubeModified())
-			return this.cube;
+		if(isCubeNameModified())
+			return this.cubeName;
 
 		if(! GWT.isClient())
 			return null;
 
-		String _value = dtoManager.getProperty(this, instantiatePropertyAccess().cube());
+		String _value = dtoManager.getProperty(this, instantiatePropertyAccess().cubeName());
 
 		return _value;
 	}
 
 
-	public void setCube(String cube)  {
+	public void setCubeName(String cubeName)  {
 		/* old value */
 		String oldValue = null;
 		if(GWT.isClient())
-			oldValue = getCube();
+			oldValue = getCubeName();
 
 		/* set new value */
-		this.cube = cube;
+		this.cubeName = cubeName;
 
 		if(! GWT.isClient())
 			return;
 
 		if(isTrackChanges())
-			addChange(new ChangeTracker(cube_pa, oldValue, cube, this.cube_m));
+			addChange(new ChangeTracker(cubeName_pa, oldValue, cubeName, this.cubeName_m));
 
 		/* set indicator */
-		this.cube_m = true;
+		this.cubeName_m = true;
 
-		this.fireObjectChangedEvent(MondrianDatasourceConfigDtoPA.INSTANCE.cube(), oldValue);
+		this.fireObjectChangedEvent(MondrianDatasourceConfigDtoPA.INSTANCE.cubeName(), oldValue);
 	}
 
 
-	public boolean isCubeModified()  {
-		return cube_m;
+	public boolean isCubeNameModified()  {
+		return cubeName_m;
 	}
 
 
-	public static PropertyAccessor<MondrianDatasourceConfigDto, String> getCubePropertyAccessor()  {
-		return cube_pa;
+	public static PropertyAccessor<MondrianDatasourceConfigDto, String> getCubeNamePropertyAccessor()  {
+		return cubeName_pa;
 	}
 
 
@@ -172,15 +172,15 @@ public class MondrianDatasourceConfigDto extends DatasourceDefinitionConfigDto {
 	}
 
 	public void clearModified()  {
-		this.cube = null;
-		this.cube_m = false;
+		this.cubeName = null;
+		this.cubeName_m = false;
 	}
 
 
 	public boolean isModified()  {
 		if(super.isModified())
 			return true;
-		if(cube_m)
+		if(cubeName_m)
 			return true;
 		return false;
 	}
@@ -188,15 +188,15 @@ public class MondrianDatasourceConfigDto extends DatasourceDefinitionConfigDto {
 
 	public List<PropertyAccessor> getPropertyAccessors()  {
 		List<PropertyAccessor> list = super.getPropertyAccessors();
-		list.add(cube_pa);
+		list.add(cubeName_pa);
 		return list;
 	}
 
 
 	public List<PropertyAccessor> getModifiedPropertyAccessors()  {
 		List<PropertyAccessor> list = super.getModifiedPropertyAccessors();
-		if(cube_m)
-			list.add(cube_pa);
+		if(cubeName_m)
+			list.add(cubeName_pa);
 		return list;
 	}
 
@@ -204,7 +204,7 @@ public class MondrianDatasourceConfigDto extends DatasourceDefinitionConfigDto {
 	public List<PropertyAccessor> getPropertyAccessorsByView(net.datenwerke.gxtdto.client.dtomanager.DtoView view)  {
 		List<PropertyAccessor> list = super.getPropertyAccessorsByView(view);
 		if(view.compareTo(DtoView.NORMAL) >= 0){
-			list.add(cube_pa);
+			list.add(cubeName_pa);
 		}
 		return list;
 	}

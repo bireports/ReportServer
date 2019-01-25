@@ -174,19 +174,19 @@ abstract public class TableReportDto extends ReportDtoDec {
 		}
 	};
 
-	private boolean cube;
-	private  boolean cube_m;
-	public static final String PROPERTY_CUBE = "dpi-tablereport-cube";
+	private boolean cubeFlag;
+	private  boolean cubeFlag_m;
+	public static final String PROPERTY_CUBE_FLAG = "dpi-tablereport-cubeflag";
 
-	private transient static PropertyAccessor<TableReportDto, Boolean> cube_pa = new PropertyAccessor<TableReportDto, Boolean>() {
+	private transient static PropertyAccessor<TableReportDto, Boolean> cubeFlag_pa = new PropertyAccessor<TableReportDto, Boolean>() {
 		@Override
 		public void setValue(TableReportDto container, Boolean object) {
-			container.setCube(object);
+			container.setCubeFlag(object);
 		}
 
 		@Override
 		public Boolean getValue(TableReportDto container) {
-			return container.isCube();
+			return container.isCubeFlag();
 		}
 
 		@Override
@@ -196,17 +196,17 @@ abstract public class TableReportDto extends ReportDtoDec {
 
 		@Override
 		public String getPath() {
-			return "cube";
+			return "cubeFlag";
 		}
 
 		@Override
 		public void setModified(TableReportDto container, boolean modified) {
-			container.cube_m = modified;
+			container.cubeFlag_m = modified;
 		}
 
 		@Override
 		public boolean isModified(TableReportDto container) {
-			return container.isCubeModified();
+			return container.isCubeFlagModified();
 		}
 	};
 
@@ -608,52 +608,52 @@ abstract public class TableReportDto extends ReportDtoDec {
 	}
 
 
-	public boolean isCube()  {
+	public boolean isCubeFlag()  {
 		if(! isDtoProxy()){
-			return this.cube;
+			return this.cubeFlag;
 		}
 
-		if(isCubeModified())
-			return this.cube;
+		if(isCubeFlagModified())
+			return this.cubeFlag;
 
 		if(! GWT.isClient())
 			return false;
 
-		boolean _value = dtoManager.getProperty(this, instantiatePropertyAccess().cube());
+		boolean _value = dtoManager.getProperty(this, instantiatePropertyAccess().cubeFlag());
 
 		return _value;
 	}
 
 
-	public void setCube(boolean cube)  {
+	public void setCubeFlag(boolean cubeFlag)  {
 		/* old value */
 		boolean oldValue = false;
 		if(GWT.isClient())
-			oldValue = isCube();
+			oldValue = isCubeFlag();
 
 		/* set new value */
-		this.cube = cube;
+		this.cubeFlag = cubeFlag;
 
 		if(! GWT.isClient())
 			return;
 
 		if(isTrackChanges())
-			addChange(new ChangeTracker(cube_pa, oldValue, cube, this.cube_m));
+			addChange(new ChangeTracker(cubeFlag_pa, oldValue, cubeFlag, this.cubeFlag_m));
 
 		/* set indicator */
-		this.cube_m = true;
+		this.cubeFlag_m = true;
 
-		this.fireObjectChangedEvent(TableReportDtoPA.INSTANCE.cube(), oldValue);
+		this.fireObjectChangedEvent(TableReportDtoPA.INSTANCE.cubeFlag(), oldValue);
 	}
 
 
-	public boolean isCubeModified()  {
-		return cube_m;
+	public boolean isCubeFlagModified()  {
+		return cubeFlag_m;
 	}
 
 
-	public static PropertyAccessor<TableReportDto, Boolean> getCubePropertyAccessor()  {
-		return cube_pa;
+	public static PropertyAccessor<TableReportDto, Boolean> getCubeFlagPropertyAccessor()  {
+		return cubeFlag_pa;
 	}
 
 
@@ -1029,8 +1029,8 @@ abstract public class TableReportDto extends ReportDtoDec {
 		this.allowCubification_m = false;
 		this.columns = null;
 		this.columns_m = false;
-		this.cube = false;
-		this.cube_m = false;
+		this.cubeFlag = false;
+		this.cubeFlag_m = false;
 		this.cubeXml = null;
 		this.cubeXml_m = false;
 		this.distinctFlag = null;
@@ -1055,7 +1055,7 @@ abstract public class TableReportDto extends ReportDtoDec {
 			return true;
 		if(columns_m)
 			return true;
-		if(cube_m)
+		if(cubeFlag_m)
 			return true;
 		if(cubeXml_m)
 			return true;
@@ -1078,7 +1078,7 @@ abstract public class TableReportDto extends ReportDtoDec {
 		list.add(additionalColumns_pa);
 		list.add(allowCubification_pa);
 		list.add(columns_pa);
-		list.add(cube_pa);
+		list.add(cubeFlag_pa);
 		list.add(cubeXml_pa);
 		list.add(distinctFlag_pa);
 		list.add(enableSubtotals_pa);
@@ -1097,8 +1097,8 @@ abstract public class TableReportDto extends ReportDtoDec {
 			list.add(allowCubification_pa);
 		if(columns_m)
 			list.add(columns_pa);
-		if(cube_m)
-			list.add(cube_pa);
+		if(cubeFlag_m)
+			list.add(cubeFlag_pa);
 		if(cubeXml_m)
 			list.add(cubeXml_pa);
 		if(distinctFlag_m)
@@ -1118,7 +1118,7 @@ abstract public class TableReportDto extends ReportDtoDec {
 	public List<PropertyAccessor> getPropertyAccessorsByView(net.datenwerke.gxtdto.client.dtomanager.DtoView view)  {
 		List<PropertyAccessor> list = super.getPropertyAccessorsByView(view);
 		if(view.compareTo(DtoView.FTO) >= 0){
-			list.add(cube_pa);
+			list.add(cubeFlag_pa);
 		}
 		if(view.compareTo(DtoView.NORMAL) >= 0){
 			list.add(additionalColumns_pa);

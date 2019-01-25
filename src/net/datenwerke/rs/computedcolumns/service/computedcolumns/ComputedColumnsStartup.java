@@ -23,6 +23,9 @@
  
 package net.datenwerke.rs.computedcolumns.service.computedcolumns;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.base.service.dbhelper.hooks.ColumnReferenceSqlProvider;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.hookers.ComputedColumnSqlProvider;
@@ -39,6 +42,7 @@ import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handl
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.LogicalOperatorHandler;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.NullHandler;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.NumberHandler;
+import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.ParameterHandler;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.ParenthesisHandler;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.RelationHandler;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.StringHandler;
@@ -51,15 +55,13 @@ import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handl
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.sql.LogicalOperatorToSql;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.sql.NullToSql;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.sql.NumberToSql;
+import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.sql.ParameterToSql;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.sql.ParenthesisToSql;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.sql.RelationToSql;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.sql.StringToSql;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.sql.VariableToSql;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.handlers.sql.WhiteSpaceToSql;
 import net.datenwerke.rs.computedcolumns.service.computedcolumns.tokenizer.hooks.ExpressionTokenHandlerHook;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class ComputedColumnsStartup {
 
@@ -81,6 +83,7 @@ public class ComputedColumnsStartup {
 		Provider<LogicalOperatorHandler> logicalOperatorHandler,
 		Provider<NullHandler> nullHandler,
 		Provider<NumberHandler> numberHandler,
+		Provider<ParameterHandler> parameterHandler,
 		Provider<ParenthesisHandler> parenthesisHandler,
 		Provider<RelationHandler> relationHandler,
 		Provider<StringHandler> stringHandler,
@@ -95,6 +98,7 @@ public class ComputedColumnsStartup {
 		Provider<LogicalOperatorToSql> logicalOperatorToSql,
 		Provider<NullToSql> nullToSql,
 		Provider<NumberToSql> numberToSql,
+		Provider<ParameterToSql> parameterToSql,
 		Provider<ParenthesisToSql> parenthesisToSql,
 		Provider<RelationToSql> relationToSql,
 		Provider<StringToSql> stringToSql,
@@ -116,6 +120,7 @@ public class ComputedColumnsStartup {
 		hookHandler.attachHooker(ExpressionTokenHandlerHook.class, logicalOperatorHandler);
 		hookHandler.attachHooker(ExpressionTokenHandlerHook.class, nullHandler);
 		hookHandler.attachHooker(ExpressionTokenHandlerHook.class, numberHandler);
+		hookHandler.attachHooker(ExpressionTokenHandlerHook.class, parameterHandler);
 		hookHandler.attachHooker(ExpressionTokenHandlerHook.class, parenthesisHandler);
 		hookHandler.attachHooker(ExpressionTokenHandlerHook.class, relationHandler);
 		hookHandler.attachHooker(ExpressionTokenHandlerHook.class, stringHandler);
@@ -129,6 +134,7 @@ public class ComputedColumnsStartup {
 		hookHandler.attachHooker(ExpressionTokenToSqlHook.class, logicalOperatorToSql);
 		hookHandler.attachHooker(ExpressionTokenToSqlHook.class, nullToSql);
 		hookHandler.attachHooker(ExpressionTokenToSqlHook.class, numberToSql);
+		hookHandler.attachHooker(ExpressionTokenToSqlHook.class, parameterToSql);
 		hookHandler.attachHooker(ExpressionTokenToSqlHook.class, parenthesisToSql);
 		hookHandler.attachHooker(ExpressionTokenToSqlHook.class, relationToSql);
 		hookHandler.attachHooker(ExpressionTokenToSqlHook.class, stringToSql);

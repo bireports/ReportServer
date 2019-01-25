@@ -44,6 +44,8 @@ public class ConnectionPoolConfigImpl implements ConnectionPoolConfig {
 
 	protected Properties properties;
 	
+	protected Properties jdbcProperties;
+	
 	protected String username;
 	protected String password = "";
 	protected String jdbcUrl;
@@ -187,6 +189,14 @@ public class ConnectionPoolConfigImpl implements ConnectionPoolConfig {
 	
 	public void setProperty(String key, String value){
 		properties.setProperty(key, value);
+	}
+	
+	public void setJdbcProperties(Properties jdbcProperties) {
+		this.jdbcProperties = jdbcProperties;
+	}
+	@Override
+	public Properties getJdbcProperties() {
+		return jdbcProperties;
 	}
 
 }

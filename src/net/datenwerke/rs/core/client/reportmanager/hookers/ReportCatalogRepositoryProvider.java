@@ -42,6 +42,7 @@ import net.datenwerke.rs.core.client.reportmanager.dto.interfaces.ReportVariantD
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.decorator.ReportDtoDec;
 import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog;
+import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog.RepositoryProviderConfig;
 import net.datenwerke.rs.core.client.reportmanager.hooks.ReportSelectionRepositoryProviderHookImpl;
 import net.datenwerke.rs.core.client.reportmanager.locale.ReportmanagerMessages;
 import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerTreeFolders;
@@ -95,7 +96,7 @@ public class ReportCatalogRepositoryProvider extends ReportSelectionRepositoryPr
 	}
 
 	@Override
-	public void addCards(final ReportSelectionDialog dialog, ReportSelectionDialog.RepositoryProviderConfig... configs){
+	public void addCards(final ReportSelectionDialog dialog, RepositoryProviderConfig[] configs){
 		Config conf = getConfig(configs);
 		if(null != conf && ! conf.showCatalog())
 			return;

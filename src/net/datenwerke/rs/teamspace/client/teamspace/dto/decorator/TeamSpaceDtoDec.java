@@ -39,9 +39,8 @@ import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
  */
 public class TeamSpaceDtoDec extends TeamSpaceDto implements IdedDto {
 
-
 	private static final long serialVersionUID = 1L;
-	
+	private static final int MAX_DISPLAY_TITLE_SIZE = 50;
 	
 	/* the current users role in this teamspace */
 	private TeamSpaceRoleDto role;
@@ -87,8 +86,12 @@ public class TeamSpaceDtoDec extends TeamSpaceDto implements IdedDto {
 	
 	@Override
 	public String toDisplayTitle()  {
+		String name = getName();
 		try{
-			return getName() + " (" + getId() + ")";
+			if (name.length() <= MAX_DISPLAY_TITLE_SIZE)
+				return name;
+				
+			return name.substring(0, MAX_DISPLAY_TITLE_SIZE) + "...";
 		} catch(NullPointerException e){
 			return BaseMessages.INSTANCE.unnamed();
 		}

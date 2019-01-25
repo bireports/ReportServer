@@ -46,6 +46,7 @@ import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2JasperTra
 import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2JdcbDatasourceTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2QueryTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2TableTransformer;
+import net.datenwerke.rs.base.service.datasources.transformers.csv.Csv2TempTableResultTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.database.Database2JasperTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.database.Database2JdbcConnectionTransformer;
 import net.datenwerke.rs.base.service.datasources.transformers.database.Database2JdbcDatasourceTransformer;
@@ -75,6 +76,7 @@ public class DatasourceExtensionStartup {
 		Csv2ConnectionTransformer csv2ConnectionTransformer,
 		Csv2JdcbDatasourceTransformer csv2JdbcDatasourceTransformer,
 		Csv2QueryTransformer csv2QueryTransformer,
+		Csv2TempTableResultTransformer csv2TempTableResultTransformer,
 		
 		Database2JasperTransformer database2JasperTransformer, 
 		Database2JdbcConnectionTransformer database2JdbcConnectionTransformer, 
@@ -98,6 +100,7 @@ public class DatasourceExtensionStartup {
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, csv2ConnectionTransformer);
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, csv2JdbcDatasourceTransformer);
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, csv2QueryTransformer);
+		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, csv2TempTableResultTransformer);
 		
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, database2JasperTransformer);
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, database2JdbcConnectionTransformer);

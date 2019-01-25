@@ -203,7 +203,7 @@ public class DashboardUiStartup {
 		waitOnEventService.callbackOnEvent(AdministrationUIService.REPORTSERVER_EVENT_HAS_ADMIN_RIGHTS, new SynchronousCallbackOnEventTrigger(){
 			public void execute(final WaitOnEventTicket ticket) {
 				if(securityService.hasRight(DashboardAdminGenericTargetIdentifier.class, ReadDto.class)){
-					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(adminModuleProvider),  HookHandlerService.PRIORITY_HIGH + 5);
+					hookHandler.attachHooker(AdminModuleProviderHook.class, new AdminModuleProviderHook(adminModuleProvider),  HookHandlerService.PRIORITY_HIGH + 50);
 					hookHandler.attachHooker(MainPanelViewProviderHook.class, mainPanelViewProvider);
 				}
 				waitOnEventService.signalProcessingDone(ticket);

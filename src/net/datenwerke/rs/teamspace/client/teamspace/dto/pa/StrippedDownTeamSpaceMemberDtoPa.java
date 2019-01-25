@@ -33,12 +33,13 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 
 public interface StrippedDownTeamSpaceMemberDtoPa extends PropertyAccess<StrippedDownTeamSpaceMemberDto> {
 
-	@Path("userId")
+	@Path("folkId")
 	public ModelKeyProvider<StrippedDownTeamSpaceMemberDto> dtoId();
 
 	/* Properties */
-	public ValueProvider<StrippedDownTeamSpaceMemberDto,Long> userId();
+	public ValueProvider<StrippedDownTeamSpaceMemberDto,Long> folkId();
 	public ValueProvider<StrippedDownTeamSpaceMemberDto,TeamSpaceRoleDto> role();
+	public ValueProvider<StrippedDownTeamSpaceMemberDto,String> name();
 	public ValueProvider<StrippedDownTeamSpaceMemberDto,String> firstname();
 	public ValueProvider<StrippedDownTeamSpaceMemberDto,String> lastname();
 

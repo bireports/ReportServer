@@ -26,14 +26,23 @@ package net.datenwerke.rs.uservariables.client.parameters;
 import java.util.Collection;
 import java.util.HashMap;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.widget.core.client.WidgetComponent;
+
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCBaseModel;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.resources.BaseResources;
 import net.datenwerke.rs.core.client.parameters.config.ParameterConfiguratorImpl;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterDefinitionDto;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.core.client.parameters.helper.ParameterFieldWrapperForFrontend;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.rs.uservariables.client.parameters.dto.UserVariableParameterDefinitionDto;
 import net.datenwerke.rs.uservariables.client.parameters.dto.UserVariableParameterInstanceDto;
@@ -43,15 +52,6 @@ import net.datenwerke.rs.uservariables.client.parameters.locale.UserVariablePara
 import net.datenwerke.rs.uservariables.client.uservariables.UserVariablesUIService;
 import net.datenwerke.rs.uservariables.client.uservariables.dto.UserVariableDefinitionDto;
 import net.datenwerke.rs.uservariables.client.uservariables.dto.pa.UserVariableDefinitionDtoPA;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.widget.core.client.WidgetComponent;
 
 /**
  * 
@@ -88,7 +88,8 @@ public class UserVariableParameterConfigurator extends ParameterConfiguratorImpl
 		return UserVariableParameterDefinitionDto.class.equals(type);
 	}
 
-	public Widget getEditComponentForDefinition(UserVariableParameterDefinitionDto definition) {
+	@Override
+	public Widget getEditComponentForDefinition(UserVariableParameterDefinitionDto definition, ReportDto report) {
 		SimpleForm form = SimpleForm.getInlineInstance();
 		
 		form.addField(UserVariableDefinitionDto.class, UserVariableParameterDefinitionDtoPA.INSTANCE.userVariableDefinition(), UserVariableParameterMessages.INSTANCE.userVariable(), new SFFCBaseModel<UserVariableDefinitionDto>(){ 

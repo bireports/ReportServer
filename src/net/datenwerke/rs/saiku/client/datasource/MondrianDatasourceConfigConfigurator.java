@@ -129,8 +129,8 @@ public class MondrianDatasourceConfigConfigurator implements DatasourceDefinitio
 		
 		dropDown.setWidth(227);
 		
-		if(null != ((MondrianDatasourceConfigDto)config).getCube())
-			dropDown.setValue(((MondrianDatasourceConfigDto)config).getCube());
+		if(null != ((MondrianDatasourceConfigDto)config).getCubeName())
+			dropDown.setValue(((MondrianDatasourceConfigDto)config).getCubeName());
 		
 		dropDown.addValueChangeHandler(new ValueChangeHandler<String>() {
 			@Override
@@ -150,9 +150,9 @@ public class MondrianDatasourceConfigConfigurator implements DatasourceDefinitio
 
 		/* are we rendered */
 		if(null == dropDown)
-			((MondrianDatasourceConfigDto)config).setCube(null);
+			((MondrianDatasourceConfigDto)config).setCubeName(null);
 		else
-			((MondrianDatasourceConfigDto)config).setCube(dropDown.getCurrentValue());
+			((MondrianDatasourceConfigDto)config).setCubeName(dropDown.getCurrentValue());
 	}
 
 	@Override

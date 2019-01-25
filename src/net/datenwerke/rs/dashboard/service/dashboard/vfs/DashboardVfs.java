@@ -23,17 +23,18 @@
  
 package net.datenwerke.rs.dashboard.service.dashboard.vfs;
 
-import net.datenwerke.rs.core.service.reportmanager.entities.ReportFolder;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.rs.dashboard.service.dashboard.DashboardManagerService;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.AbstractDashboardManagerNode;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.DadgetNode;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardFolder;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardNode;
 import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocation;
 import net.datenwerke.rs.terminal.service.terminal.vfs.exceptions.VFSException;
 import net.datenwerke.rs.terminal.service.terminal.vfs.hooks.TreeBasedVirtualFileSystem;
 import net.datenwerke.treedb.service.treedb.TreeDBManager;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class DashboardVfs extends TreeBasedVirtualFileSystem<AbstractDashboardManagerNode> {
 
@@ -59,6 +60,17 @@ public class DashboardVfs extends TreeBasedVirtualFileSystem<AbstractDashboardMa
 	@Override
 	protected String doGetNodeName(AbstractDashboardManagerNode node) {
 		return node.getName();
+	}
+	
+	@Override
+	protected void doRename(AbstractDashboardManagerNode node, String name) {
+		if(node instanceof DashboardNode)
+			((DashboardNode)node).setName(name);
+		else if(node instanceof DadgetNode)
+			((DadgetNode)node).setName(name);
+		else if(node instanceof DashboardFolder)
+			((DashboardFolder)node).setName(name);
+			
 	}
 
 	@Override

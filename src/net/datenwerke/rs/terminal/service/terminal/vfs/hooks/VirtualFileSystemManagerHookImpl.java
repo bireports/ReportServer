@@ -23,6 +23,8 @@
  
 package net.datenwerke.rs.terminal.service.terminal.vfs.hooks;
 
+import java.util.List;
+
 import net.datenwerke.rs.terminal.service.terminal.TerminalSession;
 import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocation;
 import net.datenwerke.rs.terminal.service.terminal.vfs.exceptions.VFSException;
@@ -69,13 +71,13 @@ public abstract class VirtualFileSystemManagerHookImpl implements
 	protected abstract VFSLocation doCreateFolder(VFSLocation location, String folder);
 	
 	@Override
-	public final void moveFilesTo(VFSLocation sources, VFSLocation target) {
+	public final List<VFSLocation> moveFilesTo(VFSLocation sources, VFSLocation target) {
 		if(isReadOnly())
 			throw new IllegalStateException("filesystem is read only");
-		doMoveFilesTo(sources, target);
+		return doMoveFilesTo(sources, target);
 	}
 
-	protected abstract void doMoveFilesTo(VFSLocation sources, VFSLocation target);
+	protected abstract List<VFSLocation> doMoveFilesTo(VFSLocation sources, VFSLocation target);
 	
 	@Override
 	public void copyFilesTo(VFSLocation sources, VFSLocation target, boolean deep) throws VFSException {

@@ -23,16 +23,23 @@
  
 package net.datenwerke.security.ext.client.usermanager.provider.treehookers;
 
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.inject.Inject;
+import com.sencha.gxt.widget.core.client.menu.Menu;
+import com.sencha.gxt.widget.core.client.menu.MenuItem;
+import com.sencha.gxt.widget.core.client.menu.SeparatorMenuItem;
+
 import net.datenwerke.gf.client.managerhelper.hooks.TreeConfiguratorHook;
 import net.datenwerke.gf.client.managerhelper.tree.ManagerHelperTree;
 import net.datenwerke.gf.client.treedb.helper.menu.DeleteMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.InsertMenuItem;
+import net.datenwerke.gf.client.treedb.helper.menu.ReloadMenuItem;
 import net.datenwerke.gf.client.treedb.helper.menu.TreeDBUIMenuProvider;
 import net.datenwerke.gf.client.treedb.icon.IconMapping;
 import net.datenwerke.gf.client.treedb.icon.TreeDBUIIconProvider;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
 import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.resources.BaseResources;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.security.client.usermanager.dto.GroupDto;
 import net.datenwerke.security.client.usermanager.dto.OrganisationalUnitDto;
@@ -43,12 +50,6 @@ import net.datenwerke.security.ext.client.usermanager.UserManagerUIModule;
 import net.datenwerke.security.ext.client.usermanager.locale.UsermanagerMessages;
 import net.datenwerke.security.ext.client.usermanager.utils.UserIconMapping;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-
-import com.google.gwt.event.dom.client.DoubleClickEvent;
-import com.google.inject.Inject;
-import com.sencha.gxt.widget.core.client.menu.Menu;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
-import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 public class UserManagerTreeConfigurationHooker implements
 		TreeConfiguratorHook {
@@ -98,6 +99,8 @@ public class UserManagerTreeConfigurationHooker implements
 		inserItem = generateInsertMenu();
 		ouMenu.add(inserItem);
 		ouMenu.add(new DeleteMenuItem(treeHandler));
+		ouMenu.add(new SeparatorMenuItem());
+		ouMenu.add(new ReloadMenuItem());
 	}
 
 	private MenuItem generateInsertMenu(){

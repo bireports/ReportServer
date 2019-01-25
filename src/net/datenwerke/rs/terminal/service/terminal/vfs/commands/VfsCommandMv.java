@@ -85,20 +85,46 @@ public class VfsCommandMv implements TerminalCommandHook{
 		String targetStr = arguments.get(1);
 
 		try{
+			/* load source */
+			VFSLocation source = vfs.getLocation(sourceStr);
+			if(source.isVirtualLocation())
+				throw new IllegalArgumentException("Source is virtual location");
+			if(! source.exists() && ! source.isWildcardLocation())
+				throw new IllegalArgumentException("Could not find " + sourceStr);
+			
+			String targetFileName = null;
+			
 			VFSLocation target = vfs.getLocation(targetStr);
-			if(! target.isFolder())
-				throw new IllegalArgumentException("target is not a folder");
+			
+			if(target.exists() && ! target.isFolder())
+				throw new IllegalArgumentException("Target file already exists.");
+			
+			if(! target.exists()){
+				targetFileName = target.getPathHelper().getLastPathway();
+				target = target.getParentLocation();
+			}
+			
+			if(! target.isFolder() || ! target.exists())
+				throw new IllegalArgumentException("Target folder does not exist.");
+			if(target.isVirtualLocation())
+				throw new IllegalArgumentException("Target is virtual location");
 
+			/* load target object */
 			Object targetFolder = target.getObject();
 			if(targetFolder instanceof SecurityService)
 				if(! securityService.checkRights((SecurityTarget)targetFolder, Read.class, Write.class))
 					throw new ViolatedSecurityException();
-			VFSLocation source = vfs.getLocation(sourceStr);
 			
-			if(target.isVirtualLocation() || source.isVirtualLocation())
-				throw new IllegalArgumentException("target or source is virtual");
+			/* perform copy */
+			List<VFSLocation> movedFileLocations = target.getFilesystemManager().moveFilesTo(source, target);
 			
-			target.getFilesystemManager().moveFilesTo(source, target);
+			if(null != targetFileName && movedFileLocations.size() != 1)
+				throw new IllegalArgumentException("Cannot rename multiple files.");
+			
+			if(null != targetFileName){
+				VFSLocation copiedFile = movedFileLocations.get(0);
+				copiedFile.rename(targetFileName);
+			} 
 		
 			return new CommandResult();
 		} catch(VFSException e){

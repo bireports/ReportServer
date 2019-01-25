@@ -32,5 +32,6 @@ public interface FileSelectionMessages extends Messages {
 	
 	String maxFilesReachedTitle();
 	String maxFilesReachedMessage(int maxfiles);
+	String noFileUploaded();
 	
 }

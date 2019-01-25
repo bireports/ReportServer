@@ -25,6 +25,10 @@ package net.datenwerke.rs.base.client.parameters.headline;
 
 import java.util.Collection;
 
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Singleton;
+
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.widgets.SeparatorTextLabel;
 import net.datenwerke.rs.base.client.parameters.headline.dto.HeadlineParameterDefinitionDto;
@@ -34,11 +38,8 @@ import net.datenwerke.rs.base.client.parameters.locale.RsMessages;
 import net.datenwerke.rs.core.client.parameters.config.ParameterConfiguratorImpl;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterDefinitionDto;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
-
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Singleton;
 
 /**
  * 
@@ -47,7 +48,8 @@ import com.google.inject.Singleton;
 @Singleton
 public class HeadlineConfigurator extends ParameterConfiguratorImpl<HeadlineParameterDefinitionDto, HeadlineParameterInstanceDto> {
 
-	public Widget getEditComponentForDefinition(HeadlineParameterDefinitionDto definition) {
+	@Override
+	public Widget getEditComponentForDefinition(HeadlineParameterDefinitionDto definition, ReportDto report) {
 		SimpleForm form = SimpleForm.getInlineInstance();
 		
 		form.addField(String.class, HeadlineParameterDefinitionDtoPA.INSTANCE.value(), RsMessages.INSTANCE.headline()); 

@@ -56,7 +56,7 @@ public interface TableReportDtoPA extends ReportDtoPA {
 	public ValueProvider<TableReportDto,List<AdditionalColumnSpecDto>> additionalColumns();
 	public ValueProvider<TableReportDto,Boolean> allowCubification();
 	public ValueProvider<TableReportDto,List<ColumnDto>> columns();
-	public ValueProvider<TableReportDto,Boolean> cube();
+	public ValueProvider<TableReportDto,Boolean> cubeFlag();
 	public ValueProvider<TableReportDto,String> cubeXml();
 	public ValueProvider<TableReportDto,Boolean> distinctFlag();
 	public ValueProvider<TableReportDto,Boolean> enableSubtotals();

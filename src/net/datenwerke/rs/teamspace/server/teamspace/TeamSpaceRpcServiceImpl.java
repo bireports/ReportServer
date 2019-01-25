@@ -55,6 +55,7 @@ import net.datenwerke.security.service.security.rights.Delete;
 import net.datenwerke.security.service.security.rights.Read;
 import net.datenwerke.security.service.security.rights.Write;
 import net.datenwerke.security.service.usermanager.UserManagerService;
+import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
 import net.datenwerke.security.service.usermanager.entities.User;
 
 /**
@@ -178,7 +179,7 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		
 		return new ListLoadResultBean<TeamSpaceDto>(dtos);
 	}
-
+	
 	/**
 	 * Deletes the passed teamspace
 	 *
@@ -252,17 +253,16 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		
 		for(StrippedDownTeamSpaceMemberDto strippedMember : members){
 			try{
-				User user = (User) userManager.getNodeById(strippedMember.getUserId());
-				if(teamSpace.isOwner(user)){
+				AbstractUserManagerNode userNode = (AbstractUserManagerNode) userManager.getNodeById(strippedMember.getFolkId());
+				
+				if(userNode instanceof User && teamSpace.isOwner((User)userNode))
 					continue;
-					//throw new ExpectedException("DEBUG: tried to add the teamspace owner as a member. aborting. ");
-				}
 				
 				/* new role */
 				TeamSpaceRole role = (TeamSpaceRole) dtoService.createPoso(strippedMember.getRole());
 				
 				/* is there already a member user */
-				TeamSpaceMember member = teamSpaceService.getMemberFor(teamSpace, user);
+				TeamSpaceMember member = teamSpaceService.getMemberFor(teamSpace, userNode);
 				
 				if(role == TeamSpaceRole.ADMIN && ! teamSpaceService.isAdmin(teamSpace)){
 					if(null == member || member.getRole() != TeamSpaceRole.ADMIN)
@@ -274,7 +274,7 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 				} else {
 					member = new TeamSpaceMember();
 					member.setRole(role);
-					member.setUser(user);
+					member.setFolk(userNode);
 					
 					teamSpaceService.persist(member);
 					teamSpace.addMember(member);
@@ -334,7 +334,7 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		
 		List<TeamSpaceDto> dtos = new ArrayList<TeamSpaceDto>();
 		for(TeamSpace ts : spaces)
-			dtos.add((TeamSpaceDto)dtoService.createListDto(ts));
+			dtos.add((TeamSpaceDto)dtoService.createDto(ts));
 			
 		return new ListLoadResultBean<TeamSpaceDto>(dtos);
 	}

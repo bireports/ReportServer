@@ -24,6 +24,7 @@
 package net.datenwerke.rs.birt.service.reportengine;
 
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import net.datenwerke.rs.base.service.datasources.definitions.CsvDatasource;
 import net.datenwerke.rs.base.service.datasources.transformers.DatasourceTransformationService;
 import net.datenwerke.rs.birt.service.reportengine.entities.BirtReport;
 import net.datenwerke.rs.birt.service.reportengine.output.generator.BirtOutputGenerator;
@@ -42,6 +44,9 @@ import net.datenwerke.rs.birt.service.reportengine.output.metadata.BirtMetadataE
 import net.datenwerke.rs.birt.service.reportengine.output.metadata.BirtMetadataExporterManager;
 import net.datenwerke.rs.birt.service.reportengine.sandbox.BirtEngineEnvironment;
 import net.datenwerke.rs.birt.service.reportengine.sandbox.BirtEngineEnvironmentFactory;
+import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
+import net.datenwerke.rs.core.service.internaldb.TempTableHelper;
+import net.datenwerke.rs.core.service.internaldb.TempTableResult;
 import net.datenwerke.rs.core.service.reportmanager.engine.CompiledReport;
 import net.datenwerke.rs.core.service.reportmanager.engine.ReportEngine;
 import net.datenwerke.rs.core.service.reportmanager.engine.config.ReportExecutionConfig;
@@ -49,6 +54,7 @@ import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.core.service.reportmanager.exceptions.ReportExecutorException;
 import net.datenwerke.rs.core.service.reportmanager.exceptions.ReportExecutorRuntimeException;
 import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterSet;
+import net.datenwerke.rs.incubator.service.scriptdatasource.entities.ScriptDatasource;
 import net.datenwerke.security.service.usermanager.entities.User;
 
 @Singleton
@@ -59,14 +65,13 @@ public class BirtReportEngine extends ReportEngine<Connection, BirtOutputGenerat
 	private final BirtReportService birtReportService;
 	private final BirtEngineEnvironmentFactory birtEngineEnvironmentFactory;
 
-
 	@Inject
 	public BirtReportEngine(
 			BirtReportService birtReportService,
 			BirtOutputGeneratorManager outputGeneratorManager,
 			BirtMetadataExporterManager metadataExporterManager,
 			BirtEngineEnvironmentFactory birtEngineEnvironmentFactory, 
-			DatasourceTransformationService datasourceTransformationService 
+			DatasourceTransformationService datasourceTransformationService
 			) {
 
 		super(outputGeneratorManager, metadataExporterManager, datasourceTransformationService);
@@ -84,23 +89,43 @@ public class BirtReportEngine extends ReportEngine<Connection, BirtOutputGenerat
 		if(!(report instanceof BirtReport))
 			throw new IllegalArgumentException("Need a report of type BirtReport."); //$NON-NLS-1$
 		BirtReport bReport = (BirtReport) report;
+		
+		if(null == bReport.getReportFile()){
+			throw new IllegalArgumentException("No file has been uploaded.");
+		}
 
 		Connection con = transformDatasource(Connection.class, report, parameters);
+		
+		DatasourceDefinition datasourceDef = report.getDatasourceContainer().getDatasource();
+		if (datasourceDef instanceof CsvDatasource || datasourceDef instanceof ScriptDatasource) {
+			processTempTableArguments(report, bReport, parameters);
+		}
 
 		return executeReport(con, bReport, parameters, outputFormat, user, configs);
+	}
+	
+	private void processTempTableArguments(Report report, BirtReport bReport, ParameterSet parameters) {
+		TempTableResult tempTableResult = transformDatasource(TempTableResult.class, report, parameters);
+		
+		TempTableHelper tempTableHelper = tempTableResult.getTableHelper();
+		tempTableHelper.setParameterValues(bReport, parameters, tempTableResult);
 	}
 	
 	private CompiledReport executeReport(Connection connection, BirtReport bReport, ParameterSet parameters, String outputFormat, User user, ReportExecutionConfig... configs) {
 		try{
 			/* get output generator */
 			BirtOutputGenerator outputGenerator = outputGeneratorManager.getOutputGenerator(outputFormat);
-			byte[] reportBytes = bReport.getReportFile().getContent().getBytes();
+			byte[] reportBytes = bReport.getReportFile().getContent().getBytes("UTF-8");
 			
 			IReportEngine reportEngine = birtReportService.getReportEngine();
 			BirtEngineEnvironment env = birtEngineEnvironmentFactory.create(reportEngine, reportBytes, parameters, connection, outputFormat, outputGenerator, configs);
 			
 			return env.call();
-		}catch(Exception e){
+		}catch (UnsupportedEncodingException e1) {
+			IllegalStateException ise = new IllegalStateException("Could not load XML as UTF-8: " + e1.getMessage()); //$NON-NLS-1$
+			ise.initCause(e1);
+			throw ise;
+		} catch(Exception e){
 			throw new ReportExecutorRuntimeException(e);
 		} finally {
 			try {

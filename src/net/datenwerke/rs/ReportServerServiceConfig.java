@@ -225,7 +225,7 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 
 	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
-	public static final String CODE_VERSION = "2018-06-26-15-44-00";
+	public static final String CODE_VERSION = "2018-08-27-10-01-33";
 	
 	public static final String ENTERPRISE_MODULE_LOCATION = "net.datenwerke.rsenterprise.main.service.RsEnterpriseModule";
 	private static final String ENTERPRISE_MODULE_LOAD_MODULE_METHOD = "getEnterpriseModules";

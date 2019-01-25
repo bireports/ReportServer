@@ -65,6 +65,16 @@ public class UserManagerVFS extends TreeBasedVirtualFileSystem<AbstractUserManag
 		else
 			return ((User)node).getUsername();
 	}
+	
+	@Override
+	protected void doRename(AbstractUserManagerNode node, String name) {
+		if(node instanceof OrganisationalUnit)
+			((OrganisationalUnit)node).setName(name);
+		else if(node instanceof Group)
+			((Group)node).setName(name);
+		else
+			((User)node).setUsername(name);
+	}
 
 	@Override
 	protected AbstractUserManagerNode instantiateFolder(String folder) {

@@ -43,6 +43,6 @@ public class Table2CSV extends Export2CSV {
 	}
 
 	public boolean consumes(ReportDto report) {
-		return report instanceof TableReportDto && !((TableReportDto)report).isCube();
+		return report instanceof TableReportDto && !((TableReportDto)report).isCubeFlag();
 	}
 }

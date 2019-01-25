@@ -65,7 +65,7 @@ var Settings = {
     DEFAULT_VIEW_STATE: 'edit', // could be 'edit' as well
     DEMO: false,
     TELEMETRY_SERVER: '',
-    LOCALSTORAGE_EXPIRATION: 10 * 60 * 60 * 1000 /* 10 hours, in ms */,
+    LOCALSTORAGE_EXPIRATION: 0/* 10 * 60 * 60 * 1000 */ /* 10 hours, in ms */,
     UPGRADE: true,
     EVALUATION_PANEL_LOGIN: false,
     QUERY_OVERWRITE_WARNING: false,

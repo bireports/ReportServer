@@ -25,17 +25,6 @@ package net.datenwerke.rs.base.client.parameters.blatext;
 
 import java.util.Collection;
 
-import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
-import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCRichTextEditor;
-import net.datenwerke.gxtdto.client.resources.BaseResources;
-import net.datenwerke.rs.base.client.parameters.blatext.dto.BlatextParameterDefinitionDto;
-import net.datenwerke.rs.base.client.parameters.blatext.dto.BlatextParameterInstanceDto;
-import net.datenwerke.rs.base.client.parameters.locale.RsMessages;
-import net.datenwerke.rs.core.client.parameters.config.ParameterConfiguratorImpl;
-import net.datenwerke.rs.core.client.parameters.dto.ParameterDefinitionDto;
-import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
-import net.datenwerke.rs.theme.client.icon.BaseIcon;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -43,6 +32,17 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Singleton;
+
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
+import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCRichTextEditor;
+import net.datenwerke.rs.base.client.parameters.blatext.dto.BlatextParameterDefinitionDto;
+import net.datenwerke.rs.base.client.parameters.blatext.dto.BlatextParameterInstanceDto;
+import net.datenwerke.rs.base.client.parameters.locale.RsMessages;
+import net.datenwerke.rs.core.client.parameters.config.ParameterConfiguratorImpl;
+import net.datenwerke.rs.core.client.parameters.dto.ParameterDefinitionDto;
+import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
 /**
  * 
@@ -69,7 +69,8 @@ public class BlatextConfigurator extends ParameterConfiguratorImpl<BlatextParame
 		resources.css().ensureInjected();
 	}
 	
-	public Widget getEditComponentForDefinition(BlatextParameterDefinitionDto definition) {
+	@Override
+	public Widget getEditComponentForDefinition(BlatextParameterDefinitionDto definition, ReportDto report) {
 		SimpleForm form = SimpleForm.getInlineInstance();
 		
 		form.addField(String.class, BlatextParameterDefinitionDto.PROPERTY_VALUE, RsMessages.INSTANCE.text(), new SFFCRichTextEditor() { 

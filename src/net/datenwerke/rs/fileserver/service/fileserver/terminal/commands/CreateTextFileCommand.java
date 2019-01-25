@@ -23,6 +23,8 @@
  
 package net.datenwerke.rs.fileserver.service.fileserver.terminal.commands;
 
+import com.google.inject.Inject;
+
 import net.datenwerke.rs.fileserver.service.fileserver.FileServerService;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.AbstractFileServerNode;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFile;
@@ -34,10 +36,11 @@ import net.datenwerke.rs.terminal.service.terminal.helpers.CommandParser;
 import net.datenwerke.rs.terminal.service.terminal.hooks.TerminalCommandHook;
 import net.datenwerke.rs.terminal.service.terminal.obj.CommandResult;
 import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocation;
+import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocationInfo;
+import net.datenwerke.rs.terminal.service.terminal.vfs.VFSObjectInfo;
+import net.datenwerke.rs.terminal.service.terminal.vfs.VirtualFileSystemDeamon;
 import net.datenwerke.rs.terminal.service.terminal.vfs.exceptions.VFSException;
 import net.datenwerke.rs.terminal.service.terminal.vfs.helper.PathHelper;
-
-import com.google.inject.Inject;
 
 public class CreateTextFileCommand implements TerminalCommandHook {
 
@@ -65,9 +68,15 @@ public class CreateTextFileCommand implements TerminalCommandHook {
 	public CommandResult execute(CommandParser parser, TerminalSession session) throws TerminalException {
 		String completePath = parser.getArgumentNr(1);
 		
+		if (null == completePath)
+			throw new IllegalArgumentException("Expected filename");
+		
 		PathHelper helper = new PathHelper(completePath);
 		String path = helper.getPath();
 		String fileName = helper.getLastPathway();
+		
+		if(null == fileName || "".equals(fileName.trim()))
+			throw new IllegalArgumentException("Expected filename");
 
 		VFSLocation location;
 		if("".equals(path))
@@ -82,6 +91,14 @@ public class CreateTextFileCommand implements TerminalCommandHook {
 		
 		if(! (location.getFilesystemManager() instanceof FileServerVfs))
 			return new CommandResult("wrong filesystem");
+		
+		/* check if file exists */
+		VirtualFileSystemDeamon vfs = session.getFileSystem();
+		VFSLocationInfo locationInfo = vfs.getLocationInfo(location);
+		for(VFSObjectInfo info : locationInfo.getChildInfos()){
+			if(fileName.equals(info.getName()))
+				return  new CommandResult("A file or folder with this name already exists");
+		}
 		
 		AbstractFileServerNode parent = null;
 		try {

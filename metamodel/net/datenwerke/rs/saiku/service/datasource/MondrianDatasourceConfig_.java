@@ -31,7 +31,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(MondrianDatasourceConfig.class)
 public abstract class MondrianDatasourceConfig_ extends net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinitionConfig_ {
 
-	public static volatile SingularAttribute<MondrianDatasourceConfig, String> cube;
+	public static volatile SingularAttribute<MondrianDatasourceConfig, String> cubeName;
 
 }
 

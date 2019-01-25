@@ -25,13 +25,14 @@ package net.datenwerke.gf.client.homepage;
 
 import java.util.Collection;
 
-import net.datenwerke.gf.client.homepage.modules.ClientTempModule;
-import net.datenwerke.gf.client.homepage.ui.DwMainViewport;
-
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+
+import net.datenwerke.gf.client.homepage.modules.ClientMainModule;
+import net.datenwerke.gf.client.homepage.modules.ClientTempModule;
+import net.datenwerke.gf.client.homepage.ui.DwMainViewport;
 
 /**
  * This implementation of {@link DwMainViewportUiService} configure the 
@@ -82,6 +83,10 @@ public class DwMainViewportUiServiceImpl implements DwMainViewportUiService{
 		return viewport.getTempModules();
 	}
 
+	@Override
+	public void showModule(ClientMainModule module) {
+		viewport.showModule(module);
+	}
 
 	@Override
 	public void setLoadingMask() {

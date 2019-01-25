@@ -38,6 +38,7 @@ public class TeamSpace__ implements net.datenwerke.entityservices.metadatagenera
 	public static final String name = "name";
 	public static final String owner = "owner";
 	public static final String teamspaceService = "teamspaceService";
+	public static final String userManagerService = "userManagerService";
 	public static final String version = "version";
 
 }

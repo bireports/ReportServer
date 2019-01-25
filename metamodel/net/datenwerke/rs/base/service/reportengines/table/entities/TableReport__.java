@@ -34,7 +34,7 @@ public class TableReport__ extends net.datenwerke.rs.core.service.reportmanager.
 	public static final String additionalColumns = "additionalColumns";
 	public static final String allowCubification = "allowCubification";
 	public static final String columns = "columns";
-	public static final String cube = "cube";
+	public static final String cubeFlag = "cubeFlag";
 	public static final String cubeXml = "cubeXml";
 	public static final String distinctFlag = "distinctFlag";
 	public static final String enableSubtotals = "enableSubtotals";

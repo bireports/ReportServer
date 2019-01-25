@@ -89,8 +89,15 @@ public class JasperUtilsServiceImpl implements JasperUtilsService {
 			Element parameterElement = (Element)parameterTags.item(i);
 		
 			JasperParameterProposal proposal = JasperParameterProposal.createFrom(parameterElement);
+			if (null != proposal.getKey() && 
+					( proposal.getKey().trim().equals("_RS_TMP_TABLENAME")  || proposal.getKey().trim().equals("_RS_query") )) {
+				// these values are set automatically. We don't want to extract them and show them to the user.
+				continue;
+			}
+			
 			if(! "net.sf.jasperreports.engine.JasperReport".equals(proposal.getType()))
 				parameters.add(proposal);
+			
 		}
 		
 		return parameters;

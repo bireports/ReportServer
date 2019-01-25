@@ -211,7 +211,7 @@ public class TableReportViewStatusBarInfoHooker implements ReportPreviewViewStat
 	
 	@Override
 	public void reportPreviewViewStatusbarHook_reportToBeReloaded(ReportDto report, AbstractReportPreviewView abstractReportPreviewView) {
-		if(! (report instanceof TableReportDto) || ((TableReportDto)report).isCube())
+		if(! (report instanceof TableReportDto) || ((TableReportDto)report).isCubeFlag())
 			return;
 		
 		currentPage = 1;
@@ -221,7 +221,7 @@ public class TableReportViewStatusBarInfoHooker implements ReportPreviewViewStat
 
 	@Override
 	public void reportPreviewViewStatusbarHook_reportUpdated(ReportDto report, final AbstractReportPreviewView abstractReportPreviewView, boolean configChanged) {
-		if(! (report instanceof TableReportDto) || ((TableReportDto)report).isCube())
+		if(! (report instanceof TableReportDto) || ((TableReportDto)report).isCubeFlag())
 			return;
 		
 		if(! configChanged)
@@ -322,7 +322,7 @@ public class TableReportViewStatusBarInfoHooker implements ReportPreviewViewStat
 
 	@Override
 	public void reportPreviewViewStatusbarHook_cancel(ReportDto report,	AbstractReportPreviewView abstractReportPreviewView) {
-		if(! (report instanceof TableReportDto) || ((TableReportDto)report).isCube())
+		if(! (report instanceof TableReportDto) || ((TableReportDto)report).isCubeFlag())
 			return;
 		
 		String token = abstractReportPreviewView.getExecuteReportToken()  + ":" + tokenLocalPart;

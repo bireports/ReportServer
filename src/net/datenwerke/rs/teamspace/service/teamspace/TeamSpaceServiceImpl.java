@@ -25,6 +25,7 @@ package net.datenwerke.rs.teamspace.service.teamspace;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,6 +62,7 @@ import net.datenwerke.security.service.security.exceptions.ViolatedSecurityExcep
 import net.datenwerke.security.service.security.rights.Read;
 import net.datenwerke.security.service.usermanager.UserManagerService;
 import net.datenwerke.security.service.usermanager.UserPropertiesService;
+import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
 import net.datenwerke.security.service.usermanager.entities.User;
 import net.datenwerke.security.service.usermanager.entities.UserProperty;
 
@@ -118,7 +120,7 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 	public void provideAccess(TeamSpace teamSpace, User user, TeamSpaceRole role){
 		if(! mayAccess(user, teamSpace)){
 			TeamSpaceMember member = new TeamSpaceMember();
-			member.setUser(user);
+			member.setFolk(user);
 			member.setRole(role);
 			teamSpace.addMember(member);
 
@@ -158,7 +160,7 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 			try{
 				long id = Long.valueOf(property.getValue());
 				TeamSpace teamSpace = getTeamSpaceById(id);
-				if(null != teamSpace && mayAccess(user, teamSpace))
+				if(null != teamSpace && getTeamSpaces(user).contains(teamSpace))
 					return teamSpace;
 			} catch(NumberFormatException e){
 			} catch(NoResultException e){
@@ -208,18 +210,31 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 
 	@Override
 	public Collection<TeamSpace> getTeamSpaces(User user) {
-		Collection<TeamSpace> teamspaces = getTeamSpacesWhereMember(user);
-		teamspaces.addAll(getOwnedTeamSpaces(user));
+		List<Long> idList = new ArrayList<>();
+		for(TeamSpace space : getAllTeamSpaces())
+			if(mayAccess(user, space))
+				idList.add(space.getId());
+		
+		if(null == idList || idList.isEmpty())
+			return Collections.emptySet();
+		
+		StringBuilder query = new StringBuilder("from ")
+				.append(TeamSpace.class.getSimpleName())
+				.append(" WHERE id IN :ids");
+
+		List<TeamSpace> teamspaces = entityManagerProvider.get()
+				.createQuery(query.toString())
+				.setParameter("ids", idList)
+				.getResultList();
+
 		return teamspaces;
 	}
 	
-	@SimpleQuery(join=@Join(joinAttribute=TeamSpace__.members,where=@Predicate(attribute=TeamSpaceMember__.user, value="user")))
-	public Collection<TeamSpace> getTeamSpacesWhereMember(@Named("user") User user) {
+	@Override
+	@SimpleQuery(join=@Join(joinAttribute=TeamSpace__.members,where=@Predicate(attribute=TeamSpaceMember__.folk, value="folk")))
+	public Collection<TeamSpace> getTeamSpacesWithMemberFor(@Named("folk") AbstractUserManagerNode folk) {
 		return null; // magic
 	}
-	
-	
-
 	
 	@Override
 	public Collection<TeamSpace> getOwnedTeamSpaces() {
@@ -268,6 +283,7 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 	public TeamSpace merge(TeamSpace teamSpace) {
 		EntityManager em = entityManagerProvider.get();
 		teamSpace = em.merge(teamSpace);
+		
 		return teamSpace;
 	}
 
@@ -476,28 +492,28 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 
 	@Override
 	public TeamSpaceRole getRole(User user, TeamSpace teamSpace) {
-		TeamSpaceMember member = getMemberFor(teamSpace, user);
-		if(null == member)
-			return null;
-		return member.getRole();
+		TeamSpaceRole role = null;
+
+		for(TeamSpaceMember member : teamSpace.getMembers()){
+			if(userService.userInFolk(user, member.getFolk())){
+				if(null == role || role.compareTo(member.getRole()) >= 0)
+					role = member.getRole();
+			}
+		}
+
+		return role;
 	}
 	
 	@Override
-	public TeamSpaceMember getMemberFor(TeamSpace teamSpace, User user) {
-		/* ideally change mapping, such that member knows its teamSpace */
-		Collection<TeamSpaceMember> membersFor = getMembersFor(user);
-		
-		for(TeamSpaceMember member : teamSpace.getMembers()){
-			for(TeamSpaceMember m2 : membersFor){
-				if(member.equals(m2))
-					return member;
-			}
-		}
+	public TeamSpaceMember getMemberFor(TeamSpace teamSpace, AbstractUserManagerNode folk) {
+		for(TeamSpaceMember member : teamSpace.getMembers())
+			if(folk.equals(member.getFolk()))
+				return member;
 		return null;
 	}
 
-	@QueryByAttribute(where=TeamSpaceMember__.user)
-	protected Collection<TeamSpaceMember> getMembersFor(User user) {
+	@QueryByAttribute(where=TeamSpaceMember__.folk)
+	protected Collection<TeamSpaceMember> getMembersFor(AbstractUserManagerNode folk) {
 		return null;
 	}
 	
@@ -528,7 +544,7 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 	
 	@Override
 	public boolean mayAccess(User user, TeamSpace teamSpace){
-		return isGlobalTsAdmin(user) || isGuest(user, teamSpace) || isOwner(teamSpace);
+		return isGlobalTsAdmin(user) || isOwner(user, teamSpace) || isGuest(user, teamSpace);
 	}
 
 	@Override

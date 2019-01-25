@@ -124,7 +124,7 @@ public class TableModelDbHelper {
 		for(int i = 0; i < td.getColumnCount(); i++){
 			
 			String columnName = td.getColumnNames().get(i);
-			columnName = columnName.replaceAll("[^a-zA-Z0-9_]", "").replaceAll("\\d*$", "");
+			columnName = columnName.replaceAll("[^a-zA-Z0-9_]", "");
 			
 			createqry.append(columnName).append (" ");
 			insertstmt.append(columnName);

@@ -266,8 +266,9 @@ public class DbC3p0PoolServiceImpl extends DbPoolServiceImpl<ComboPooledDataSour
 			e1.printStackTrace();
 		}
 		
-		// seductive, isn't it?
-//		pool.setProperties(config.getProperties());
+		/* first set jdbc properties */
+		if(null != config.getJdbcProperties())
+			pool.setProperties(config.getJdbcProperties());
 		
 		try {
 			pool.setDriverClass(config.getDriver());
