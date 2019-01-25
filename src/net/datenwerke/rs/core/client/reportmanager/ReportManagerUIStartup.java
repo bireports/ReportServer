@@ -23,12 +23,22 @@
  
 package net.datenwerke.rs.core.client.reportmanager;
 
+import java.util.ArrayList;
+
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.shared.EventBus;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.sencha.gxt.data.shared.TreeStore;
+
 import net.datenwerke.gf.client.administration.AdministrationUIModule;
 import net.datenwerke.gf.client.administration.AdministrationUIService;
 import net.datenwerke.gf.client.administration.hooks.AdminModuleProviderHook;
 import net.datenwerke.gf.client.history.HistoryUiService;
 import net.datenwerke.gf.client.managerhelper.hooks.MainPanelViewProviderHook;
 import net.datenwerke.gf.client.managerhelper.hooks.TreeConfiguratorHook;
+import net.datenwerke.gf.client.managerhelper.tree.ManagerHelperTree;
 import net.datenwerke.gf.client.treedb.TreeDBHistoryCallback;
 import net.datenwerke.gf.client.treedb.UITree;
 import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHook;
@@ -47,14 +57,12 @@ import net.datenwerke.rs.core.client.reportmanager.provider.treehookers.ReportMa
 import net.datenwerke.rs.core.client.reportmanager.security.ReportManagerGenericTargetIdentifier;
 import net.datenwerke.rs.core.client.reportmanager.security.ReportManagerViewSecurityTargetDomainHooker;
 import net.datenwerke.rs.core.client.reportmanager.ui.ReportManagerPanel;
+import net.datenwerke.rs.core.client.reportvariants.ui.ReportVariantsView;
 import net.datenwerke.security.client.security.SecurityUIService;
 import net.datenwerke.security.client.security.dto.ReadDto;
 import net.datenwerke.security.client.security.hooks.GenericSecurityViewDomainHook;
 import net.datenwerke.security.client.security.hooks.GenericTargetProviderHook;
-
-import com.google.gwt.event.shared.EventBus;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 
 public class ReportManagerUIStartup  {
 
@@ -119,7 +127,31 @@ public class ReportManagerUIStartup  {
 		
 		/* configureHistory */
 		historyService.addHistoryCallback(ReportManagerUIModule.REPORTMANAGER_FAV_HISTORY_TOKEN,
-				new TreeDBHistoryCallback(reportManagerTree, eventBus, reportManagerAdminPanel, AdministrationUIModule.ADMIN_PANEL_ID));
+				new TreeDBHistoryCallback(reportManagerTree, eventBus, reportManagerAdminPanel, AdministrationUIModule.ADMIN_PANEL_ID){
+			@Override
+			protected void doHandleEvent(final ArrayList<Long> nodes, final UITree tree, final TreeStore<AbstractNodeDto> store) {
+				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						int i = nodes.size() - 1;
+						boolean showVariants = false;
+						while(i >= 0){
+							AbstractNodeDto item = store.findModelWithKey(String.valueOf(nodes.get(i--)));
+							if(null != item){
+								tree.getSelectionModel().select(item, false);
+								tree.scrollIntoView(item);
+								break;
+							} else {
+								showVariants = true;
+							}
+						}
+						
+						if(showVariants && tree instanceof ManagerHelperTree)
+							((ManagerHelperTree)tree).showTabOnSelection(ReportVariantsView.VIEW_ID);
+					}
+				});
+			}
+		});
 		
 	}
 

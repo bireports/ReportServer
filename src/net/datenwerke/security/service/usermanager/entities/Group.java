@@ -185,5 +185,8 @@ public class Group extends AbstractUserManagerNode {
 			_getAllReferencedGroups(refGroups, g);
 	}
 
-
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 }

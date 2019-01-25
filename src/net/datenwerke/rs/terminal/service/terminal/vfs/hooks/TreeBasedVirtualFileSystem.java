@@ -115,6 +115,13 @@ public abstract class TreeBasedVirtualFileSystem<N extends AbstractNode<N>> exte
 	}
 	
 	@Override
+	public String getNameFor(VFSLocation location) {
+		N node = getNodeByLocation(location);
+		
+		return getNodeName(node);
+	}
+	
+	@Override
 	public String translatePathWay(VFSLocation location) {
 		return getNodeName((N) getObjectFor(location));
 	}
@@ -267,6 +274,10 @@ public abstract class TreeBasedVirtualFileSystem<N extends AbstractNode<N>> exte
 
 	public boolean isFolder(VFSLocation location){
 		N node = getNodeByLocation(location);
+		return doIsFolder(node);
+	}
+	
+	protected boolean doIsFolder(N node) {
 		return ((AbstractNode<?>)node).getSupportedChildren().length > 0;
 	}
 	
@@ -347,11 +358,13 @@ public abstract class TreeBasedVirtualFileSystem<N extends AbstractNode<N>> exte
 	}
 	
 	@Override
-	public void doCopyFilesTo(VFSLocation sources, VFSLocation target, boolean deep) throws VFSException {
+	public List<VFSLocation> doCopyFilesTo(VFSLocation sources, VFSLocation target, boolean deep) throws VFSException {
 		N newParent = getNodeByLocation(target);
 		
 		/* check rights */
 		checkWrite(newParent);
+		
+		List<VFSLocation> copiedFiles = new ArrayList<>();
 		
 		for(VFSLocation source : sources.resolveWildcards(terminalSession.getFileSystem())){
 			Object obj = source.getObject();
@@ -365,8 +378,12 @@ public abstract class TreeBasedVirtualFileSystem<N extends AbstractNode<N>> exte
 			
 			/* the copy method without checking rights is somewhat hidden... */
 			SecuredTreeDBManagerImpl treeDBManager = (SecuredTreeDBManagerImpl)treeDBManagerProvider.get();
-			treeDBManager.copy((SecuredAbstractNode)sourceNode, (SecuredAbstractNode)newParent, deep, false);
+			SecuredAbstractNode copiedNode = treeDBManager.copy((SecuredAbstractNode)sourceNode, (SecuredAbstractNode)newParent, deep, false);
+			
+			copiedFiles.add(target.newSubLocation(copiedNode.getId(), true));
 		}
+		
+		return copiedFiles;
 	}
 	
 	

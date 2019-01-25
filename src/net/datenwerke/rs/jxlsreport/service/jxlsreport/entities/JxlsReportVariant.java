@@ -109,4 +109,9 @@ public class JxlsReportVariant extends JxlsReport implements ReportVariant {
 		super.setParameterDefinitions(null);
 		super.setDatasourceContainer(null);
 	}
+	
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 }

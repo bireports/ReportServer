@@ -25,10 +25,13 @@ package net.datenwerke.rs.tsreportarea.client.tsreportarea;
 
 import java.util.Collection;
 
+import com.google.gwt.event.shared.EventBus;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.gf.client.history.HistoryCallback;
 import net.datenwerke.gf.client.history.HistoryLocation;
 import net.datenwerke.gf.client.history.HistoryUiService;
-import net.datenwerke.gf.client.managerhelper.hooks.TreeConfiguratorHook;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.eventbus.events.SubmoduleDisplayRequest;
 import net.datenwerke.gxtdto.client.eventbus.events.SubmoduleDisplayRequest.ParentDisplayedCallback;
@@ -55,7 +58,6 @@ import net.datenwerke.rs.tsreportarea.client.tsreportarea.hookers.MenuOpenHooker
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hookers.MenuRenameHooker;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hookers.ReferenceCallHistoryCallback;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hookers.ReportSelectionTeamspaceRepositoryProvider;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.hookers.ReportVariantMenuHooker;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hookers.TsDiskReportHandler;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hookers.TsUrlViewObjectInfoPostProcessor;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.hooks.GeneralReferenceHandlerHook;
@@ -67,10 +69,6 @@ import net.datenwerke.rs.tsreportarea.client.tsreportarea.ui.TsDiskMainComponent
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.ui.listviews.TsDiskGridListView;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.ui.listviews.TsDiskIconListView;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-
-import com.google.gwt.event.shared.EventBus;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class TsDiskUIStartup {
 
@@ -96,8 +94,6 @@ public class TsDiskUIStartup {
 		final Provider<TsDiskProvider> simpleFormDiskNodeProvider,
 		
 		final Provider<TsUrlViewObjectInfoPostProcessor> urlViewPostProcessor,
-		
-		final Provider<ReportVariantMenuHooker> reportVariantMenuHooker,
 		
 		final Provider<TsDiskReportHandler> reportReferenceHandler,
 		
@@ -144,9 +140,6 @@ public class TsDiskUIStartup {
 		hookHandler.attachHooker(TsFavoriteMenuHook.class, exportBtnHooker);
 		hookHandler.attachHooker(TsFavoriteMenuHook.class, addFolderHooker);
 		hookHandler.attachHooker(TsFavoriteMenuHook.class, menuDeleteHooker, HookHandlerService.PRIORITY_LOW);
-		
-		/* import variants */
-		hookHandler.attachHooker(TreeConfiguratorHook.class, reportVariantMenuHooker);
 		
 		/* import post processor */
 		hookHandler.attachHooker(ImporterPostProcessorConfiguratorHook.class, importPostProcessorProvider);

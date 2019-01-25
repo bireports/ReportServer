@@ -110,7 +110,7 @@ public abstract class SecuredTreeDBManagerImpl<A extends SecuredAbstractNode<A>>
 		return super.copy(node, newParent);
 	}
 	
-	public  void copy(A source, A target, boolean deep, boolean checkRights) {
+	public A copy(A source, A target, boolean deep, boolean checkRights) {
 		if(checkRights)
 			testCopyRights(source, target);
 		A copiedNode = super.copy(source, target);
@@ -118,6 +118,8 @@ public abstract class SecuredTreeDBManagerImpl<A extends SecuredAbstractNode<A>>
 		if(deep)
 			for(A child : source.getChildren())
 				copy(child, copiedNode, true, checkRights);
+		
+		return copiedNode;
 	}
 	
 	

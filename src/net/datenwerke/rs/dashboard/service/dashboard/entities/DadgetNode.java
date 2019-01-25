@@ -100,4 +100,9 @@ public class DadgetNode extends AbstractDashboardManagerNode  {
 	public void setDadget(Dadget dadget) {
 		this.dadget = dadget;
 	}
+	
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 }

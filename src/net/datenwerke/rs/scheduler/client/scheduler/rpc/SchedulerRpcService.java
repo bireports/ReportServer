@@ -25,6 +25,10 @@ package net.datenwerke.rs.scheduler.client.scheduler.rpc;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.scheduler.client.scheduler.dto.ReportScheduleDefinition;
@@ -33,10 +37,6 @@ import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.Repor
 import net.datenwerke.scheduler.client.scheduler.dto.filter.JobFilterConfigurationDto;
 import net.datenwerke.scheduler.client.scheduler.dto.filter.JobFilterCriteriaDto;
 import net.datenwerke.scheduler.client.scheduler.dto.history.ExecutionLogEntryDto;
-
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 
 @RemoteServiceRelativePath("scheduler")
 public interface SchedulerRpcService extends RemoteService{
@@ -63,4 +63,6 @@ public interface SchedulerRpcService extends RemoteService{
 	boolean remove(Long jobId) throws ServerCallFailedException;
 
 	void clearErrorStatus(Long jobId) throws ServerCallFailedException;
+	
+	List<ReportScheduleJobListInformation> getReportJobList(ReportDto report);
 }

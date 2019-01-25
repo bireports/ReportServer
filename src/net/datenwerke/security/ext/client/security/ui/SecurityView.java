@@ -63,6 +63,11 @@ public class SecurityView extends MainPanelView {
 	public String getViewId() {
 		return VIEW_ID;
 	}
+	
+	@Override
+	public boolean isSticky() {
+		return true;
+	}
 
 	@Override
 	public boolean appliesTo(AbstractNodeDto item) {

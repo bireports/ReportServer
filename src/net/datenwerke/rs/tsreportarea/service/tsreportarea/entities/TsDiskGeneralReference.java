@@ -30,20 +30,21 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.Type;
+import org.hibernate.envers.Audited;
 
 import net.datenwerke.dtoservices.dtogenerator.annotations.AdditionalField;
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
+import net.datenwerke.gf.base.service.annotations.Field;
 import net.datenwerke.gxtdto.client.dtomanager.DtoView;
 import net.datenwerke.rs.tsreportarea.service.tsreportarea.entities.post.GeneralReference2DtoPost;
 import net.datenwerke.rs.tsreportarea.service.tsreportarea.locale.TsDiskMessages;
 import net.datenwerke.rs.utils.instancedescription.annotations.Description;
 import net.datenwerke.rs.utils.instancedescription.annotations.InstanceDescription;
 import net.datenwerke.rs.utils.instancedescription.annotations.Title;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.envers.Audited;
-import net.datenwerke.gf.base.service.annotations.Field;
 
 /**
  * 
@@ -79,7 +80,7 @@ public abstract class TsDiskGeneralReference extends AbstractTsDiskNode{
 		displayTitle=true
 	)
 	@Field
-	@Column(length = 128)
+	@Column(length = 128,nullable=false)
 	@Title
 	private String name;
 
@@ -127,4 +128,8 @@ public abstract class TsDiskGeneralReference extends AbstractTsDiskNode{
 		return 0;
 	}
 
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 }

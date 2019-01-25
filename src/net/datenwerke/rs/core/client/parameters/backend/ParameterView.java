@@ -183,11 +183,7 @@ public class ParameterView extends MainPanelView{
 		
 		/* create wrapper for grid */
 		container.add(createToolbar(), new VerticalLayoutData(1, -1));
-		
-		VerticalLayoutContainer gridContainer = new VerticalLayoutContainer();
-		gridContainer.setScrollMode(ScrollMode.AUTO);
-		gridContainer.add(parameterGrid, new VerticalLayoutData(1, -1));
-		container.add(gridContainer, new VerticalLayoutData(1,1));
+		container.add(parameterGrid, new VerticalLayoutData(1,1));
 		
 		/* prepare panel */
 		DwContentPanel panel = new DwContentPanel();
@@ -199,9 +195,9 @@ public class ParameterView extends MainPanelView{
 		
 		/* wrapper */
 		VerticalLayoutContainer wrapper = new VerticalLayoutContainer();
-		wrapper.add(panel, new VerticalLayoutData(1,-1,new Margins(10)));
+		wrapper.add(panel, new VerticalLayoutData(1,1,new Margins(10)));
 		
-		return panel;
+		return wrapper;
 	}
 
 

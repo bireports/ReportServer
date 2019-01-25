@@ -30,28 +30,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.datenwerke.gf.client.treedb.UITree;
-import net.datenwerke.gf.client.treedb.dnd.UITreeDragSource;
-import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
-import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwToggleButton;
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwBorderContainer;
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwNorthSouthContainer;
-import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
-import net.datenwerke.gxtdto.client.dtomanager.Dto;
-import net.datenwerke.gxtdto.client.forms.locale.FormsMessages;
-import net.datenwerke.gxtdto.client.forms.selection.SelectionMode;
-import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.ui.helper.grid.DeletableRowsGrid;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
-import net.datenwerke.gxtdto.client.utils.modelkeyprovider.DtoIdModelKeyProvider;
-import net.datenwerke.rs.theme.client.icon.BaseIcon;
-import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.Store;
@@ -73,6 +56,26 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+
+import net.datenwerke.gf.client.treedb.UITree;
+import net.datenwerke.gf.client.treedb.dnd.UITreeDragSource;
+import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
+import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwToggleButton;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwBorderContainer;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwNorthSouthContainer;
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
+import net.datenwerke.gxtdto.client.dtomanager.Dto;
+import net.datenwerke.gxtdto.client.forms.locale.FormsMessages;
+import net.datenwerke.gxtdto.client.forms.selection.SelectionMode;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.gxtdto.client.ui.helper.grid.DeletableRowsGrid;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
+import net.datenwerke.gxtdto.client.utils.modelkeyprovider.DtoIdModelKeyProvider;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
+import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 
 /**
  * 
@@ -103,12 +106,13 @@ public class TreeSelectionPopup extends DwWindow {
 		this.treePanel = treePanel;
 		this.types = types;
 		
-		/* initilaize UI */
+		/* initialize UI */
 		initializeUI();
 		
 		/* load all items */
-		if(! treePanel.isAllLoaded())
+		if(! treePanel.isAllLoaded()) {
 			treePanel.loadAll();
+		}
 	}
 
 
@@ -356,6 +360,14 @@ public class TreeSelectionPopup extends DwWindow {
 							if(selectionMode ==SelectionMode.SINGLE)
 								selectedItemsStore.clear();
 							selectedItemsStore.add(dto);
+							
+							if(selectionMode == SelectionMode.SINGLE){
+								List<AbstractNodeDto> selectedItems = selectedItemsStore.getAll();
+								if(validateSelectedItems(selectedItems)){
+									hide();
+									itemsSelected(selectedItems);
+								}
+							}
 						}
 					}
 		    	}
@@ -433,8 +445,13 @@ public class TreeSelectionPopup extends DwWindow {
 	public void hide() {
 		textFilter.clear();
 		textFilter.unbind(treePanel.getStore());
-		treePanel.getStore().removeFilters();
 		super.hide();
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				treePanel.getStore().removeFilters();
+			}
+		});
 	}
 
 	public SelectionFilter getSelectionFilter() {

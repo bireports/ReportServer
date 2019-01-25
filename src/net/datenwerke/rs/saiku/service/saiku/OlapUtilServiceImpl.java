@@ -443,8 +443,7 @@ public class OlapUtilServiceImpl implements OlapUtilService {
 					if (!reportCube.getName().equals(cube.getName())) 
 						continue;
 					
-					CellRegion allCells = cacheControl.createMeasuresRegion(cube);
-					cacheControl.flush(allCells);
+					cacheControl.flushSchema(cube.getSchema());
 				}
 				
 			} catch (Exception e) {

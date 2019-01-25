@@ -24,10 +24,13 @@
 package net.datenwerke.rs.dashboard.server.dashboard;
 
 import net.datenwerke.gxtdto.server.dtomanager.DtoService;
+import net.datenwerke.rs.core.service.datasourcemanager.entities.AbstractDatasourceManagerNode;
+import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
 import net.datenwerke.rs.dashboard.client.dashboard.rpc.DashboardTreeLoader;
 import net.datenwerke.rs.dashboard.client.dashboard.rpc.DashboardTreeManager;
 import net.datenwerke.rs.dashboard.service.dashboard.DashboardManagerService;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.AbstractDashboardManagerNode;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.DadgetNode;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.Dashboard;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardNode;
 import net.datenwerke.rs.utils.entitycloner.EntityClonerService;
@@ -74,6 +77,21 @@ public class DashboardTreeRpcServiceImpl extends TreeDBManagerTreeHandler<Abstra
 	@Override
 	protected boolean allowDuplicateNode(AbstractDashboardManagerNode realNode) {
 		return true;
+	}
+	
+	@Override
+	protected void nodeCloned(AbstractDashboardManagerNode clonedNode) {
+		if(! (clonedNode instanceof AbstractDashboardManagerNode))
+			throw new IllegalArgumentException();
+		
+		if (clonedNode instanceof DadgetNode) {
+			DadgetNode dadgetNode = (DadgetNode) clonedNode;
+			dadgetNode.setName(dadgetNode.getName() == null ? "copy" : dadgetNode.getName() + " (copy)");
+		} else if (clonedNode instanceof DashboardNode) {
+			DashboardNode dashboardNode = (DashboardNode) clonedNode;
+			dashboardNode.setName(dashboardNode.getName() == null ? "copy" : dashboardNode.getName() + " (copy)");
+		}
+		
 	}
 }
 	

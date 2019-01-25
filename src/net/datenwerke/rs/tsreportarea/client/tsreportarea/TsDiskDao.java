@@ -39,6 +39,7 @@ import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsReferenceInfo;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.container.TsDiskItemList;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.rpc.TsDiskRpcServiceAsync;
 
@@ -142,6 +143,10 @@ public class TsDiskDao extends Dao {
 				hooker.prepareForExecutionOrStorage(reportDto, executeToken);
 			}
 		}
+	}
+	
+	public void getReferenceInfosFor(ReportDto report, AsyncCallback<List<TsReferenceInfo>> callback){
+		rpcService.getReferenceInfosFor(report, transformAndKeepCallback(callback));
 	}
 }
 

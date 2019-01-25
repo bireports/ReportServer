@@ -72,6 +72,7 @@ import net.datenwerke.rs.core.service.reportmanager.engine.CompiledReport;
 import net.datenwerke.rs.core.service.reportmanager.engine.config.RECReportExecutorToken;
 import net.datenwerke.rs.core.service.reportmanager.engine.config.ReportExecutionConfig;
 import net.datenwerke.rs.core.service.reportmanager.engine.hooks.ReportExecutionConfigFromPropertyMapHook;
+import net.datenwerke.rs.core.service.reportmanager.entities.AbstractReportManagerNode;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.core.service.reportmanager.exceptions.ReportExecutorException;
 import net.datenwerke.rs.core.service.reportmanager.hooks.ConfigureReportViaHttpRequestHook;
@@ -110,6 +111,8 @@ public class ReportExportServlet extends SecuredHttpServlet{
 	public static final String SESSION_KEY_BACKLINKS = "rs.reportexport.backlinks"; //$NON-NLS-1$
 	
 	public static final String PARAMETER_SUGGESTED_FILENAME = "suggestedFilename";
+	
+	public static final String SERVLET_NAME = "reportexport";
 
 	protected final Provider<AuthenticatorService> authenticatorServiceProvider;
 	protected final Provider<HookHandlerService> hookHandlerProvider;
@@ -187,8 +190,13 @@ public class ReportExportServlet extends SecuredHttpServlet{
 				exportBackLinkReport(req, resp);
 			else if(null != req.getParameter("id") || null != req.getParameter("key") ){ //$NON-NLS-1$ //$NON-NLS-2$
 				exportReportByIdViaRequest(req,resp);
-			}else
+			} else if(null != req.getParameter("tid"))
 				exportReportViaSession(req,resp);
+			else if(null != req.getParameter("path")) {
+				exportByPath(req,resp);
+			} else {
+				throw new IllegalArgumentException("No id, key or path to identify the report");
+			}
 		} catch(Exception e){
 			logger.warn( e.getMessage(), e);
 			try{
@@ -196,6 +204,20 @@ public class ReportExportServlet extends SecuredHttpServlet{
 			} catch(Exception e2){
 				// swallow
 			}
+		}
+	}
+	
+	private void exportByPath(HttpServletRequest request, HttpServletResponse resp) throws IOException, ReportExecutorException {
+		
+		if (null == request.getParameter("path"))
+			throw new ReportExecutorException("No path defined in url");
+		
+		String path = request.getParameter("path");
+		
+		ReportService service = reportService.get();
+		AbstractReportManagerNode node = service.getNodeByPath(path, false);
+		if(node instanceof Report){
+			exportReportById(node.getId(), request, resp);
 		}
 	}
 	

@@ -23,6 +23,7 @@
  
 package net.datenwerke.rs.tsreportarea.client.tsreportarea.objectinfo;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,6 @@ import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.TsDiskDao;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskGeneralReferenceDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskRootDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.locale.TsFavoriteMessages;
@@ -67,6 +67,63 @@ public class ReportInTeamSpaceObjectInfo implements ObjectInfoAdditionalInfoProv
 	public boolean consumes(Object object) {
 		return object instanceof ReportDto;
 	}
+	
+	private boolean isHardLink(List<AbstractTsDiskNodeDto> path) {
+		for (AbstractTsDiskNodeDto node: path) {
+			if (node instanceof TsDiskReportReferenceDto) {
+				TsDiskReportReferenceDto nodeDto = (TsDiskReportReferenceDto) node;
+				return nodeDto.isHardlink();
+			}
+		}
+		
+		return false;
+	}
+	
+	/* If hardLinks == true, get all hard links in the list. If not, get all soft links in the list. */
+	private List<List<AbstractTsDiskNodeDto>> getLinks(List<List<AbstractTsDiskNodeDto>> paths, boolean hardLinks) {
+		List<List<AbstractTsDiskNodeDto>> links = new ArrayList<>();
+		for (List<AbstractTsDiskNodeDto> path: paths) {
+			if (hardLinks) {
+				if (isHardLink(path))
+					links.add(path);
+			} else {
+				if (! isHardLink(path))
+					links.add(path);
+			}
+		}
+		
+		return links;
+	}
+	
+	private void printLinks(List<List<AbstractTsDiskNodeDto>> links, SafeHtmlBuilder builder) {
+		
+		for (List<AbstractTsDiskNodeDto> path: links) {
+			StringBuilder pathStr = new StringBuilder();
+			AbstractTsDiskNodeDto lastNode = path.get(path.size()-1);
+			for (AbstractTsDiskNodeDto node: path) {
+				if (node instanceof TsDiskFolderDto ) {
+					pathStr.append(((TsDiskFolderDto)node).getName());
+				} else if (node instanceof TsDiskRootDto) {
+					pathStr.append(((TsDiskRootDto)node).getName());
+				} else if (node instanceof TsDiskReportReferenceDto) {
+					pathStr.append(((TsDiskReportReferenceDto)node).getName());
+					pathStr.append(" (" + ((TsDiskReportReferenceDto)node).getId());
+					Long reportId = ((TsDiskReportReferenceDto)node).getReport().getId();
+					if (null != reportId) 
+						pathStr.append(" -> " + ((TsDiskReportReferenceDto)node).getReport().getId());
+					
+					pathStr.append(")");
+				} else {
+					pathStr.append(node.getId());
+				}
+				if (node != lastNode) {
+					pathStr.append("/");
+				}
+			}
+			builder.appendHtmlConstant("<li>").appendEscaped(pathStr.toString()).appendHtmlConstant("</li>");
+			
+		}
+	}
 
 	@Override
 	public void addInfoFor(Object object, InfoWindow window) {
@@ -82,35 +139,46 @@ public class ReportInTeamSpaceObjectInfo implements ObjectInfoAdditionalInfoProv
 					panel.add(new Label(TsFavoriteMessages.INSTANCE.reportNotInTeamSpacesMessages()));
 				else {
 					SafeHtmlBuilder builder = new SafeHtmlBuilder();
-					builder.appendHtmlConstant("<div class=\"rs-infopanel-reportinteamspace\"><ol>");
+					builder.appendHtmlConstant("<div class=\"rs-infopanel-reportinteamspace\">");
+					
+					/* Hard links */
 					Iterator<TeamSpaceDto> it = result.keySet().iterator();
 					while (it.hasNext()) {
 						TeamSpaceDto ts = it.next();
-						builder.appendHtmlConstant("<li>").appendEscaped(ts.getName() + " (" + ts.getId() + ")");
-						builder.appendHtmlConstant("<ul>");
-						List<List<AbstractTsDiskNodeDto>> paths = result.get(ts);
-						for (List<AbstractTsDiskNodeDto> path: paths) {
-							StringBuilder pathStr = new StringBuilder();
-							AbstractTsDiskNodeDto lastNode = path.get(path.size()-1);
-							for (AbstractTsDiskNodeDto node: path) {
-								if (node instanceof TsDiskFolderDto ) {
-									pathStr.append(((TsDiskFolderDto)node).getName());
-								} else if (node instanceof TsDiskRootDto) {
-									pathStr.append(((TsDiskRootDto)node).getName());
-								} else if (node instanceof TsDiskGeneralReferenceDto) {
-									pathStr.append(((TsDiskGeneralReferenceDto)node).getName());
-								} else {
-									pathStr.append(node.getId());
-								}
-								if (node != lastNode) {
-									pathStr.append("/");
-								}
-							}
-							builder.appendHtmlConstant("<li>").appendEscaped(pathStr.toString()).appendHtmlConstant("</li>");
+						
+						List<List<AbstractTsDiskNodeDto>> hardLink = getLinks(result.get(ts), true);
+						if (!hardLink.isEmpty()) {
+							builder.appendHtmlConstant("<ol>");
+							builder.appendHtmlConstant("<li>").appendEscaped(ts.getName() + " (" + ts.getId() + ")");
+							builder.appendHtmlConstant("<ul>");
+							printLinks(hardLink, builder);
+							builder.appendHtmlConstant("</ul>");
+							builder.appendHtmlConstant("</li>");
+							builder.appendHtmlConstant("</ol>");
 						}
-						builder.appendHtmlConstant("</ul></li>");
 					}
-					builder.appendHtmlConstant("</ol></div>");
+					
+					
+					/* Soft links */
+					builder.appendHtmlConstant("<span style=\"font-style:italic;\">")
+						.appendEscaped(TsFavoriteMessages.INSTANCE.referencedBy() + ":").appendHtmlConstant("</span>");
+					it = result.keySet().iterator();
+					while (it.hasNext()) {
+						TeamSpaceDto ts = it.next();
+						
+						List<List<AbstractTsDiskNodeDto>> softLinks = getLinks(result.get(ts), false);
+						if (!softLinks.isEmpty()) {
+							builder.appendHtmlConstant("<ol>");
+							builder.appendHtmlConstant("<li>").appendEscaped(ts.getName() + " (" + ts.getId() + ")");
+							builder.appendHtmlConstant("<ul>");
+							printLinks(softLinks, builder);
+							builder.appendHtmlConstant("</ul>");
+							builder.appendHtmlConstant("</li>");
+							builder.appendHtmlConstant("</ol>");
+						}
+					}
+					
+					builder.appendHtmlConstant("</div>");
 					
 					panel.add(new HTML(builder.toSafeHtml()));
 				}

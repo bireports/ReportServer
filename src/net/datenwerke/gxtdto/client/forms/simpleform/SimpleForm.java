@@ -31,35 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwHorizontalFlowLayoutContainer;
-import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
-import net.datenwerke.gxtdto.client.dtomanager.HasValueProviderByPath;
-import net.datenwerke.gxtdto.client.forms.layout.FormFieldLayoutConfiguration;
-import net.datenwerke.gxtdto.client.forms.locale.FormsMessages;
-import net.datenwerke.gxtdto.client.forms.simpleform.actions.SimpleFormAction;
-import net.datenwerke.gxtdto.client.forms.simpleform.conditions.ComplexCondition;
-import net.datenwerke.gxtdto.client.forms.simpleform.conditions.SimpleFormCondition;
-import net.datenwerke.gxtdto.client.forms.simpleform.conditions.registrar.ComplexConditionRegistrar;
-import net.datenwerke.gxtdto.client.forms.simpleform.conditions.registrar.ConditionRegistrar;
-import net.datenwerke.gxtdto.client.forms.simpleform.conditions.registrar.SimpleConditionRegistrar;
-import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.ContextMenuDecorator;
-import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.FieldInfoDecorator;
-import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.FieldInfoDecorator.DelayedInfoMessage;
-import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.LabelDecorator;
-import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.SimpleFormFieldDecorator;
-import net.datenwerke.gxtdto.client.forms.simpleform.dependency.DependencyRegistrar;
-import net.datenwerke.gxtdto.client.forms.simpleform.dependency.SimpleDependencyRegistrar;
-import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHook;
-import net.datenwerke.gxtdto.client.forms.simpleform.json.SimpleFormFieldJson;
-import net.datenwerke.gxtdto.client.forms.simpleform.json.SimpleFormFieldsJson;
-import net.datenwerke.gxtdto.client.forms.simpleform.json.SimpleFormJsonConfig;
-import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.theme.CssClassConstant;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwButtonBar;
-import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
-
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -97,6 +68,35 @@ import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 import com.sencha.gxt.widget.core.client.menu.Menu;
+
+import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwHorizontalFlowLayoutContainer;
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
+import net.datenwerke.gxtdto.client.dtomanager.HasValueProviderByPath;
+import net.datenwerke.gxtdto.client.forms.layout.FormFieldLayoutConfiguration;
+import net.datenwerke.gxtdto.client.forms.locale.FormsMessages;
+import net.datenwerke.gxtdto.client.forms.simpleform.actions.SimpleFormAction;
+import net.datenwerke.gxtdto.client.forms.simpleform.conditions.ComplexCondition;
+import net.datenwerke.gxtdto.client.forms.simpleform.conditions.SimpleFormCondition;
+import net.datenwerke.gxtdto.client.forms.simpleform.conditions.registrar.ComplexConditionRegistrar;
+import net.datenwerke.gxtdto.client.forms.simpleform.conditions.registrar.ConditionRegistrar;
+import net.datenwerke.gxtdto.client.forms.simpleform.conditions.registrar.SimpleConditionRegistrar;
+import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.ContextMenuDecorator;
+import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.FieldInfoDecorator;
+import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.FieldInfoDecorator.DelayedInfoMessage;
+import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.LabelDecorator;
+import net.datenwerke.gxtdto.client.forms.simpleform.decorators.field.SimpleFormFieldDecorator;
+import net.datenwerke.gxtdto.client.forms.simpleform.dependency.DependencyRegistrar;
+import net.datenwerke.gxtdto.client.forms.simpleform.dependency.SimpleDependencyRegistrar;
+import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHook;
+import net.datenwerke.gxtdto.client.forms.simpleform.json.SimpleFormFieldJson;
+import net.datenwerke.gxtdto.client.forms.simpleform.json.SimpleFormFieldsJson;
+import net.datenwerke.gxtdto.client.forms.simpleform.json.SimpleFormJsonConfig;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.gxtdto.client.theme.CssClassConstant;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwButtonBar;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 
 /**
  * 
@@ -281,6 +281,10 @@ public class SimpleForm extends DwContentPanel {
 		/* init ui */
 		initializeUI();
 	}
+	
+	public void setAutoHeight(){
+		mainForm.setLayoutData(new VerticalLayoutData(1,1));
+	}
 
 	@Override
 	public String getCssName() {
@@ -342,6 +346,10 @@ public class SimpleForm extends DwContentPanel {
 
 	public void setFieldWidth(double width) {
 		fieldLayoutConfig.setFieldWidth(width);
+	}
+	
+	public void setFieldHeight(double height) {
+		fieldLayoutConfig.setFieldHeight(height);
 	}
 
 	public void setLabelAlign(LabelAlign al) {
@@ -904,7 +912,7 @@ public class SimpleForm extends DwContentPanel {
 
 		Container lc = layoutStack.isEmpty() ? fieldWrapper : layoutStack.peek();
 
-		addToContainer(lc, widget, sfield.getFieldLayoutConfig().getFieldWidth(), -1, null, sfield.getFieldLayoutConfig());
+		addToContainer(lc, widget, sfield.getFieldLayoutConfig().getFieldWidth(), sfield.getFieldLayoutConfig().getFieldHeight(), null, sfield.getFieldLayoutConfig());
 		sfield.setContainer(lc);
 	}
 

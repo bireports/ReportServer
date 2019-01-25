@@ -26,23 +26,6 @@ package net.datenwerke.gf.client.managerhelper.mainpanel;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.datenwerke.gf.client.managerhelper.hooks.SimpleFormViewHook;
-import net.datenwerke.gf.client.managerhelper.locale.ManagerhelperMessages;
-import net.datenwerke.gf.client.upload.FileUploadUIModule;
-import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
-import net.datenwerke.gxtdto.client.dialog.error.DetailErrorDialog;
-import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
-import net.datenwerke.gxtdto.client.forms.simpleform.SimpleFormSubmissionCallback;
-import net.datenwerke.gxtdto.client.forms.simpleform.SimpleMultiForm;
-import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
-import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
-import net.datenwerke.rs.theme.client.icon.BaseIcon;
-import net.datenwerke.security.client.security.dto.WriteDto;
-import net.datenwerke.security.client.treedb.dto.decorator.SecuredAbstractNodeDtoDec;
-import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-
 import com.google.gwt.resources.client.ImageResource;
 import com.google.inject.Inject;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
@@ -56,6 +39,22 @@ import com.sencha.gxt.widget.core.client.event.SubmitCompleteEvent.SubmitComplet
 import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 
+import net.datenwerke.gf.client.managerhelper.hooks.SimpleFormViewHook;
+import net.datenwerke.gf.client.managerhelper.locale.ManagerhelperMessages;
+import net.datenwerke.gf.client.upload.FileUploadUIModule;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
+import net.datenwerke.gxtdto.client.dialog.error.DetailErrorDialog;
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleFormSubmissionCallback;
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleMultiForm;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
+import net.datenwerke.security.client.security.dto.WriteDto;
+import net.datenwerke.security.client.treedb.dto.decorator.SecuredAbstractNodeDtoDec;
+import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
+
 /**
  * A {@link MainPanelView} that displays a widget.
  * 
@@ -68,7 +67,7 @@ public abstract class SimpleFormView extends MainPanelView {
 	@Inject
 	protected HookHandlerService hookHandlerService;
 
-	private DwFlowContainer wrapper;
+	private VerticalLayoutContainer wrapper;
 
 	private VerticalLayoutContainer formWrapper;
 	
@@ -84,15 +83,16 @@ public abstract class SimpleFormView extends MainPanelView {
 	
 	@Override
 	public Component getViewComponent() {
-		wrapper = new DwFlowContainer();
+		wrapper = new VerticalLayoutContainer();
 		wrapper.setScrollMode(ScrollMode.AUTOY);
 		
 		formWrapper = new VerticalLayoutContainer();
-		wrapper.add(formWrapper);
+		if(useScrollWrapper())
+			wrapper.add(formWrapper, new VerticalLayoutData(1,-1));
 		
 		/* create form and configure submit event handler */ 
 		form = new SimpleMultiForm();
-		formWrapper.add(form, new VerticalLayoutData(1,-1, new Margins(10)));
+		formWrapper.add(form, getFormLayoutData());
 
 		if(null != getFormWidth())
 			form.setWidth(getFormWidth());
@@ -147,7 +147,15 @@ public abstract class SimpleFormView extends MainPanelView {
 		if((getSelectedNode() instanceof SecuredAbstractNodeDtoDec) && ! ((SecuredAbstractNodeDtoDec)getSelectedNode()).hasAccessRight(WriteDto.class))
 			form.getButtonBar().clear();
 		
-		return wrapper;
+		return useScrollWrapper() ? wrapper : formWrapper;
+	}
+	
+	protected boolean useScrollWrapper(){
+		return true;
+	}
+	
+	protected VerticalLayoutData getFormLayoutData() {
+		return new VerticalLayoutData(1,-1, new Margins(10));
 	}
 	
 	protected String getFormAction() {

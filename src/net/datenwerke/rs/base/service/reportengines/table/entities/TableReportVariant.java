@@ -133,4 +133,9 @@ public class TableReportVariant extends TableReport implements ReportVariant {
 		super.setMetadataDatasourceContainer(null);
 		super.setDatasourceContainer(null);
 	}
+	
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 }

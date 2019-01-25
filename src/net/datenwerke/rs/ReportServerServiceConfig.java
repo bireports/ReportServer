@@ -225,7 +225,7 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 
 	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
-	public static final String CODE_VERSION = "2018-08-27-10-01-33";
+	public static final String CODE_VERSION = "2018-10-30-11-29-01";
 	
 	public static final String ENTERPRISE_MODULE_LOCATION = "net.datenwerke.rsenterprise.main.service.RsEnterpriseModule";
 	private static final String ENTERPRISE_MODULE_LOAD_MODULE_METHOD = "getEnterpriseModules";
@@ -441,8 +441,11 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 				serve(BASE_URL + "usermanager").with(UserManagerRpcServiceImpl.class); //$NON-NLS-1$
 			
 				serve(BASE_URL + "reportexporterrpc").with(ReportExportRpcServiceImpl.class); //$NON-NLS-1$
-				serve(BASE_URL + "reportexport").with(ReportExportServlet.class); //$NON-NLS-1$
-				serve(BASE_URL + "httpauthexport").with(HttpAuthExecuteServlet.class); //$NON-NLS-1$
+				serve(BASE_URL + ReportExportServlet.SERVLET_NAME).with(ReportExportServlet.class); //$NON-NLS-1$
+				serve(BASE_URL + ReportExportServlet.SERVLET_NAME + "/*").with(ReportExportServlet.class); //$NON-NLS-1$
+				
+				serve(BASE_URL + HttpAuthExecuteServlet.SERVLET_NAME).with(HttpAuthExecuteServlet.class); //$NON-NLS-1$
+				serve(BASE_URL + HttpAuthExecuteServlet.SERVLET_NAME + "/*").with(HttpAuthExecuteServlet.class); //$NON-NLS-1$
 				
 				serve(BASE_URL + "filedownload").with(FileDownloadServlet.class);
 				serve(BASE_URL + "fileupload").with(FileUploadServlet.class);

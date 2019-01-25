@@ -107,6 +107,11 @@ public class ReportPropertiesView extends MainPanelView {
 	}
 	
 	@Override
+	public boolean isSticky() {
+		return true;
+	}
+	
+	@Override
 	public ImageResource getIcon() {
 		return BaseIcon.LIST_ALT.toImageResource();
 	}
@@ -140,7 +145,7 @@ public class ReportPropertiesView extends MainPanelView {
 		main.setInfoText(ReportPropertiesMessages.INSTANCE.description());
 		
 		VerticalLayoutContainer wrapper = new VerticalLayoutContainer();
-		wrapper.add(main, new VerticalLayoutData(1,-1, new Margins(10)));
+		wrapper.add(main, new VerticalLayoutData(1,1, new Margins(10)));
 		
 		return wrapper;
 	}

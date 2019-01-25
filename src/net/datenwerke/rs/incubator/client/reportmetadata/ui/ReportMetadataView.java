@@ -114,6 +114,11 @@ public class ReportMetadataView extends MainPanelView {
 	}
 	
 	@Override
+	public boolean isSticky() {
+		return true;
+	}
+	
+	@Override
 	public ImageResource getIcon() {
 		return BaseIcon.EDIT.toImageResource();
 	}

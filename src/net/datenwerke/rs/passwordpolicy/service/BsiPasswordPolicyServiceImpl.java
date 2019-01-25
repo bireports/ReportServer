@@ -87,7 +87,7 @@ public class BsiPasswordPolicyServiceImpl implements BsiPasswordPolicyService, R
 				logger.info("password policy loaded. policy is: " + (bsiPasswordPolicy.isValid() ? " valid" : "invalid"));
 			} catch(Exception e){
 				if(e instanceof ConfigFileNotFoundException)
-					logger.info("Passowrd policy not active: " + e.getMessage());
+					logger.info("Password policy not active: " + e.getMessage());
 				else
 					logger.warn("Could not load password policy: ", e);
 				eventBus.fireEvent(new InvalidConfigEvent("password policy", e.getMessage()));

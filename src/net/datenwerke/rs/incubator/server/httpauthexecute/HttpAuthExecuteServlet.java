@@ -69,6 +69,7 @@ public class HttpAuthExecuteServlet extends ReportExportServlet {
 
 	private final Provider<UserManagerService> userManagerProvider;
 
+	public static final String SERVLET_NAME = "httpauthexport";
 
 	@Inject
 	public HttpAuthExecuteServlet(

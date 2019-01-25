@@ -33,17 +33,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.datenwerke.gxtdto.client.awareness.TreePanelAware;
-import net.datenwerke.gxtdto.client.dtoinfo.DtoInformationService;
-import net.datenwerke.gxtdto.client.dtomanager.ClientDtoManagerService;
-import net.datenwerke.gxtdto.client.dtomanager.Dto;
-import net.datenwerke.gxtdto.client.dtomanager.events.BeforeDtoDetachedEvent;
-import net.datenwerke.gxtdto.client.dtomanager.events.DtoAddedEvent;
-import net.datenwerke.gxtdto.client.dtomanager.events.DtoChangedEvent;
-import net.datenwerke.gxtdto.client.dtomanager.events.DtoListener;
-import net.datenwerke.gxtdto.client.stores.HasLoader;
-import net.datenwerke.gxtdto.client.utils.sort.AlphabeticStoreSortInfo;
-
 import com.google.inject.Inject;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.SortDir;
@@ -54,6 +43,18 @@ import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.Loader;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.tree.Tree;
+
+import net.datenwerke.gxtdto.client.awareness.TreePanelAware;
+import net.datenwerke.gxtdto.client.dtoinfo.DtoInformationService;
+import net.datenwerke.gxtdto.client.dtomanager.ClientDtoManagerService;
+import net.datenwerke.gxtdto.client.dtomanager.Dto;
+import net.datenwerke.gxtdto.client.dtomanager.events.BeforeDtoDetachedEvent;
+import net.datenwerke.gxtdto.client.dtomanager.events.DtoAddedEvent;
+import net.datenwerke.gxtdto.client.dtomanager.events.DtoChangedEvent;
+import net.datenwerke.gxtdto.client.dtomanager.events.DtoListener;
+import net.datenwerke.gxtdto.client.dtomanager.stores.marker.NoAutomaticStoreAddableDto;
+import net.datenwerke.gxtdto.client.stores.HasLoader;
+import net.datenwerke.gxtdto.client.utils.sort.AlphabeticStoreSortInfo;
 
 /**
  * Handles change events if underlying dto is already known
@@ -174,6 +175,9 @@ public class DtoAwareTreeStore<X extends Dto> extends TreeStore<X> implements Tr
 	}
 	
 	protected boolean isOfAllowedType(Dto dto) {
+		if(dto instanceof NoAutomaticStoreAddableDto)
+			return false;
+		
 		if(null == typeFilter)
 			return true;
 		

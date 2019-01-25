@@ -123,17 +123,15 @@ public class RemoteMessageServiceImpl extends RemoteServiceServlet implements Re
 				if(f.isDirectory()){
 					findInFolder(f);
 				}
-			} catch (URISyntaxException e1) {
-				e1.printStackTrace();
+			} catch (URISyntaxException e) {
+				logger.warn("Could not load url for parsing message files " + String.valueOf(u) + ".", e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not load url for parsing message files " + String.valueOf(u) + ".", e);
 			}
 			try {
 				findInJar(u);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not load jar for parsing message files " + String.valueOf(u) + ".", e);
 			}
 		}
 		// set missing keys from default NOLANG.properties

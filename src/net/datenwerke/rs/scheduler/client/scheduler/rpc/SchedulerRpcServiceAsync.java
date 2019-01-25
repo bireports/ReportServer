@@ -25,6 +25,9 @@ package net.datenwerke.rs.scheduler.client.scheduler.rpc;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.scheduler.client.scheduler.dto.ReportScheduleDefinition;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.ReportScheduleJobInformation;
@@ -32,9 +35,6 @@ import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.Repor
 import net.datenwerke.scheduler.client.scheduler.dto.filter.JobFilterConfigurationDto;
 import net.datenwerke.scheduler.client.scheduler.dto.filter.JobFilterCriteriaDto;
 import net.datenwerke.scheduler.client.scheduler.dto.history.ExecutionLogEntryDto;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 
 public interface SchedulerRpcServiceAsync {
 
@@ -71,4 +71,6 @@ public interface SchedulerRpcServiceAsync {
 
 
 	void scheduleOnce(Long jobId, AsyncCallback<Void> callback);
+
+	void getReportJobList(ReportDto reportDto, AsyncCallback<List<ReportScheduleJobListInformation>> callback);
 }

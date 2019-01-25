@@ -95,7 +95,7 @@ public interface ReportService extends TreeDBManager<AbstractReportManagerNode> 
 
 	public List<String> getReportStringPropertyKeys();
 
-
-
+	AbstractReportManagerNode getNodeByPath(String path);
+	AbstractReportManagerNode getNodeByPath(String path, boolean checkRights);
 
 }

@@ -23,20 +23,13 @@
  
 package net.datenwerke.gxtdto.client.ui.helper.nav;
 
+import java.util.HashMap;
 import java.util.HashSet;
-
-import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
-import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwBorderContainer;
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
-import net.datenwerke.gxtdto.client.utils.modelkeyprovider.BasicObjectModelKeyProvider;
-import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.IconProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
@@ -50,7 +43,18 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.TreeSelectionModel;
 
+import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
+import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwBorderContainer;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
+import net.datenwerke.gxtdto.client.utils.modelkeyprovider.BasicObjectModelKeyProvider;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
+
 public class WestPropertiesDialog extends DwWindow {
+	
+	public static interface CardConfig{
+		void cardSelected();
+	}
 
 	private TreeStore<NavigationModelData<Widget>> navigationStore;
 	private Tree<NavigationModelData<Widget>, String> navigationTree;
@@ -60,6 +64,8 @@ public class WestPropertiesDialog extends DwWindow {
 
 	private int cardId = 0;
 	private HashSet<Integer> toAdd = new HashSet<Integer>();
+	
+	private HashMap<Integer, CardConfig> configMap = new HashMap<>();
 
 	public WestPropertiesDialog() {
 		this(840, 620, 230);
@@ -127,6 +133,11 @@ public class WestPropertiesDialog extends DwWindow {
 				
 				mainContainer.setActiveWidget(data.getModel());
 				mainContainer.forceLayout();
+				
+				CardConfig cardConfig = configMap.get(data.getId());
+				if(null != cardConfig){
+					cardConfig.cardSelected();
+				}
 			}
 		});
 		navigationTree.setSelectionModel(sModel);
@@ -134,16 +145,17 @@ public class WestPropertiesDialog extends DwWindow {
 		return navigationTree;
 	}
 
-	public void addCard(String name, BaseIcon icon, Widget component) {
-		addCard(name, icon.toImageResource(), component);
+	public void addCard(String name, BaseIcon icon, Widget component){
+		addCard(name, icon, component, null);
+	}
+	
+	public void addCard(String name, BaseIcon icon, Widget component, CardConfig config) {
+		addCard(name, icon.toImageResource(), component, config);
 	}
 
-	public void addCard(String name, ImageResource icon, Widget component) {
+	public void addCard(String name, ImageResource icon, Widget component, CardConfig config) {
 		VerticalLayoutContainer wrapper = new VerticalLayoutContainer();
 		
-//		VerticalLayoutContainer scrollWrapper = new VerticalLayoutContainer();
-//		scrollWrapper.setScrollMode(ScrollMode.AUTOY);
-//		scrollWrapper.add(component, new VerticalLayoutData(1, -1,new Margins(0,0,0,10)));
 		FlowLayoutContainer sWrapper = new DwFlowContainer();
 		sWrapper.add(component, new MarginData(10));
 		sWrapper.setScrollMode(ScrollMode.AUTOY);
@@ -151,6 +163,9 @@ public class WestPropertiesDialog extends DwWindow {
 		
 		int id = cardId++;
 		navigationStore.add(new NavigationModelData<Widget>(id, name, icon, wrapper));
+		
+		if(null != config)
+			configMap.put(id,  config);
 		
 		/* add first, and queue rest */
 		if(id == 0)
@@ -167,4 +182,11 @@ public class WestPropertiesDialog extends DwWindow {
 		navigationTree.getSelectionModel().select(navigationStore.getAll().get(0), false);
 	}
 
+	protected CardConfig getSelectedCard(){
+		NavigationModelData<Widget> data = navigationTree.getSelectionModel().getSelectedItem();
+		if(null == data)
+			return null;
+		
+		return configMap.get(data.getId());
+	}
 }

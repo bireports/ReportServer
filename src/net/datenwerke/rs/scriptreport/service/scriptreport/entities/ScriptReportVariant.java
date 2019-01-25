@@ -134,4 +134,9 @@ public class ScriptReportVariant extends ScriptReport implements ReportVariant {
 		super.setArguments(null);
 		super.setExportFormats(null);
 	}
+	
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 }

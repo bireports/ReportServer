@@ -293,5 +293,10 @@ public class User extends AbstractUserManagerNode {
 		}
 		return null;
 	}
+	
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 
 }

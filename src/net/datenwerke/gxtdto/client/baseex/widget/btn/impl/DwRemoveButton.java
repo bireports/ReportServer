@@ -241,4 +241,8 @@ public class DwRemoveButton extends DwTextButton {
 	public String getRemovePromptDescription() {
 		return removePromptDescription;
 	}
+	
+	public void disableRemoveAll(){
+		setMenu(null);
+	}
 }

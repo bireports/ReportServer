@@ -63,6 +63,7 @@ public class ReportExecutorInlineDispatcher extends DispatcherTakeOverHookImpl {
 	public static final String PARAM_KEY = "key";
 	public static final String PARAM_ID = "id";
 	public static final String PARAM_UUID = "uuid";
+	public static final String PARAM_PATH = "path";
 	
 	public static final String TYPE_FULL = "full";
 	public static final String TYPE_PREVIEW = "preview";
@@ -88,7 +89,7 @@ public class ReportExecutorInlineDispatcher extends DispatcherTakeOverHookImpl {
 	
 	@Override
 	protected boolean checkParameters(HistoryLocation hLocation) {
-		return hLocation.hasParameter(PARAM_ID) || hLocation.hasParameter(PARAM_KEY) || hLocation.hasParameter(PARAM_UUID);
+		return hLocation.hasParameter(PARAM_ID) || hLocation.hasParameter(PARAM_KEY) || hLocation.hasParameter(PARAM_UUID) || hLocation.hasParameter(PARAM_PATH);
 	}
 	
 	@Override

@@ -2772,7 +2772,7 @@
 
     create table RS_TS_DISK_GENERAL_REFERENCE (
         description longtext,
-        NAME_FIELD varchar(128),
+        NAME_FIELD varchar(128) not null,
         id bigint not null,
         primary key (id)
     ) CHARACTER SET utf8 COLLATE utf8_bin;
@@ -5667,5 +5667,5 @@
         primary key (ENTITY_ID)
     ) CHARACTER SET utf8 COLLATE utf8_bin;
     insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('created', date_format(now(), '%Y-%m-%d %T'));
-    insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('version', 'RS3.0.4-build-6004-6004');
-    insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('schemaversion', 'RS3.0-10');
+    insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('version', 'RS3.0.5-6005');
+    insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('schemaversion', 'RS3.0-11');

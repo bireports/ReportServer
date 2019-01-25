@@ -95,7 +95,7 @@ public class TeamSpaceManagerPanel extends DwContentPanel {
 
 	private void init() {
 		setHeadingText(TeamSpaceMessages.INSTANCE.adminButton());
-		setHeaderIcon(BaseIcon.USER_SECRET);
+		setHeaderIcon(BaseIcon.GROUP_EDIT);
 		
 		/* init store */
 		initStore();

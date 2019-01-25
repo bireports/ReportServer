@@ -121,4 +121,9 @@ public class GridEditorReportVariant extends GridEditorReport implements ReportV
 		super.setParameterDefinitions(null);
 		super.setDatasourceContainer(null);
 	}
+	
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 }

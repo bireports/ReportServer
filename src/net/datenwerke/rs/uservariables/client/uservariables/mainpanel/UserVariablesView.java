@@ -26,7 +26,45 @@ package net.datenwerke.rs.uservariables.client.uservariables.mainpanel;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.data.shared.loader.ListLoadResult;
+import com.sencha.gxt.widget.core.client.Component;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.CellDoubleClickEvent;
+import com.sencha.gxt.widget.core.client.event.CellDoubleClickEvent.CellDoubleClickHandler;
+import com.sencha.gxt.widget.core.client.event.DialogHideEvent;
+import com.sencha.gxt.widget.core.client.event.DialogHideEvent.DialogHideHandler;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
+import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
+import com.sencha.gxt.widget.core.client.menu.Item;
+import com.sencha.gxt.widget.core.client.menu.Menu;
+import com.sencha.gxt.widget.core.client.menu.MenuItem;
+import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 import net.datenwerke.gf.client.managerhelper.mainpanel.MainPanelView;
 import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
@@ -53,42 +91,6 @@ import net.datenwerke.rs.uservariables.client.uservariables.dto.pa.UserVariableD
 import net.datenwerke.rs.uservariables.client.uservariables.dto.pa.UserVariableInstanceDtoPA;
 import net.datenwerke.rs.uservariables.client.uservariables.locale.UserVariablesMessages;
 import net.datenwerke.security.client.usermanager.dto.AbstractUserManagerNodeDto;
-
-import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.sencha.gxt.core.client.IdentityValueProvider;
-import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.core.client.util.Margins;
-import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.Store.StoreSortInfo;
-import com.sencha.gxt.data.shared.loader.ListLoadResult;
-import com.sencha.gxt.widget.core.client.Component;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
-import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.CellDoubleClickEvent;
-import com.sencha.gxt.widget.core.client.event.CellDoubleClickEvent.CellDoubleClickHandler;
-import com.sencha.gxt.widget.core.client.event.DialogHideEvent;
-import com.sencha.gxt.widget.core.client.event.DialogHideEvent.DialogHideHandler;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
-import com.sencha.gxt.widget.core.client.grid.ColumnModel;
-import com.sencha.gxt.widget.core.client.grid.Grid;
-import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
-import com.sencha.gxt.widget.core.client.menu.Item;
-import com.sencha.gxt.widget.core.client.menu.Menu;
-import com.sencha.gxt.widget.core.client.menu.MenuItem;
-import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 public class UserVariablesView extends MainPanelView {
 	
@@ -174,6 +176,7 @@ public class UserVariablesView extends MainPanelView {
 		loadData();
 		
 		VerticalLayoutContainer container = new VerticalLayoutContainer();
+		container.setScrollMode(ScrollMode.AUTOY);
 		container.add(herePanel, new VerticalLayoutData(1,-1,new Margins(10)));
 		container.add(inheritedPanel, new VerticalLayoutData(1,-1,new Margins(10)));
 		
@@ -349,7 +352,7 @@ public class UserVariablesView extends MainPanelView {
 					tmpStore.remove(instance.getDefinition());
 				
 				/* open selection popup */
-				HashMap<ValueProvider<UserVariableDefinitionDto,String>, String> displayProperties = new HashMap<ValueProvider<UserVariableDefinitionDto, String>, String>();
+				HashMap<ValueProvider<UserVariableDefinitionDto,String>, String> displayProperties = new LinkedHashMap<ValueProvider<UserVariableDefinitionDto, String>, String>();
 				displayProperties.put(uvDefPa.name(), BaseMessages.INSTANCE.propertyName());
 				displayProperties.put(uvDefPa.description(), BaseMessages.INSTANCE.propertyDescription());
 				

@@ -30,6 +30,14 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
+
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ViolatedSecurityExceptionDto;
@@ -83,14 +91,6 @@ import net.datenwerke.security.service.security.rights.Read;
 import net.datenwerke.security.service.usermanager.UserManagerService;
 import net.datenwerke.security.service.usermanager.entities.AbstractUserManagerNode;
 import net.datenwerke.security.service.usermanager.entities.User;
-
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
 
 /**
  * 
@@ -569,6 +569,11 @@ public class SchedulerRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		
 		job.getTrigger().setExecuteOnce(true);
 		schedulerService.merge(job);
+	}
+
+	@Override
+	public List<ReportScheduleJobListInformation> getReportJobList(ReportDto reportDto) {
+		return schedulerService.getReportJobList((Report) dtoService.loadPoso(reportDto));
 	}
 
 

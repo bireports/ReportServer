@@ -26,13 +26,9 @@ package net.datenwerke.gxtdto.client.statusbar.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
-import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
-import net.datenwerke.gxtdto.client.theme.CssClassConstant;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwHookableToolbar;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -43,6 +39,11 @@ import com.sencha.gxt.core.client.util.Padding;
 import com.sencha.gxt.widget.core.client.container.HBoxLayoutContainer.HBoxLayoutAlign;
 import com.sencha.gxt.widget.core.client.container.Viewport;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
+
+import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
+import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.theme.CssClassConstant;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwHookableToolbar;
 
 @Singleton
 public class StatusBarWidget extends DwContentPanel {
@@ -173,10 +174,16 @@ public class StatusBarWidget extends DwContentPanel {
 		for(Widget r : rightGroup)
 			toolbar.add(r);
 		
-		forceLayout();
-		if(null != container){
-			container.forceLayout();
-		}
+		Timer timer = new Timer() {
+		     @Override
+		     public void run() {
+		    	 forceLayout();
+		    	 if(null != container){
+		    		 container.forceLayout();
+		    	 }
+		     }
+		 };
+		 timer.schedule(500);
 	}
 
 	private void possiblyHide() {

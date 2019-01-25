@@ -1701,3 +1701,8 @@ body.rs-documentation {
 	list-style: circle inside;
 	margin: 5px;	
 }
+
+.rs-infopanel-reportinscheduler ul{
+	list-style: circle inside;
+	margin: 5px;	
+}

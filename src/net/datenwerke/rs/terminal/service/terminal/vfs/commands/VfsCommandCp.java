@@ -25,6 +25,8 @@ package net.datenwerke.rs.terminal.service.terminal.vfs.commands;
 
 import java.util.List;
 
+import com.google.inject.Inject;
+
 import net.datenwerke.rs.terminal.service.terminal.TerminalSession;
 import net.datenwerke.rs.terminal.service.terminal.helpers.AutocompleteHelper;
 import net.datenwerke.rs.terminal.service.terminal.helpers.CommandParser;
@@ -42,8 +44,6 @@ import net.datenwerke.security.service.security.SecurityTarget;
 import net.datenwerke.security.service.security.exceptions.ViolatedSecurityException;
 import net.datenwerke.security.service.security.rights.Read;
 import net.datenwerke.security.service.security.rights.Write;
-
-import com.google.inject.Inject;
 
 public class VfsCommandCp implements TerminalCommandHook{
 	
@@ -81,6 +81,8 @@ public class VfsCommandCp implements TerminalCommandHook{
 	public CommandResult execute(CommandParser parser, TerminalSession session) {
 		VirtualFileSystemDeamon vfs = session.getFileSystem();
 		
+		VFSLocation workingDirectory = vfs.getCurrentLocation();
+		
 		List<String> arguments = parser.getNonOptionArguments();
 		if(arguments.size() != 2)
 			throw new IllegalArgumentException();
@@ -89,23 +91,55 @@ public class VfsCommandCp implements TerminalCommandHook{
 		String targetStr = arguments.get(1);
 
 		try{
+			/* load source */
+			VFSLocation source = vfs.getLocation(sourceStr);
+			if(source.isVirtualLocation())
+				throw new IllegalArgumentException("Source is virtual location");
+			if(! source.exists() && ! source.isWildcardLocation())
+				throw new IllegalArgumentException("Could not find " + sourceStr);
+			
+			String targetFileName = null;
+			
 			VFSLocation target = vfs.getLocation(targetStr);
-			if(! target.isFolder())
-				throw new IllegalArgumentException("target is not a folder");
+			
+			if(target.exists() && ! target.isFolder())
+				throw new IllegalArgumentException("Target file already exists.");
+			
+			if(! target.exists()){
+				targetFileName = target.getPathHelper().getLastPathway();
+				target = target.getParentLocation();
+			}
+			
+			if(! target.isFolder() || ! target.exists())
+				throw new IllegalArgumentException("Target folder does not exist.");
+			if(target.isVirtualLocation())
+				throw new IllegalArgumentException("Target is virtual location");
 
+			/* load target object */
 			Object targetFolder = target.getObject();
 			if(targetFolder instanceof SecurityService)
 				if(! securityService.checkRights((SecurityTarget)targetFolder, Read.class, Write.class))
 					throw new ViolatedSecurityException();
-			VFSLocation source = vfs.getLocation(sourceStr);
-			
-			if(target.isVirtualLocation() || source.isVirtualLocation())
-				throw new IllegalArgumentException("target or source is virtual");
 			
 			boolean deepCopy = parser.hasOption("r");
 			
 			/* perform copy */
-			target.getFilesystemManager().copyFilesTo(source, target, deepCopy);
+			List<VFSLocation> copiedFileLocations = target.getFilesystemManager().copyFilesTo(source, target, deepCopy);
+			
+			if(null != targetFileName && copiedFileLocations.size() != 1)
+				throw new IllegalArgumentException("Cannot copy multiple files into one file.");
+			
+			if(null != targetFileName){
+				VFSLocation copiedFile = copiedFileLocations.get(0);
+				copiedFile.rename(targetFileName);
+			} else {
+				if(target.equals(workingDirectory)){
+					for(VFSLocation loc : copiedFileLocations){
+						String name = loc.getFilesystemManager().getNameFor(loc);
+						loc.rename(name+ " (copy)");
+					}
+				}
+			}
 		
 			return new CommandResult();
 		} catch(VFSException e){

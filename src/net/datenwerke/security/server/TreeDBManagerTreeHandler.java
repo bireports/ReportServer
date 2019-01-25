@@ -29,6 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.inject.name.Named;
+import com.google.inject.persist.Transactional;
+
 import net.datenwerke.gxtdto.client.dtomanager.Dto;
 import net.datenwerke.gxtdto.client.dtomanager.Dto2PosoMapper;
 import net.datenwerke.gxtdto.client.dtomanager.DtoView;
@@ -60,9 +63,6 @@ import net.datenwerke.treedb.client.treedb.rpc.RPCTreeLoader;
 import net.datenwerke.treedb.client.treedb.rpc.RPCTreeManager;
 import net.datenwerke.treedb.service.treedb.AbstractNode;
 import net.datenwerke.treedb.service.treedb.TreeDBManager;
-
-import com.google.inject.name.Named;
-import com.google.inject.persist.Transactional;
 
 /**
  * 
@@ -119,7 +119,11 @@ public abstract class TreeDBManagerTreeHandler<A extends AbstractNode<A>>
 		)
 	)
 	@Transactional(rollbackOn={Exception.class})
-	public List<AbstractNodeDto> getChildren(@Named("node")AbstractNodeDto node, Dto state)  throws ServerCallFailedException  {
+	public final List<AbstractNodeDto> getChildren(@Named("node")AbstractNodeDto node, Dto state)  throws ServerCallFailedException  {
+		return doGetChildren(node, state);
+	}
+	
+	protected List<AbstractNodeDto> doGetChildren(AbstractNodeDto node, Dto state) {
 		List<AbstractNodeDto> list = new ArrayList<AbstractNodeDto>();
 
 		for(A child : (Collection<A>) treeDBManager.getNodeById(node.getId()).getChildrenSorted()){
@@ -129,7 +133,6 @@ public abstract class TreeDBManagerTreeHandler<A extends AbstractNode<A>>
 		
 		return list;
 	}
-	
 
 	@SecurityChecked(
 		returnObjectValidation = @ReturnObjectValidation(
@@ -220,7 +223,11 @@ public abstract class TreeDBManagerTreeHandler<A extends AbstractNode<A>>
 			}
 		)
 	@Override
-	public String[][] getChildrenAsFto(@Named("node")AbstractNodeDto node, Dto state) throws ServerCallFailedException {
+	public final String[][] getChildrenAsFto(@Named("node")AbstractNodeDto node, Dto state) throws ServerCallFailedException {
+		return doGetChildrenAsFto(node, state);
+	}
+	
+	protected String[][] doGetChildrenAsFto(AbstractNodeDto node, Dto state) {
 		ArrayList<String[]> list = new ArrayList<String[]>();
 
 		for(A child : (Collection<A>) treeDBManager.getNodeById(node.getId()).getChildrenSorted()){
@@ -233,7 +240,6 @@ public abstract class TreeDBManagerTreeHandler<A extends AbstractNode<A>>
 		
 		return list.toArray(new String[][]{});
 	}
-	
 
 	@Override
 	@Transactional(rollbackOn={Exception.class})

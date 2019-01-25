@@ -29,6 +29,7 @@ import com.google.inject.Provider;
 import net.datenwerke.gf.client.administration.AdministrationUIService;
 import net.datenwerke.gf.client.administration.hooks.AdminModuleProviderHook;
 import net.datenwerke.gf.client.homepage.hooks.ClientMainModuleProviderHook;
+import net.datenwerke.gxtdto.client.objectinformation.hooks.ObjectInfoAdditionalInfoProvider;
 import net.datenwerke.gxtdto.client.waitonevent.SynchronousCallbackOnEventTrigger;
 import net.datenwerke.gxtdto.client.waitonevent.WaitOnEventTicket;
 import net.datenwerke.gxtdto.client.waitonevent.WaitOnEventUIService;
@@ -58,6 +59,7 @@ import net.datenwerke.rs.scheduler.client.scheduler.security.SchedulingAdminView
 import net.datenwerke.rs.scheduler.client.scheduler.security.SchedulingAdminViewSecurityTargetDomainHooker;
 import net.datenwerke.rs.scheduler.client.scheduler.security.SchedulingBasicGenericTargetIdentifier;
 import net.datenwerke.rs.scheduler.client.scheduler.security.SchedulingBasicSecurityTargetDomainHooker;
+import net.datenwerke.scheduler.client.scheduler.objectinfo.ReportInSchedulerObjectInfo;
 import net.datenwerke.security.client.security.SecurityUIService;
 import net.datenwerke.security.client.security.dto.ReadDto;
 import net.datenwerke.security.client.security.hooks.GenericSecurityViewDomainHook;
@@ -94,6 +96,8 @@ public class SchedulerUIStartup {
 		
 		Provider<GenericActionLogEntryDetailHooker> genericActionLogEntryHooker,
 		
+		final ReportInSchedulerObjectInfo reportInSchedulerInfo,
+		
 		final SecurityUIService securityService
 		){
 		
@@ -118,6 +122,8 @@ public class SchedulerUIStartup {
 		/* attach hookers */
 		/* report view toolbar */
 		hookHandler.attachHooker(ReportExecutorViewToolbarHook.class, scheduleButtonHooker, HookHandlerService.PRIORITY_LOW);
+		
+		hookHandler.attachHooker(ObjectInfoAdditionalInfoProvider.class, reportInSchedulerInfo);
 		
 		/* attach security target domains */
 		hookHandler.attachHooker(GenericTargetProviderHook.class, new GenericTargetProviderHook(adminSecurityTargetDomain.genericSecurityViewDomainHook_getTargetId()));

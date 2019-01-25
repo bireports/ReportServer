@@ -145,5 +145,9 @@ public class FileServerFile extends AbstractFileServerNode  {
 		return fileData.getSize();
 	}
 
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 
 }

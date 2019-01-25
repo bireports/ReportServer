@@ -25,27 +25,6 @@ package net.datenwerke.rs.tsreportarea.client.tsreportarea.hookers;
 
 import java.util.List;
 
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwNorthSouthContainer;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
-import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
-import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
-import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
-import net.datenwerke.gxtdto.client.utils.modelkeyprovider.DtoIdModelKeyProvider;
-import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog;
-import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog.RepositoryProviderConfig;
-import net.datenwerke.rs.core.client.reportmanager.hooks.ReportSelectionRepositoryProviderHookImpl;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
-import net.datenwerke.rs.theme.client.icon.BaseIcon;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.TsDiskDao;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.TsDiskUIService;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.decorator.TsDiskReportReferenceDtoDec;
-import net.datenwerke.rs.tsreportarea.client.tsreportarea.helper.simpleform.SFFCTsTeamSpaceSelector;
-
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -66,8 +45,30 @@ import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
-public class ReportSelectionTeamspaceRepositoryProvider extends
-		ReportSelectionRepositoryProviderHookImpl {
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwNorthSouthContainer;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
+import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
+import net.datenwerke.gxtdto.client.utils.modelkeyprovider.DtoIdModelKeyProvider;
+import net.datenwerke.rs.core.client.reportmanager.dto.interfaces.ReportContainerDto;
+import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog;
+import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog.ReportSelectionCardConfig;
+import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog.RepositoryProviderConfig;
+import net.datenwerke.rs.core.client.reportmanager.hooks.ReportSelectionRepositoryProviderHook;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.TsDiskDao;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.TsDiskUIService;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.decorator.TsDiskReportReferenceDtoDec;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.helper.simpleform.SFFCTsTeamSpaceSelector;
+
+public class ReportSelectionTeamspaceRepositoryProvider implements ReportSelectionRepositoryProviderHook {
 
 	private final TsDiskDao diskDao;
 	private final TsDiskUIService diskService;
@@ -198,7 +199,18 @@ public class ReportSelectionTeamspaceRepositoryProvider extends
 		dialog.addCard(
 			teamSpace.getName(), 
 			BaseIcon.GROUP_EDIT, 
-			wrapper	
+			wrapper,
+			new ReportSelectionCardConfig(){
+				@Override
+				public void cardSelected() {
+				}
+
+				@Override
+				public ReportContainerDto getSelectedReport() {
+					return (TsDiskReportReferenceDtoDec)grid.getSelectionModel().getSelectedItem();
+				}
+				
+			}
 		);
 	}
 

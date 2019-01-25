@@ -28,15 +28,12 @@ import com.google.inject.Singleton;
 
 import net.datenwerke.gf.client.treedb.UITree;
 import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionField;
-import net.datenwerke.rs.core.client.reportmanager.provider.BasicTreeProvider;
 import net.datenwerke.rs.core.client.reportmanager.provider.FolderAndReportTreeProvider;
 import net.datenwerke.rs.core.client.reportmanager.provider.FolderTreeProvider;
 import net.datenwerke.rs.core.client.reportmanager.provider.FullTreeProvider;
 import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerAdminViewTree;
-import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerTreeBasic;
 import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerTreeFolders;
 import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerTreeFoldersAndReports;
-import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerTreeFull;
 
 /**
  * 
@@ -50,8 +47,6 @@ public class ReportManagerUIModule extends AbstractGinModule {
 	@Override
 	protected void configure() {
 		/* bind trees */
-		bind(UITree.class).annotatedWith(ReportManagerTreeBasic.class).toProvider(BasicTreeProvider.class);
-		bind(UITree.class).annotatedWith(ReportManagerTreeFull.class).toProvider(FullTreeProvider.class);
 		bind(UITree.class).annotatedWith(ReportManagerTreeFolders.class).toProvider(FolderTreeProvider.class);
 		bind(UITree.class).annotatedWith(ReportManagerTreeFoldersAndReports.class).toProvider(FolderAndReportTreeProvider.class);
 		bind(UITree.class).annotatedWith(ReportManagerAdminViewTree.class).toProvider(FullTreeProvider.class).in(Singleton.class);

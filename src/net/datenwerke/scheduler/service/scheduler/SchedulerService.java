@@ -25,6 +25,8 @@ package net.datenwerke.scheduler.service.scheduler;
 
 import java.util.List;
 
+import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
+import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.ReportScheduleJobListInformation;
 import net.datenwerke.scheduler.service.scheduler.entities.AbstractJob;
 import net.datenwerke.scheduler.service.scheduler.entities.AbstractTrigger;
 import net.datenwerke.scheduler.service.scheduler.exceptions.SchedulerStartupException;
@@ -77,5 +79,7 @@ public interface SchedulerService {
 	void restartWatchdog();
 
 	void startWatchdog();
+
+	List<ReportScheduleJobListInformation> getReportJobList(Report report);
 	
 }

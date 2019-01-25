@@ -38,6 +38,7 @@ public enum BaseIcon {
 	ACCEPT("check-circle-o"),
 	ADD("plus-circle"),
 	AGGREGATION("compress"),
+	EXECUTE("play-circle-o"),
 	EXPAND_ALL("plus-square-o"),
 	COLLAPSE("minus-square-o"),
 	COLLAPSE_ALL("minus-square-o"),

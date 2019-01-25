@@ -94,5 +94,7 @@ public interface TsFavoriteMessages extends Messages {
 	String folderDescription();
 	String reportDescription();
 	String referenceDescription();
+	
+	String referencedBy();
 
 }

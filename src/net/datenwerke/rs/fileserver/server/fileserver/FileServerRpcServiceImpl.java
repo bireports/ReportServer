@@ -295,5 +295,13 @@ FileServerExportRpcService {
 		return file;
 	}
 
+	@Override
+	protected void nodeCloned(AbstractFileServerNode clonedNode) {
+		if(! (clonedNode instanceof FileServerFile))
+			throw new IllegalArgumentException();
+		FileServerFile file = (FileServerFile) clonedNode;
+		
+		file.setName(file.getName() == null ? "copy" : file.getName() + " (copy)");
+	}
 
 }

@@ -114,20 +114,7 @@ public class TreeDBHistoryCallback implements HistoryCallback {
 			final HistoryCallbackListener callback = new HistoryCallbackListener() {
 				@Override
 				public void handleEvent() {
-					Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-						@Override
-						public void execute() {
-							int i = nodes.size() - 1;
-							while(i >= 0){
-								AbstractNodeDto item = store.findModelWithKey(String.valueOf(nodes.get(i--)));
-								if(null != item){
-									tree.getSelectionModel().select(item, false);
-									tree.scrollIntoView(item);
-									break;
-								}
-							}
-						}
-					});
+					doHandleEvent(nodes,tree,store);
 				}
 			};
 			
@@ -208,7 +195,23 @@ public class TreeDBHistoryCallback implements HistoryCallback {
 		tree.setExpanded(item, true);
 	}
 
-
+	protected void doHandleEvent(final ArrayList<Long> nodes, final UITree tree, final TreeStore<AbstractNodeDto> store) {
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				int i = nodes.size() - 1;
+				while(i >= 0){
+					AbstractNodeDto item = store.findModelWithKey(String.valueOf(nodes.get(i--)));
+					if(null != item){
+						tree.getSelectionModel().select(item, false);
+						tree.scrollIntoView(item);
+						break;
+					}
+				}							
+			}
+		});
+	}
+	
 	public void setSelectParent(boolean b) {
 		this.selectParent = b;
 	}

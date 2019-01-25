@@ -42,6 +42,7 @@ import com.google.inject.name.Named;
 
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.base.ext.service.reportmanager.vfs.ReportManagerVFS;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceContainer__;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
 import net.datenwerke.rs.core.service.parameters.entities.ParameterDefinition;
@@ -59,6 +60,8 @@ import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report__;
 import net.datenwerke.rs.core.service.reportmanager.hooks.VariantToBeStoredHook;
 import net.datenwerke.rs.core.service.reportmanager.interfaces.ReportVariant;
 import net.datenwerke.rs.core.service.reportmanager.locale.ReportManagerMessages;
+import net.datenwerke.rs.terminal.service.terminal.TerminalService;
+import net.datenwerke.rs.terminal.service.terminal.objresolver.exceptions.ObjectResolverException;
 import net.datenwerke.rs.utils.entitycloner.EntityClonerService;
 import net.datenwerke.rs.utils.simplequery.PredicateType;
 import net.datenwerke.rs.utils.simplequery.annotations.Join;
@@ -89,6 +92,7 @@ public class ReportServiceImpl extends SecuredTreeDBManagerImpl<AbstractReportMa
 	private final EntityClonerService entityCloner;
 	private final Provider<AuthenticatorService> authenticatorServiceProvider;
 	private final ReportParameterService reportParameterService;
+	private final TerminalService terminalService;
 	
 	@Inject
 	public ReportServiceImpl(
@@ -98,6 +102,7 @@ public class ReportServiceImpl extends SecuredTreeDBManagerImpl<AbstractReportMa
 		SecurityService securityService,
 		EntityClonerService entityCloner,
 		ReportParameterService reportParameterService,
+		TerminalService terminalService,
 		Provider<AuthenticatorService> authenticatorServiceProvider
 	) {
 		this.entityManagerProvider = entityManagerProvider;
@@ -106,6 +111,7 @@ public class ReportServiceImpl extends SecuredTreeDBManagerImpl<AbstractReportMa
 		this.securityService = securityService;
 		this.entityCloner = entityCloner;
 		this.reportParameterService = reportParameterService;
+		this.terminalService = terminalService;
 		this.authenticatorServiceProvider = authenticatorServiceProvider;
 	}
 	
@@ -119,6 +125,28 @@ public class ReportServiceImpl extends SecuredTreeDBManagerImpl<AbstractReportMa
 	@SimpleQuery
 	public List<Report> getAllReports(){
 		return null; //finder magic;
+	}
+	
+	@Override
+	public AbstractReportManagerNode getNodeByPath(String path){
+		return getNodeByPath(path, true);
+	}
+	
+	@Override
+	public AbstractReportManagerNode getNodeByPath(String path, boolean checkRights) {
+		if(path.startsWith("/"))
+			path = "/" + ReportManagerVFS.FILESYSTEM_NAME + path;
+		else
+			path = "/" + ReportManagerVFS.FILESYSTEM_NAME + "/" + path;
+		
+		try {
+			Object object = terminalService.getObjectByLocation(path, checkRights);
+			if(object instanceof AbstractReportManagerNode)
+				return (AbstractReportManagerNode) object;
+			return null;
+		} catch (ObjectResolverException e) {
+			return null;
+		}
 	}
 	
 	@Override
@@ -398,9 +426,10 @@ public class ReportServiceImpl extends SecuredTreeDBManagerImpl<AbstractReportMa
 	protected AbstractReportManagerNode cloneNode(AbstractReportManagerNode node) {
 		AbstractReportManagerNode clone = super.cloneNode(node);
 		
-		if(clone instanceof Report)
+		if(clone instanceof Report) {
 			((Report)clone).setUuid(UUID.randomUUID().toString());
-		
+			((Report)clone).setKey(null);
+		}
 		return clone;
 	}
 	

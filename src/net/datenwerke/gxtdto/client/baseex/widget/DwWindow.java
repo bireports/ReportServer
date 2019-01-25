@@ -70,6 +70,21 @@ public class DwWindow extends Window {
 		initCss();
 	}
 	
+	public static DwWindow newAutoSizeDialog(){
+		return newAutoSizeDialog(400);
+	}
+
+	public static DwWindow newAutoSizeDialog(int width) {
+		DwWindow dialog = new DwWindow();
+
+		dialog.setModal(true);
+		dialog.setPixelSize(-1, -1);
+		dialog.setMinWidth(width);
+		dialog.setMinHeight(0);
+
+		return dialog;
+	}
+	
 	@Override
 	/* weird sencha bug, that otherwise window position is off */
 	public void add(final Widget child) {

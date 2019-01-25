@@ -37,7 +37,7 @@ public class FormFieldLayoutConfiguration {
 	private MarginData marginData = new MarginData(0);
 	
 	private double fieldWidth = 1;
-	private int fieldHeight = -1;
+	private double fieldHeight = -1;
 	
 	
 	public FormFieldLayoutConfiguration() {
@@ -52,7 +52,7 @@ public class FormFieldLayoutConfiguration {
 		this.fieldWidth = fieldWidth;
 	}
 	
-	public FormFieldLayoutConfiguration(String text, int fieldWidth, int fieldHeight){
+	public FormFieldLayoutConfiguration(String text, int fieldWidth, double fieldHeight){
 		this.labelText = text;
 		this.fieldWidth = fieldWidth;
 		this.fieldHeight = fieldHeight;
@@ -99,11 +99,11 @@ public class FormFieldLayoutConfiguration {
 		return labelHtml;
 	}
 
-	public void setFieldHeight(int fieldHeight) {
+	public void setFieldHeight(double fieldHeight) {
 		this.fieldHeight = fieldHeight;
 	}
 
-	public int getFieldHeight() {
+	public double getFieldHeight() {
 		return fieldHeight;
 	}
 

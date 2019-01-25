@@ -40,6 +40,7 @@ import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
 import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
 import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
+import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCAllowBlank;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.impl.SFFCTextAreaImpl;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
@@ -118,7 +119,12 @@ public class ExportToTeamSpaceHooker implements ExportExternalEntryProviderHook 
 			}
 		});
 
-		final String nameKey = form.addField(String.class, ScheduleAsFileMessages.INSTANCE.nameLabel());
+		final String nameKey = form.addField(String.class, ScheduleAsFileMessages.INSTANCE.nameLabel(),new SFFCAllowBlank() {
+			@Override
+			public boolean allowBlank() {
+				return false;
+			}
+		});
 		final String descKey = form.addField(String.class, ScheduleAsFileMessages.INSTANCE.descriptionLabel(), new SFFCTextAreaImpl());
 		
 		window.add(form, new MarginData(10));
@@ -140,6 +146,9 @@ public class ExportToTeamSpaceHooker implements ExportExternalEntryProviderHook 
 		submitBtn.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
+				if(! form.isValid())
+					return;
+				
 				String name = (String) form.getValue(nameKey);
 				String description = (String) form.getValue(descKey);
 				AbstractTsDiskNodeDto folder = (AbstractTsDiskNodeDto) form.getValue(folderKey);

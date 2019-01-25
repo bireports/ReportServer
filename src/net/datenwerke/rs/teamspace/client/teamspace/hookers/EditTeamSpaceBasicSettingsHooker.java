@@ -23,6 +23,10 @@
  
 package net.datenwerke.rs.teamspace.client.teamspace.hookers;
 
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCAllowBlank;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.SFFCReadOnly;
@@ -37,10 +41,10 @@ import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.TeamSpaceDtoPA;
 import net.datenwerke.rs.teamspace.client.teamspace.hooks.TeamSpaceEditDialogHookImpl;
 import net.datenwerke.rs.teamspace.client.teamspace.locale.TeamSpaceMessages;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
-
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
+import net.datenwerke.security.client.usermanager.dto.UserDto;
+import net.datenwerke.security.client.usermanager.dto.decorator.UserDtoDec;
+import net.datenwerke.security.client.usermanager.dto.ie.StrippedDownUser;
+import net.datenwerke.security.ext.client.usermanager.helper.simpleform.SFFCUser;
 
 /**
  * 
@@ -53,7 +57,7 @@ public class EditTeamSpaceBasicSettingsHooker extends TeamSpaceEditDialogHookImp
 	
 	private TeamSpaceDto teamSpaceData;
 	private SimpleForm form;
-
+	private String ownerField;
 	
 	@Inject
 	public EditTeamSpaceBasicSettingsHooker(
@@ -87,7 +91,7 @@ public class EditTeamSpaceBasicSettingsHooker extends TeamSpaceEditDialogHookImp
 		SFFCReadOnly readOnly = teamSpaceUIService.isAdmin(teamSpace)?SFFCReadOnly.FALSE:SFFCReadOnly.TRUE;
 		
 		form = SimpleForm.getInlineInstance();
-		form.setHeight(200);
+		form.setHeight(240);
 		
 		form.addField(String.class, 
 				TeamSpaceDtoPA.INSTANCE.name(), 
@@ -114,6 +118,17 @@ public class EditTeamSpaceBasicSettingsHooker extends TeamSpaceEditDialogHookImp
 					}
 		}, readOnly);
 		
+		if(teamSpaceUIService.isGlobalTsAdmin()){
+			ownerField = form.addField(StrippedDownUser.class, TeamSpaceMessages.INSTANCE.owner(), new SFFCUser(){
+				@Override
+				public boolean isMultiSelect() {
+					return false;
+				}
+			});
+			if(null != teamSpace.getOwner())
+				form.setValue(ownerField, StrippedDownUser.fromUser(teamSpace.getOwner()));
+		}
+		
 		/* copy values to data */
 		teamSpaceData = new TeamSpaceDtoDec();
 		teamSpaceData.setName(
@@ -123,6 +138,9 @@ public class EditTeamSpaceBasicSettingsHooker extends TeamSpaceEditDialogHookImp
 			null != teamSpace.getDescription() ?
 				teamSpace.getDescription() : ""
 		);
+		teamSpaceData.setOwner(
+				null != teamSpace.getOwner() ?
+						teamSpace.getOwner() : null);
 		
 		/* create dummy teamspace and bind it to form */
 		form.bind(teamSpaceData);
@@ -138,15 +156,30 @@ public class EditTeamSpaceBasicSettingsHooker extends TeamSpaceEditDialogHookImp
 
 	@Override
 	public void submitPressed(final SubmitTrackerToken token) {
+		StrippedDownUser newOwner = null;
+		if(null != ownerField)
+			newOwner = (StrippedDownUser) form.getValue(ownerField);
+		
 		boolean dataChanged = teamSpaceUIService.isAdmin(teamSpace) && 
 			(! (teamSpaceData.getName().equals(teamSpace.getName()) &&
-			teamSpaceData.getDescription().equals(teamSpace.getDescription()) ));
+			teamSpaceData.getDescription().equals(teamSpace.getDescription())));
 			
+		if (!dataChanged)
+			dataChanged = newOwner == null ? teamSpace.getOwner() != null
+					: teamSpace.getOwner() == null || !newOwner.getId().equals(teamSpace.getOwner().getId());
+		
 		if(! dataChanged)
 			token.setCompleted();
 		else {
 			teamSpace.setName(teamSpaceData.getName());
 			teamSpace.setDescription(teamSpaceData.getDescription());
+			teamSpace.setOwner(null);
+			if(null != newOwner){
+				UserDto newOwnerDto = new UserDtoDec();
+				newOwnerDto.setId(newOwner.getId());
+				teamSpace.setOwner(newOwnerDto);
+			}
+			
 			tsDao.editTeamSpaceSettings(teamSpace, 
 					new NotamCallback<TeamSpaceDto>(TeamSpaceMessages.INSTANCE.editTeamSpaceBasicSettingsSubmitted()){
 				@Override

@@ -23,6 +23,7 @@
  
 package net.datenwerke.gxtdto.client.forms.selection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -127,7 +128,7 @@ public class SelectionPopup<M> extends DwWindow {
 		if(allItemsStore instanceof HasLoader && ((HasLoader)allItemsStore).getLoader() instanceof ListLoader)
 			setLoader((ListLoader<ListLoadConfig, ListLoadResult<M>>) ((HasLoader<ListLoadConfig, ListLoadResult<M>>)allItemsStore).getLoader());
 		
-		/* initilaize UI */
+		/* initialize UI */
 		initializeUI();
 	}
 	
@@ -144,7 +145,7 @@ public class SelectionPopup<M> extends DwWindow {
 		if(allItemsStore instanceof HasLoader && ((HasLoader)allItemsStore).getLoader() instanceof ListLoader)
 			setLoader((ListLoader<ListLoadConfig, ListLoadResult<M>>) ((HasLoader<ListLoadConfig, ListLoadResult<M>>)allItemsStore).getLoader());
 		
-		/* initilaize UI */
+		/* initialize UI */
 		initializeUI();
 	}
 
@@ -378,6 +379,12 @@ public class SelectionPopup<M> extends DwWindow {
 					if(selectionMode ==SelectionMode.SINGLE)
 						selectedItemsStore.clear();
 					selectedItemsStore.add(convertModelForSelection(model));
+					
+					if(selectionMode == SelectionMode.SINGLE){
+						M selectedItem = allItemsStore.get(event.getRowIndex());
+						hide();
+						itemsSelected(new ArrayList<M>(Arrays.asList(selectedItem)));
+					}
 				}
 			}
 		});

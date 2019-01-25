@@ -25,29 +25,6 @@ package net.datenwerke.rs.core.client.reportmanager.hookers;
 
 import java.util.List;
 
-import net.datenwerke.gf.client.treedb.UITree;
-import net.datenwerke.gf.client.treedb.simpleform.SFFCGenericTreeNode;
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwNorthSouthContainer;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
-import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
-import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
-import net.datenwerke.gxtdto.client.locale.BaseMessages;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
-import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
-import net.datenwerke.gxtdto.client.utils.modelkeyprovider.DtoIdModelKeyProvider;
-import net.datenwerke.rs.core.client.reportmanager.ReportManagerTreeLoaderDao;
-import net.datenwerke.rs.core.client.reportmanager.ReportManagerUIService;
-import net.datenwerke.rs.core.client.reportmanager.dto.ReportFolderDto;
-import net.datenwerke.rs.core.client.reportmanager.dto.interfaces.ReportVariantDto;
-import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
-import net.datenwerke.rs.core.client.reportmanager.dto.reports.decorator.ReportDtoDec;
-import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog;
-import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog.RepositoryProviderConfig;
-import net.datenwerke.rs.core.client.reportmanager.hooks.ReportSelectionRepositoryProviderHookImpl;
-import net.datenwerke.rs.core.client.reportmanager.locale.ReportmanagerMessages;
-import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerTreeFolders;
-import net.datenwerke.rs.theme.client.icon.BaseIcon;
-
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.inject.Inject;
@@ -69,7 +46,32 @@ import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
-public class ReportCatalogRepositoryProvider extends ReportSelectionRepositoryProviderHookImpl {
+import net.datenwerke.gf.client.treedb.UITree;
+import net.datenwerke.gf.client.treedb.simpleform.SFFCGenericTreeNode;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwNorthSouthContainer;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
+import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
+import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
+import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
+import net.datenwerke.gxtdto.client.utils.modelkeyprovider.DtoIdModelKeyProvider;
+import net.datenwerke.rs.core.client.reportmanager.ReportManagerTreeLoaderDao;
+import net.datenwerke.rs.core.client.reportmanager.ReportManagerUIService;
+import net.datenwerke.rs.core.client.reportmanager.dto.ReportFolderDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.interfaces.ReportContainerDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.interfaces.ReportVariantDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.decorator.ReportDtoDec;
+import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog;
+import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog.ReportSelectionCardConfig;
+import net.datenwerke.rs.core.client.reportmanager.helper.reportselector.ReportSelectionDialog.RepositoryProviderConfig;
+import net.datenwerke.rs.core.client.reportmanager.hooks.ReportSelectionRepositoryProviderHook;
+import net.datenwerke.rs.core.client.reportmanager.locale.ReportmanagerMessages;
+import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerTreeFolders;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
+
+public class ReportCatalogRepositoryProvider implements ReportSelectionRepositoryProviderHook {
 
 	public interface Config extends ReportSelectionDialog.RepositoryProviderConfig{
 		public boolean includeVariants();
@@ -222,7 +224,19 @@ public class ReportCatalogRepositoryProvider extends ReportSelectionRepositoryPr
 		dialog.addCard(
 			ReportmanagerMessages.INSTANCE.catalog(), 
 			BaseIcon.HDD_O, 
-			wrapper	
+			wrapper,
+			new ReportSelectionCardConfig(){
+
+				@Override
+				public void cardSelected() {
+				}
+
+				@Override
+				public ReportContainerDto getSelectedReport() {
+					return (ReportDtoDec) grid.getSelectionModel().getSelectedItem();
+				}
+				
+			}
 		);
 	}
 

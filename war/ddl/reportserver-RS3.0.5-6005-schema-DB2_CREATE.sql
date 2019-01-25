@@ -2767,7 +2767,7 @@
 
     create table RS_TS_DISK_GENERAL_REFERENCE (
         description clob(1g),
-        NAME_FIELD varchar(128),
+        NAME_FIELD varchar(128) not null,
         id bigint not null,
         primary key (id)
     );
@@ -5232,5 +5232,5 @@
         primary key (ENTITY_ID)
     );
     insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('created', VARCHAR_FORMAT(CURRENT TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS'));
-    insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('version', 'RS3.0.4-build-6004-6004');
-    insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('schemaversion', 'RS3.0-10');
+    insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('version', 'RS3.0.5-6005');
+    insert into RS_SCHEMAINFO(KEY_FIELD, value) VALUES('schemaversion', 'RS3.0-11');

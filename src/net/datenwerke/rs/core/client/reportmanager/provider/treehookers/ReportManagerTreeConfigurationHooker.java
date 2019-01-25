@@ -117,24 +117,12 @@ public class ReportManagerTreeConfigurationHooker implements
 			reportMenu.add(new InfoMenuItem());
 		}
 		
-		/* Report Variant */
-		for(ReportTypeConfigHook config : hookHandler.getHookers(ReportTypeConfigHook.class)){
-			Menu reportVariantMenu = menuProvider.createOrGetMenuFor(config.getReportVariantClass());
-			insertItem = generateInsertMenu();
-			insertItem.disable();
-			
-			reportVariantMenu.add(generateExecuteReportItem());
-			reportVariantMenu.add(new SeparatorMenuItem());
-			reportVariantMenu.add(insertItem);
-			reportVariantMenu.add(new DeleteMenuItem(treeHandler));
-			reportVariantMenu.add(new SeparatorMenuItem());
-			reportVariantMenu.add(new InfoMenuItem());
-		}
 	}
 
 	private MenuItem generateExecuteReportItem() {
 		TreeMenuItem executeReportItem = new TreeMenuItem();
 		executeReportItem.setText(ReportmanagerMessages.INSTANCE.execute());
+		executeReportItem.setIcon(BaseIcon.EXECUTE.toImageResource());
 		
 		executeReportItem.addMenuSelectionListener(new TreeMenuSelectionEvent() {
 			

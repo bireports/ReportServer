@@ -343,8 +343,17 @@ public class ReportExecutorRpcServiceImpl extends SecuredRemoteServiceServlet
 			if(null != uuid)
 				report = reportService.getReportByUUID(uuid);
 		}
+		if (null == report) {
+			String path = location.getParameterValue("path");
+			if (null != path) {
+				AbstractReportManagerNode node = reportService.getNodeByPath(path.replace("%2F", "/").replace("%2f", "/")
+							.replace("%20", " "));
+				if (node instanceof Report)
+					report = (Report)node;
+			}
+		}
 		if(null == report)
-			throw new ExpectedException("Could not find report. key, id or uuid must be specified.");
+			throw new ExpectedException("Could not find report. A valid key, id, path or uuid must be specified.");
 		
 		Report referenceReport = report instanceof ReportVariant ? ((ReportVariant)report).getBaseReport() : report;
 		

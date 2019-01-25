@@ -396,7 +396,7 @@ public class XLSStreamOutputGenerator extends TableOutputGeneratorImpl{
 		
 		/* date */
 		try{
-			if(cType.equals(java.util.Date.class)){ 
+			if(cType.equals(java.util.Date.class) || cType.equals(java.sql.Date.class)){ 
 				addDate((java.util.Date) content, workbook, sheet, column, cell, styles);
 			} else if(cType.equals(Time.class)){
 				addTime((Time) content, workbook, sheet, column, cell, styles);

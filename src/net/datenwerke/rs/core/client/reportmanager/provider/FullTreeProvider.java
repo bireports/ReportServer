@@ -42,7 +42,7 @@ import com.google.inject.Provider;
 public class FullTreeProvider implements Provider<ManagerHelperTree>{
 
 	private final HookHandlerService hookHandler;
-	private final BasicTreeProvider basicTreeProvider;
+	private final FolderAndReportTreeProvider basicTreeProvider;
 	private final ReportManagerTreeManagerDao reportManagerTreeHandler;
 	private final ReportManagerMainPanel mainPanel;
 	private ManagerHelperTree managerHelperTree;
@@ -51,7 +51,7 @@ public class FullTreeProvider implements Provider<ManagerHelperTree>{
 	public FullTreeProvider(
 			HookHandlerService hookHandler,
 			
-			BasicTreeProvider basicTreeProvider,
+			FolderAndReportTreeProvider basicTreeProvider,
 			ReportManagerTreeManagerDao reportManagerTreeHandler,
 			ReportManagerMainPanel mainPanel, 
 			HistoryUiService historyService 

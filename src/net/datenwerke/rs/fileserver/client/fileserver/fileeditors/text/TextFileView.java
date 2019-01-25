@@ -36,6 +36,9 @@ import net.datenwerke.rs.fileserver.client.fileserver.FileServerDao;
 import net.datenwerke.rs.fileserver.client.fileserver.dto.FileServerFileDto;
 import net.datenwerke.rs.fileserver.client.fileserver.locale.FileServerMessages;
 
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+
 import com.google.inject.Inject;
 
 public class TextFileView extends SimpleFormView{
@@ -44,10 +47,34 @@ public class TextFileView extends SimpleFormView{
 	private FileServerDao fileServerDao;
 	
 	private StringBaseModel bindingEntity = new StringBaseModel();
+	
+	@Override
+	public String getViewId() {
+		return "_file_edit_view";
+	}
+	
+	@Override
+	public boolean isSticky() {
+		return true;
+	}
+	
+	@Override
+	protected VerticalLayoutData getFormLayoutData() {
+		return new VerticalLayoutData(1,1, new Margins(10));
+	}
+	
+	@Override
+	protected boolean useScrollWrapper() {
+		return false;
+	}
 
 	@Override
 	protected void configureSimpleForm(final SimpleForm form) {
 		form.setHeadingText(FileServerMessages.INSTANCE.fileViewHeader() + (getSelectedNode() == null ? "" : " (" + getSelectedNode().getId() + ")"));
+		form.setAutoHeight();
+		
+		form.setFieldWidth(-1);
+		form.setFieldHeight(1);
 		
 		final String codeMirrorField = form.addField(String.class, StringBaseModelPa.INSTANCE.value(), new SFFCCodeMirror() {
 			
@@ -58,7 +85,7 @@ public class TextFileView extends SimpleFormView{
 			
 			@Override
 			public int getHeight() {
-				return 400;
+				return -1;
 			}
 
 			@Override

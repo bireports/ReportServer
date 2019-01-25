@@ -105,4 +105,6 @@ public interface ReportmanagerMessages extends Messages {
 	String propertyAllowCubify();
 	String fieldLabelCubify();
 	String fileSelectionParameterName();
+	
+	String deleteVariantConfirmMessage(String string);
 }

@@ -21,19 +21,15 @@
  */
  
  
-package net.datenwerke.rs.core.client.reportmanager.provider.annotations;
+package net.datenwerke.rs.reportdoc.client;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.google.inject.ImplementedBy;
 
-import com.google.inject.BindingAnnotation;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 
+@ImplementedBy(ReportDocumentationUiServiceImpl.class)
+public interface ReportDocumentationUiService {
 
-@BindingAnnotation
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
-public @interface ReportManagerTreeBasic {
+	void openDocumentationForopen(ReportDto report);
 
 }

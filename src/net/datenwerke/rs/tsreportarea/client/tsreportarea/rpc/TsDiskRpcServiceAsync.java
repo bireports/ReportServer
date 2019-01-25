@@ -26,18 +26,19 @@ package net.datenwerke.rs.tsreportarea.client.tsreportarea.rpc;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import net.datenwerke.gxtdto.client.dtomanager.Dto;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsReferenceInfo;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.container.TsDiskItemList;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 import net.datenwerke.treedb.client.treedb.rpc.RPCTreeLoaderAsync;
 import net.datenwerke.treedb.client.treedb.rpc.RPCTreeManagerAsync;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface TsDiskRpcServiceAsync extends RPCTreeLoaderAsync, RPCTreeManagerAsync {
 
@@ -83,5 +84,5 @@ public interface TsDiskRpcServiceAsync extends RPCTreeLoaderAsync, RPCTreeManage
 	void deleteNodesWithForce(List<AbstractNodeDto> nodes, Dto state,
 			AsyncCallback<Void> callback);
 
-
+	void getReferenceInfosFor(ReportDto report, AsyncCallback<List<TsReferenceInfo>> callback);
 }

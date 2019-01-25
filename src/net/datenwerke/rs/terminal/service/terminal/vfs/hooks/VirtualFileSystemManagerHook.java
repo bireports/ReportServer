@@ -78,7 +78,7 @@ public interface VirtualFileSystemManagerHook extends Hook, Serializable {
 
 	List<VFSLocation> moveFilesTo(VFSLocation source, VFSLocation target);
 
-	void copyFilesTo(VFSLocation source, VFSLocation target, boolean deep) throws VFSException;
+	List<VFSLocation> copyFilesTo(VFSLocation source, VFSLocation target, boolean deep) throws VFSException;
 
 	void remove(VFSLocation location, boolean force);
 
@@ -119,4 +119,6 @@ public interface VirtualFileSystemManagerHook extends Hook, Serializable {
 	void writeIntoLocation(VFSLocation vfsLocation, byte[] uploadData) throws VFSException;
 	
 	VFSLocation rename(VFSLocation vfsLocation, String name);
+	
+	String getNameFor(VFSLocation loc);
 }

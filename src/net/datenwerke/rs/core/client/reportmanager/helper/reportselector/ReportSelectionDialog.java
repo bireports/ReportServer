@@ -23,6 +23,12 @@
  
 package net.datenwerke.rs.core.client.reportmanager.helper.reportselector;
 
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.inject.Inject;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.menu.Menu;
+
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.gxtdto.client.ui.helper.nav.WestPropertiesDialog;
@@ -32,13 +38,6 @@ import net.datenwerke.rs.core.client.reportmanager.hooks.ReportSelectionReposito
 import net.datenwerke.rs.core.client.reportmanager.locale.ReportmanagerMessages;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.inject.Inject;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.menu.Menu;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
-
 public class ReportSelectionDialog extends WestPropertiesDialog {
 
 	public interface ReportSelectionDialogEventHandler{
@@ -46,6 +45,12 @@ public class ReportSelectionDialog extends WestPropertiesDialog {
 
 		public Menu getContextMenuFor(ReportContainerDto dto,
 				ReportSelectionRepositoryProviderHook hooker, Object... info);
+		
+		public boolean handleSubmit(ReportContainerDto container);
+	}
+	
+	public static interface ReportSelectionCardConfig extends CardConfig {
+		ReportContainerDto getSelectedReport();
 	}
 	
 	public interface RepositoryProviderConfig{}
@@ -106,7 +111,21 @@ public class ReportSelectionDialog extends WestPropertiesDialog {
 		this.eventHandler = eventHandler;
 	}
 
-
-	
+	public void initSubmitButton() {
+		DwTextButton submitBtn = new DwTextButton(BaseMessages.INSTANCE.submit());
+		submitBtn.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				CardConfig card = getSelectedCard();
+				if(! (card instanceof ReportSelectionCardConfig))
+					return;
+				
+				ReportContainerDto container = ((ReportSelectionCardConfig)card).getSelectedReport();
+				if(eventHandler.handleSubmit(container))
+					hide();
+			}
+		});
+		addButton(submitBtn);
+	}
 	
 }

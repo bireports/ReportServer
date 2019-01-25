@@ -101,5 +101,4 @@ public interface TeamSpaceMessages extends Messages {
 	String createNewSpace();
 	String owner();
 	String editTeamSpaceMembersAddGroupMember();
-
 }

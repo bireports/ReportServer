@@ -81,7 +81,7 @@ public class StringProvider extends FormFieldProviderHookImpl {
 		SFFCTextArea textAreaConfig = getTextareaConfig();
 		
 		Widget field = null;
-		if(null != textAreaConfig && textAreaConfig.getHeight() > 1){
+		if(null != textAreaConfig && (textAreaConfig.getHeight() > 1 || textAreaConfig.getHeight() == -1)){
 			SFFCCodeMirror codeMirrorConfig = GXT.isIE() ? null : getCodeMirrorConfig();
 			if(null != codeMirrorConfig){
 				field = new CodeMirrorPanel(new CodeMirrorConfig(codeMirrorConfig.getLanguage(), codeMirrorConfig.lineNumbersVisible()), codeMirrorConfig.getEnhancer());

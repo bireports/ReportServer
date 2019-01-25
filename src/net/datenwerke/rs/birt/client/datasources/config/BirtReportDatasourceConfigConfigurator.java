@@ -25,6 +25,13 @@ package net.datenwerke.rs.birt.client.datasources.config;
 
 import java.util.List;
 
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
+
 import net.datenwerke.gf.client.treedb.UITree;
 import net.datenwerke.gf.client.treedb.simpleform.SFFCGenericTreeNode;
 import net.datenwerke.gxtdto.client.codemirror.CodeMirrorPanel.ToolBarEnhancer;
@@ -46,14 +53,7 @@ import net.datenwerke.rs.core.client.datasourcemanager.helper.forms.DatasourceSe
 import net.datenwerke.rs.core.client.parameters.dto.ParameterDefinitionDto;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.core.client.reportmanager.interfaces.ReportAware;
-import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerTreeBasic;
-
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
+import net.datenwerke.rs.core.client.reportmanager.provider.annotations.ReportManagerTreeFoldersAndReports;
 
 public class BirtReportDatasourceConfigConfigurator implements DatasourceDefinitionConfigConfigurator {
 	
@@ -67,7 +67,7 @@ public class BirtReportDatasourceConfigConfigurator implements DatasourceDefinit
 	
 	@Inject
 	public BirtReportDatasourceConfigConfigurator(
-			@ReportManagerTreeBasic Provider<UITree> reportManagerTree
+			@ReportManagerTreeFoldersAndReports Provider<UITree> reportManagerTree
 			) {
 		this.reportManagerTreeProvider = reportManagerTree;
 	}

@@ -109,5 +109,8 @@ abstract public class DatasourceDefinition extends AbstractDatasourceManagerNode
     @Transient
     public abstract DatasourceDefinitionConfig createConfigObject();
 
-
+    @Override
+	public boolean hasChildren() {
+		return false;
+	}
 }

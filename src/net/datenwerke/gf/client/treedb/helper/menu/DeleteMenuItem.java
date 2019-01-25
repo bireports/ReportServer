@@ -72,9 +72,12 @@ public class DeleteMenuItem extends TreeMenuItem {
 							});
 							
 							/* select parent */
-							AbstractNodeDto parent = tree.getStore().getParent(node);
-							if(null != parent)
+							final AbstractNodeDto parent = tree.getStore().getParent(node);
+							if(null != parent) {
+								/* https://www.sencha.com/forum/showthread.php?308983-GXT-3.1.4.-TreeSelectionModel-RightClick-sets-mousdown-flag&p=1128504#post1128504 */
+								tree.releaseMouseDownFlag();
 								tree.getSelectionModel().select(parent, false);
+							}
 						}	
 					}
 				});

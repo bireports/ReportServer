@@ -228,6 +228,17 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 
 		/* merge and persist */
 		dtoService.mergePoso(teamSpaceDto, teamSpace);
+		
+		if(teamSpaceService.isGlobalTsAdmin()){
+			if(null == teamSpaceDto.getOwner())
+				teamSpace.setOwner(null);
+			else if(null == teamSpace.getOwner() || ! teamSpaceDto.getOwner().getId().equals(teamSpace.getOwner().getId())){
+				AbstractUserManagerNode user = userManager.getNodeById(teamSpaceDto.getOwner().getId());
+				if(user instanceof User)
+					teamSpace.setOwner((User) user);
+			}
+		}
+		
 		teamSpace = teamSpaceService.merge(teamSpace);
 		
 		return (TeamSpaceDto) dtoService.createDto(teamSpace);

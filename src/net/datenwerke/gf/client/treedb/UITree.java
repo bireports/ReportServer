@@ -26,34 +26,6 @@ package net.datenwerke.gf.client.treedb;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.datenwerke.gf.client.treedb.dnd.UITreeDragDropConfiguration;
-import net.datenwerke.gf.client.treedb.dnd.UITreeDragSource;
-import net.datenwerke.gf.client.treedb.dnd.UITreeDropTarget;
-import net.datenwerke.gf.client.treedb.helper.menu.TreeDBUIMenuProvider;
-import net.datenwerke.gf.client.treedb.helper.menu.TreeMenuItem;
-import net.datenwerke.gf.client.treedb.stores.EnhancedTreeStore;
-import net.datenwerke.gf.client.treedb.stores.EnhancedTreeStoreLoadListener;
-import net.datenwerke.gxtdto.client.awareness.TreePanelAware;
-import net.datenwerke.gxtdto.client.baseex.widget.DwTreePanel;
-import net.datenwerke.gxtdto.client.clipboard.ClipboardDtoItem;
-import net.datenwerke.gxtdto.client.clipboard.ClipboardItem;
-import net.datenwerke.gxtdto.client.clipboard.ClipboardUiService;
-import net.datenwerke.gxtdto.client.clipboard.processor.ClipboardCopyProcessor;
-import net.datenwerke.gxtdto.client.dtomanager.Dto;
-import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
-import net.datenwerke.gxtdto.client.dtomanager.stores.DtoAwareTreeStore;
-import net.datenwerke.gxtdto.client.dtomanager.stores.PositionSortableStore;
-import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
-import net.datenwerke.gxtdto.client.stores.HasLoader;
-import net.datenwerke.gxtdto.client.utilityservices.menu.DwHookableMenu;
-import net.datenwerke.security.client.treedb.dto.decorator.SecuredAbstractNodeDtoDec;
-import net.datenwerke.treedb.client.treedb.TreeDbLoaderDao;
-import net.datenwerke.treedb.client.treedb.TreeDbManagerDao;
-import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-import net.datenwerke.treedb.client.treedb.dto.decorator.AbstractNodeDtoDec;
-import net.datenwerke.treedb.client.treedb.dto.pa.AbstractNodeDtoPA;
-import net.datenwerke.treedb.client.treedb.locale.TreedbMessages;
-
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -63,7 +35,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.sencha.gxt.cell.core.client.form.FieldCell.FieldViewData;
 import com.sencha.gxt.core.shared.event.CancellableEvent;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreUpdateEvent;
@@ -79,9 +50,38 @@ import com.sencha.gxt.widget.core.client.event.BeforeShowContextMenuEvent.Before
 import com.sencha.gxt.widget.core.client.event.ExpandItemEvent;
 import com.sencha.gxt.widget.core.client.event.ExpandItemEvent.ExpandItemHandler;
 import com.sencha.gxt.widget.core.client.menu.Menu;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import com.sencha.gxt.widget.core.client.tree.TreeSelectionModel;
+
+import net.datenwerke.gf.client.treedb.dnd.UITreeDragDropConfiguration;
+import net.datenwerke.gf.client.treedb.dnd.UITreeDragSource;
+import net.datenwerke.gf.client.treedb.dnd.UITreeDropTarget;
+import net.datenwerke.gf.client.treedb.helper.menu.TreeDBUIMenuProvider;
+import net.datenwerke.gf.client.treedb.helper.menu.TreeMenuItem;
+import net.datenwerke.gf.client.treedb.stores.EnhancedTreeStore;
+import net.datenwerke.gf.client.treedb.stores.EnhancedTreeStoreLoadListener;
+import net.datenwerke.gxtdto.client.awareness.TreePanelAware;
+import net.datenwerke.gxtdto.client.baseex.widget.DwTreePanel;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
+import net.datenwerke.gxtdto.client.clipboard.ClipboardDtoItem;
+import net.datenwerke.gxtdto.client.clipboard.ClipboardItem;
+import net.datenwerke.gxtdto.client.clipboard.ClipboardUiService;
+import net.datenwerke.gxtdto.client.clipboard.processor.ClipboardCopyProcessor;
+import net.datenwerke.gxtdto.client.dtomanager.Dto;
+import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
+import net.datenwerke.gxtdto.client.dtomanager.stores.DtoAwareTreeStore;
+import net.datenwerke.gxtdto.client.dtomanager.stores.PositionSortableStore;
+import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
+import net.datenwerke.gxtdto.client.stores.HasLoader;
+import net.datenwerke.gxtdto.client.utilityservices.menu.DwHookableMenu;
+import net.datenwerke.security.client.treedb.dto.decorator.SecuredAbstractNodeDtoDec;
+import net.datenwerke.treedb.client.treedb.TreeDbLoaderDao;
+import net.datenwerke.treedb.client.treedb.TreeDbManagerDao;
+import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
+import net.datenwerke.treedb.client.treedb.dto.decorator.AbstractNodeDtoDec;
+import net.datenwerke.treedb.client.treedb.dto.pa.AbstractNodeDtoPA;
+import net.datenwerke.treedb.client.treedb.locale.TreedbMessages;
 
 /**
  * 
@@ -448,7 +448,7 @@ public class UITree extends DwTreePanel<AbstractNodeDto>{
 	public void loadAll() {
 		TreeStore<AbstractNodeDto> store = getStore();
 		if(store instanceof EnhancedTreeStore){
-				mask();
+				mask(BaseMessages.INSTANCE.loadingMsg());
 				((EnhancedTreeStore)store).loadEntireTree(new EnhancedTreeStoreLoadListener() {
 					public void loadComplete() {
 						isAllLoaded = true;

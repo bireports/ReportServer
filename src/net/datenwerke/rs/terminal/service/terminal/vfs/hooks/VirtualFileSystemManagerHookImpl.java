@@ -80,13 +80,13 @@ public abstract class VirtualFileSystemManagerHookImpl implements
 	protected abstract List<VFSLocation> doMoveFilesTo(VFSLocation sources, VFSLocation target);
 	
 	@Override
-	public void copyFilesTo(VFSLocation sources, VFSLocation target, boolean deep) throws VFSException {
+	public List<VFSLocation> copyFilesTo(VFSLocation sources, VFSLocation target, boolean deep) throws VFSException {
 		if(isReadOnly())
 			throw new IllegalStateException("filesystem is read only");
-		doCopyFilesTo(sources, target, deep);
+		return doCopyFilesTo(sources, target, deep);
 	}
 
-	protected abstract void doCopyFilesTo(VFSLocation sources, VFSLocation target, boolean deep) throws VFSException;
+	protected abstract List<VFSLocation> doCopyFilesTo(VFSLocation sources, VFSLocation target, boolean deep) throws VFSException;
 
 	public boolean hasContent(VFSLocation vfsLocation){
 		return false;

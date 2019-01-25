@@ -23,8 +23,6 @@
  
 package net.datenwerke.rs.reportdoc.client.hooker;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Random;
 import com.google.inject.Inject;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
@@ -34,17 +32,14 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
-import net.datenwerke.gf.client.uiutils.ClientDownloadHelper;
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
 import net.datenwerke.gxtdto.client.baseex.widget.mb.DwConfirmMessageBox;
-import net.datenwerke.gxtdto.client.utilityservices.UtilsUIService;
 import net.datenwerke.gxtdto.client.utilityservices.toolbar.ToolbarService;
 import net.datenwerke.rs.core.client.reportexecutor.hooks.ReportExecutorViewToolbarHook;
 import net.datenwerke.rs.core.client.reportexecutor.ui.ReportExecutorInformation;
 import net.datenwerke.rs.core.client.reportexecutor.ui.ReportExecutorMainPanel;
-import net.datenwerke.rs.core.client.reportexporter.ReportExporterUIService;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
-import net.datenwerke.rs.reportdoc.client.ReportDocumentationUIModule;
+import net.datenwerke.rs.reportdoc.client.ReportDocumentationUiService;
 import net.datenwerke.rs.reportdoc.client.locale.ReportDocumentationMessages;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
@@ -56,19 +51,16 @@ public class ReportViewDocumentationHooker implements
 		ReportExecutorViewToolbarHook {
 
 	private final ToolbarService toolbarService;
-	private final UtilsUIService utilsService;
-	private final ReportExporterUIService exporterService;
+	private final ReportDocumentationUiService reportDocService;
 	
 	@Inject
 	public ReportViewDocumentationHooker(
 		ToolbarService toolbarService,
-		UtilsUIService utilsService,
-		ReportExporterUIService exporterService
+		ReportDocumentationUiService reportDocService
 		){
 		
 		this.toolbarService = toolbarService;
-		this.utilsService = utilsService;
-		this.exporterService = exporterService;
+		this.reportDocService = reportDocService;
 	}
 	
 	@Override
@@ -83,14 +75,14 @@ public class ReportViewDocumentationHooker implements
 			@Override
 			public void onSelect(SelectEvent event) {
 				if(! report.isModified())
-					openDocumentation(report);
+					reportDocService.openDocumentationForopen(report);
 				else {
 					ConfirmMessageBox cmb = new DwConfirmMessageBox(ReportDocumentationMessages.INSTANCE.reportChangedInfoHeader(), ReportDocumentationMessages.INSTANCE.reportChangedInfoMessage());
 					cmb.addDialogHideHandler(new DialogHideHandler() {
 						@Override
 						public void onDialogHide(DialogHideEvent event) {
 							if (event.getHideButton() == PredefinedButton.YES) 
-								openDocumentation(report);
+								reportDocService.openDocumentationForopen(report);
 						}
 					});
 						
@@ -109,11 +101,4 @@ public class ReportViewDocumentationHooker implements
 		
 	}
 	
-	private void openDocumentation(final ReportDto report) {
-		int nonce = Random.nextInt();
-		String url = GWT.getModuleBaseURL() + ReportDocumentationUIModule.SERVLET + "?nonce=" + nonce + "&id=" + report.getId() + "&format=PDF&download=true";
-		ClientDownloadHelper.triggerDownload(url);
-	};
-
-
 }

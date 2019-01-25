@@ -23,19 +23,18 @@
  
 package net.datenwerke.gf.client.managerhelper.mainpanel;
 
-import net.datenwerke.gf.client.managerhelper.ui.AbstractTreeMainPanel;
-import net.datenwerke.gf.client.treedb.UITree;
-import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
-import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
-import net.datenwerke.treedb.client.treedb.TreeDbManagerDao;
-import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.container.Container;
+
+import net.datenwerke.gf.client.managerhelper.ui.AbstractTreeMainPanel;
+import net.datenwerke.gf.client.treedb.UITree;
+import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
+import net.datenwerke.treedb.client.treedb.TreeDbManagerDao;
+import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 
 /**
  * The base class of a specific view for a node in a manager component.
@@ -147,13 +146,16 @@ public abstract class MainPanelView {
 	public void viewAdded(Container viewWrapper) {
 	}
 
-	public Container getWrapper() {
-		return new DwFlowContainer();
-	}
-
-
 	public ImageResource getIcon() {
 		return null;
+	}
+	
+	/**
+	 * Is the view sticky, i.e. once it is selected, should it try to be autoselected if the user clicks on another tree entry ?
+	 * @return
+	 */
+	public boolean isSticky() {
+		return false;
 	}
 
 }

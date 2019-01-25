@@ -21,19 +21,15 @@
  */
  
  
-package net.datenwerke.rs.core.client.reportmanager.provider.annotations;
+package net.datenwerke.rs.core.client.reportvariants.locale;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.Messages;
 
-import com.google.inject.BindingAnnotation;
-
-
-@BindingAnnotation
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
-public @interface ReportManagerTreeFull {
-
+public interface ReportVariantsMessages extends Messages {
+	
+	public final static ReportVariantsMessages INSTANCE = GWT.create(ReportVariantsMessages.class);
+	
+	String header();
+	String description();
 }

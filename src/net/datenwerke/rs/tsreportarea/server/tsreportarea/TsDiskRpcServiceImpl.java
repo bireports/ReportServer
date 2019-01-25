@@ -58,6 +58,7 @@ import net.datenwerke.rs.teamspace.service.teamspace.entities.TeamSpaceApp;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsReferenceInfo;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.container.TsDiskItemList;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.rpc.TsDiskRpcService;
 import net.datenwerke.rs.tsreportarea.service.tsreportarea.TsDiskModule;
@@ -100,7 +101,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 
 	private final Provider<AuthenticatorService> authenticatorServiceProvider;
 	private final DtoService dtoService;
-	private final TsDiskService favoriteService;
+	private final TsDiskService diskService;
 	private final ReportService reportService;
 	private final SecurityService securityService;
 	private final TeamSpaceService teamSpaceService;
@@ -112,7 +113,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 	public TsDiskRpcServiceImpl(
 		Provider<AuthenticatorService> authenticatorServiceProvider,
 		DtoService dtoService,
-		TsDiskService favoriteService,
+		TsDiskService diskService,
 		ReportService reportService,
 		SecurityService securityService,
 		TeamSpaceService teamSpaceService,
@@ -123,7 +124,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		/* store objects */
 		this.authenticatorServiceProvider = authenticatorServiceProvider;
 		this.dtoService = dtoService;
-		this.favoriteService = favoriteService;
+		this.diskService = diskService;
 		this.reportService = reportService;
 		this.securityService = securityService;
 		this.teamSpaceService = teamSpaceService;
@@ -155,7 +156,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 			throw new ViolatedSecurityExceptionDto("insufficient rights");
 		
 		try{
-			return favoriteService.getRoot(teamSpace);
+			return diskService.getRoot(teamSpace);
 		} catch(NoResultException e){
 		}
 		
@@ -166,11 +167,11 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 	@Override
 	@Transactional(rollbackOn={Exception.class})
 	public AbstractNodeDto loadNodeById(Long id, Dto state) throws ServerCallFailedException{
-		AbstractTsDiskNode realNode = favoriteService.getNodeById(id);
+		AbstractTsDiskNode realNode = diskService.getNodeById(id);
 		if(realNode == null)
 			return null;
 		
-		TeamSpace teamSpace = favoriteService.getTeamSpaceFor(realNode);
+		TeamSpace teamSpace = diskService.getTeamSpaceFor(realNode);
 		
 		/* check rights */
 		if(! teamSpaceService.mayAccess(teamSpace))
@@ -194,7 +195,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		
 		List<AbstractNodeDto> list = new ArrayList<AbstractNodeDto>();
 
-		for(AbstractTsDiskNode child : (Collection<AbstractTsDiskNode>) favoriteService.getNodeById(node.getId()).getChildrenSorted()){
+		for(AbstractTsDiskNode child : (Collection<AbstractTsDiskNode>) diskService.getNodeById(node.getId()).getChildrenSorted()){
 			if(child instanceof TsDiskFolder){
 				AbstractNodeDto dto = (AbstractNodeDto)  dtoService.createListDto(child);
 				list.add(dto);
@@ -259,18 +260,18 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 			throw new ViolatedSecurityExceptionDto("insufficient rights");
 		
 		/* get objects */
-		AbstractTsDiskNode realNode = favoriteService.getNodeById(node.getId());
-		AbstractTsDiskNode parent = favoriteService.getNodeById(reference.getId());
+		AbstractTsDiskNode realNode = diskService.getNodeById(node.getId());
+		AbstractTsDiskNode parent = diskService.getNodeById(reference.getId());
 		
 		/* check rights */
-		if(! teamSpace.equals(favoriteService.getTeamSpaceFor(realNode)) || ! teamSpace.equals(favoriteService.getTeamSpaceFor(parent)))
+		if(! teamSpace.equals(diskService.getTeamSpaceFor(realNode)) || ! teamSpace.equals(diskService.getTeamSpaceFor(parent)))
 			throw new ViolatedSecurityExceptionDto("insufficient rights");
 		
 		/* move node */
-		favoriteService.move(realNode, parent);
+		diskService.move(realNode, parent);
 		
 		/* merge parent */
-		favoriteService.merge(parent);
+		diskService.merge(parent);
 		
 		return (AbstractTsDiskNodeDto) dtoService.createDto(realNode);
 	}
@@ -289,33 +290,33 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		/* get real nodes */
 		List<AbstractTsDiskNode> realNodes = new ArrayList();
 		for(AbstractNodeDto nodeDto : nodes){
-			AbstractTsDiskNode node = favoriteService.getNodeById(nodeDto.getId());
+			AbstractTsDiskNode node = diskService.getNodeById(nodeDto.getId());
 
 			/* check rights */
-			if(! teamSpace.equals(favoriteService.getTeamSpaceFor(node)))
+			if(! teamSpace.equals(diskService.getTeamSpaceFor(node)))
 				throw new ViolatedSecurityExceptionDto("insufficient rights");
 
 			realNodes.add(node);
 		}
 
 		/* move */
-		AbstractTsDiskNode parent = favoriteService.getNodeById(reference.getId());
+		AbstractTsDiskNode parent = diskService.getNodeById(reference.getId());
 		List<AbstractNodeDto> resultList = new ArrayList<AbstractNodeDto>();
 
 		/* check rights */
-		if(! teamSpace.equals(favoriteService.getTeamSpaceFor(parent)))
+		if(! teamSpace.equals(diskService.getTeamSpaceFor(parent)))
 			throw new ViolatedSecurityExceptionDto("insufficient rights");
 		
 		for(AbstractTsDiskNode node: realNodes){
 			/* move node */
 			AbstractTsDiskNode oldParent = (AbstractTsDiskNode) node.getParent();
-			favoriteService.move(node, parent);
+			diskService.move(node, parent);
 
 			resultList.add((AbstractNodeDto) dtoService.createDto(node));
 		}
 
 		/* merge parent */
-		favoriteService.merge(parent);
+		diskService.merge(parent);
 
 		return resultList;
 	}
@@ -367,16 +368,16 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		if(! teamSpaceService.isUser(teamSpace))
 			throw new ViolatedSecurityExceptionDto("insufficient rights");
 		
-		AbstractTsDiskNode uNode = favoriteService.getNodeById(node.getId());
+		AbstractTsDiskNode uNode = diskService.getNodeById(node.getId());
 
 		/* do not allow the deletion of root nodes */
 		if(uNode.isRoot())
 			throw new ExpectedException("Root cannot be deleted.");
 		
 		if(force)
-			favoriteService.forceRemove(uNode);
+			diskService.forceRemove(uNode);
 		else
-			favoriteService.remove(uNode);
+			diskService.remove(uNode);
 		
 		return true;
 	}
@@ -402,8 +403,8 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		folder.setDescription(dummy.getDescription());
 		parent.addChild(folder);
 		
-		favoriteService.persist(folder);
-		favoriteService.merge(parent);
+		diskService.persist(folder);
+		diskService.merge(parent);
 	
 		return (TsDiskFolderDto) dtoService.createDto(folder);
 	}
@@ -419,7 +420,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 			TsDiskFolderDto folderDto) {
 		if(null == folderDto){
 			try{
-				return favoriteService.getRoot(teamSpace);
+				return diskService.getRoot(teamSpace);
 			} catch(NoResultException e){
 				return null;
 			}
@@ -454,18 +455,18 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 			if(!(report instanceof ReportVariant) && ! teamSpaceService.isManager(teamSpace))
 				throw new ViolatedSecurityExceptionDto("insufficient rights");
 
-			if(! copyReport && ! favoriteService.getTeamSpacesThatLinkTo(report).isEmpty() && !isReference)
+			if(! copyReport && ! diskService.getTeamSpacesThatLinkTo(report).isEmpty() && !isReference)
 				throw new ExpectedException(TsDiskMessages.INSTANCE.errorVariantNeedsToBeDuplicated());
 			
 			/* do import */
-			TsDiskReportReference reference = favoriteService.importReport(report, parent, copyReport, isReference);
+			TsDiskReportReference reference = diskService.importReport(report, parent, copyReport, isReference);
 			
 			/* create dto */
 			referenceDtos.add((TsDiskReportReferenceDto) dtoService.createDto(reference));
 		}
 		
 		/* merge */
-		favoriteService.merge(parent);
+		diskService.merge(parent);
 		
 		return referenceDtos;
 	}
@@ -528,14 +529,14 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		if(null != folderDto){
 			AbstractTsDiskNode folder = (AbstractTsDiskNode) dtoService.loadPoso(folderDto);
 			
-			if(!teamSpace.equals(favoriteService.getTeamSpaceFor(folder)))
+			if(!teamSpace.equals(diskService.getTeamSpaceFor(folder)))
 				throw new ViolatedSecurityExceptionDto("insufficient rights");
 			if(!(folder instanceof TsDiskFolder))
 				throw new ServerCallFailedException("expected folder");
 			
-			references = favoriteService.getReferencesIn(folder);
+			references = diskService.getReferencesIn(folder);
 		} else 
-			references = favoriteService.getReferencesFor(teamSpace);
+			references = diskService.getReferencesFor(teamSpace);
 		
 		List<TsDiskReportReferenceDto> dtos = new ArrayList<TsDiskReportReferenceDto>();
 		for(TsDiskReportReference reference : references)
@@ -553,14 +554,14 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 	@Transactional(rollbackOn={Exception.class})
 	public AbstractNodeDto updateNode(AbstractNodeDto nodeDto, Dto state) throws ServerCallFailedException {
 		AbstractTsDiskNode node = (AbstractTsDiskNode) dtoService.loadPoso(nodeDto);
-		TeamSpace teamSpace = favoriteService.getTeamSpaceFor(node);
+		TeamSpace teamSpace = diskService.getTeamSpaceFor(node);
 		
 		if(! teamSpaceService.isUser(teamSpace))
 			throw new ViolatedSecurityException();
 		
 		/* merge node */
 		dtoService.mergePoso(nodeDto, node);
-		favoriteService.merge(node);
+		diskService.merge(node);
 		
 		return (AbstractNodeDto) dtoService.createDtoFullAccess(node);
 	}
@@ -570,7 +571,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 	public AbstractNodeDto updateNode(AbstractNodeDto nodeDto, boolean changeUnderlyingReport, String name, String description, Dto state)
 			throws ServerCallFailedException {
 		AbstractTsDiskNode node = (AbstractTsDiskNode) dtoService.loadPoso(nodeDto);
-		TeamSpace teamSpace = favoriteService.getTeamSpaceFor(node);
+		TeamSpace teamSpace = diskService.getTeamSpaceFor(node);
 		
 		if(! teamSpaceService.isUser(teamSpace))
 			throw new ViolatedSecurityException();
@@ -578,7 +579,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		/* merge node */
 		node.setName(name);
 		node.setDescription(description);
-		favoriteService.merge(node);
+		diskService.merge(node);
 		
 		if(changeUnderlyingReport && node instanceof TsDiskReportReference){
 			TsDiskReportReference reference = (TsDiskReportReference) node;
@@ -669,7 +670,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 	public AbstractNodeDto loadFullViewNode(AbstractNodeDto nodeDto, Dto state) throws ServerCallFailedException {
 		AbstractTsDiskNode node = (AbstractTsDiskNode) dtoService.loadPoso(nodeDto);
 		
-		TeamSpace teamSpace = favoriteService.getTeamSpaceFor(node);
+		TeamSpace teamSpace = diskService.getTeamSpaceFor(node);
 		if(! teamSpaceService.mayAccess(teamSpace))
 			throw new ViolatedSecurityExceptionDto();
 		
@@ -721,7 +722,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 			throws ServerCallFailedException {
 		Report report = (Report) dtoService.loadPoso(reportDto);
 		
-		Set<TeamSpace> teamSpaces = favoriteService.getTeamSpacesThatLinkTo(report);
+		Set<TeamSpace> teamSpaces = diskService.getTeamSpacesThatLinkTo(report);
 		
 		List<TeamSpaceDto> resultList = new ArrayList<TeamSpaceDto>();
 		for(TeamSpace ts : teamSpaces)
@@ -736,7 +737,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 			throws ServerCallFailedException {
 		Report report = (Report) dtoService.loadPoso(reportDto);
 		
-		Map<TeamSpace, List<List<AbstractTsDiskNode>>> pathsMap = favoriteService.getTeamSpacesWithPathsThatLinkTo(report);
+		Map<TeamSpace, List<List<AbstractTsDiskNode>>> pathsMap = diskService.getTeamSpacesWithPathsThatLinkTo(report);
 		
 		Map<TeamSpaceDto, List<List<AbstractTsDiskNodeDto>>> resultMap = new HashMap<>();
 		Iterator<TeamSpace> it = pathsMap.keySet().iterator();
@@ -831,7 +832,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		AbstractTsDiskNode parent = getFolder(teamSpace, folderDto);
 				
 		/* do import */
-		TsDiskReportReference reference = favoriteService.importReport(variant, parent, false, false);
+		TsDiskReportReference reference = diskService.importReport(variant, parent, false, false);
 		
 		/* create and return it */
 		return (TsDiskReportReferenceDto) dtoService.createDto(reference);
@@ -842,7 +843,7 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 	public TsDiskReportReferenceDto updateReferenceAndReport(TsDiskReportReferenceDto referenceDto, @Named("report") ReportDto reportDto, String executeToken, String name, String description) throws ServerCallFailedException {
 		/* load reference and check teamspace */
 		AbstractTsDiskNode reference = (AbstractTsDiskNode) dtoService.loadPoso(referenceDto);
-		TeamSpace teamSpace = favoriteService.getTeamSpaceFor(reference);
+		TeamSpace teamSpace = diskService.getTeamSpaceFor(reference);
 		
 		if(! teamSpaceService.isUser(teamSpace))
 			throw new ViolatedSecurityException();
@@ -887,7 +888,34 @@ public class TsDiskRpcServiceImpl extends SecuredRemoteServiceServlet
 		return null;
 	}
 
+	@SecurityChecked(
+			argumentVerification = {
+				@ArgumentVerification(
+					name = "node",
+					isDto = true,
+					verify = @RightsVerification(rights=Read.class)
+				)
+			}
+		)
+	@Override
+	public List<TsReferenceInfo> getReferenceInfosFor(@Named("node") ReportDto reportDto) throws ServerCallFailedException {
+		Report report = (Report) dtoService.loadPoso(reportDto);
+		
+		List<TsDiskReportReference> referencesTo = diskService.getReferencesTo(report);
+		
+		List<TsReferenceInfo> referenceInfos = new ArrayList<>();
+		for(TsDiskReportReference ref : referencesTo){
+			TsReferenceInfo refDto = new TsReferenceInfo();
+			refDto.setHardlink(ref.isHardlink());
 
+			TeamSpace ts = diskService.getTeamSpaceFor(ref);
+			refDto.setTeamSpace((TeamSpaceDto) dtoService.createListDto(ts));
+			
+			referenceInfos.add(refDto);
+		}
+		
+		return referenceInfos;
+	}
 
 	
 }

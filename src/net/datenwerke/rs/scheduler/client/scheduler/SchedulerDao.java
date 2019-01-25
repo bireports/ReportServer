@@ -25,6 +25,10 @@ package net.datenwerke.rs.scheduler.client.scheduler;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+
 import net.datenwerke.gxtdto.client.dtomanager.Dao;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
@@ -35,10 +39,6 @@ import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.Repor
 import net.datenwerke.scheduler.client.scheduler.dto.filter.JobFilterConfigurationDto;
 import net.datenwerke.scheduler.client.scheduler.dto.filter.JobFilterCriteriaDto;
 import net.datenwerke.scheduler.client.scheduler.dto.history.ExecutionLogEntryDto;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 
 public class SchedulerDao extends Dao {
 
@@ -72,6 +72,10 @@ public class SchedulerDao extends Dao {
 			JobFilterConfigurationDto jobFilterConfig,
 			List<JobFilterCriteriaDto> addCriterions, AsyncCallback<PagingLoadResult<ReportScheduleJobListInformation>> callback) {
 		rpcService.getReportJobList(jobFilterConfig, addCriterions, transformAndKeepCallback(callback));
+	}
+	
+	public void getReportJobList(ReportDto reportDto, AsyncCallback<List<ReportScheduleJobListInformation>> callback) {
+		rpcService.getReportJobList(reportDto, transformAndKeepCallback(callback));
 	}
 	
 	public void getReportFor(Long jobId, AsyncCallback<ReportDto> callback){

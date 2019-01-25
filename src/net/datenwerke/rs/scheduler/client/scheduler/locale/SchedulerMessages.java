@@ -251,6 +251,7 @@ public interface SchedulerMessages extends Messages {
 	String notificationMsgFailedSubject();
 	String notificationMsgFailedText();
 	String reportCompress();
-
+	String active();
+	String reportNotInJobMessages();
 	
 }

@@ -26,6 +26,10 @@ package net.datenwerke.rs.fileserver.service.fileserver;
 import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.proxy.HibernateProxy;
+
+import com.google.inject.Inject;
+
 import net.datenwerke.rs.fileserver.service.fileserver.entities.AbstractFileServerNode;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.AbstractFileServerNode__;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFile;
@@ -43,10 +47,6 @@ import net.datenwerke.security.service.security.SecurityService;
 import net.datenwerke.security.service.security.exceptions.ViolatedSecurityException;
 import net.datenwerke.security.service.treedb.SecuredTreeDBManagerImpl;
 import net.datenwerke.security.service.treedb.actions.InsertAction;
-
-import org.hibernate.proxy.HibernateProxy;
-
-import com.google.inject.Inject;
 
 public class FileServerServiceImpl extends SecuredTreeDBManagerImpl<AbstractFileServerNode> implements FileServerService {
 
@@ -96,7 +96,7 @@ public class FileServerServiceImpl extends SecuredTreeDBManagerImpl<AbstractFile
 		}
 	}
 	
-	public  void copy(AbstractFileServerNode source, AbstractFileServerNode target, boolean deep, boolean checkRights) {
+	public AbstractFileServerNode copy(AbstractFileServerNode source, AbstractFileServerNode target, boolean deep, boolean checkRights) {
 		if(checkRights)
 			testCopyRights(source, target);
 		AbstractFileServerNode copiedNode = copy(source, target);
@@ -104,6 +104,8 @@ public class FileServerServiceImpl extends SecuredTreeDBManagerImpl<AbstractFile
 		if(deep)
 			for(AbstractFileServerNode child : source.getChildren())
 				copy(child, copiedNode, true, checkRights);
+		
+		return copiedNode;
 	}
 	
 	protected AbstractFileServerNode copy(AbstractFileServerNode source, AbstractFileServerNode target) {

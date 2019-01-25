@@ -37,6 +37,7 @@ import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskFolderDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto;
+import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsReferenceInfo;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.container.TsDiskItemList;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 import net.datenwerke.treedb.client.treedb.rpc.RPCTreeLoader;
@@ -80,4 +81,6 @@ public interface TsDiskRpcService extends RemoteService, RPCTreeLoader, RPCTreeM
 	public void deleteNodes(List<AbstractNodeDto> nodes, Dto state) throws ServerCallFailedException, NeedForcefulDeleteClientException;
 	
 	public void deleteNodesWithForce(List<AbstractNodeDto> nodes, Dto state) throws ServerCallFailedException;
+	
+	public List<TsReferenceInfo> getReferenceInfosFor(ReportDto report) throws ServerCallFailedException;
 }

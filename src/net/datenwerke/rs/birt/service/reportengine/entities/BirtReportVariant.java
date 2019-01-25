@@ -108,4 +108,9 @@ public class BirtReportVariant extends BirtReport implements ReportVariant {
 		super.setParameterDefinitions(null);
 		super.setDatasourceContainer(null);
 	}
+	
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
 }

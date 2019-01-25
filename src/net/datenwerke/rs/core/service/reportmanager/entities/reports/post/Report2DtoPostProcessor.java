@@ -84,6 +84,9 @@ public class Report2DtoPostProcessor implements Poso2DtoPostProcessor<Report, Re
 			if(it.next() instanceof ServerSidePropertyDto)
 				it.remove();
 		dto.setReportProperties(properties);
+		
+		// mark report as not having children
+		dto.setHasChildren(false);
 	}
 
 	@Override

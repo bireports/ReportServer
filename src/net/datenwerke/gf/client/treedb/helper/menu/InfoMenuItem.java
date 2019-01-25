@@ -23,12 +23,13 @@
  
 package net.datenwerke.gf.client.treedb.helper.menu;
 
+import com.google.inject.Inject;
+
 import net.datenwerke.gf.client.treedb.UITree;
 import net.datenwerke.gxtdto.client.objectinformation.ObjectInfoPanelService;
+import net.datenwerke.rs.theme.client.icon.BaseIcon;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 import net.datenwerke.treedb.client.treedb.locale.TreedbMessages;
-
-import com.google.inject.Inject;
 
 public class InfoMenuItem extends TreeMenuItem {
 	
@@ -39,6 +40,7 @@ public class InfoMenuItem extends TreeMenuItem {
 		super();
 		
 		setText(TreedbMessages.INSTANCE.infoMenuLabel());
+		setIcon(BaseIcon.INFO.toImageResource());
 		
 		addMenuSelectionListener(new TreeMenuSelectionEvent() {
 			

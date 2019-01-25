@@ -21,13 +21,21 @@
  */
  
  
-package net.datenwerke.rs.core.client.reportmanager.hooks;
+package net.datenwerke.rs.reportdoc.client;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Random;
 
-public abstract class ReportSelectionRepositoryProviderHookImpl implements
-		ReportSelectionRepositoryProviderHook {
+import net.datenwerke.gf.client.uiutils.ClientDownloadHelper;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 
+public class ReportDocumentationUiServiceImpl implements ReportDocumentationUiService {
 
-	
+	@Override
+	public void openDocumentationForopen(ReportDto report) {
+		int nonce = Random.nextInt();
+		String url = GWT.getModuleBaseURL() + ReportDocumentationUIModule.SERVLET + "?nonce=" + nonce + "&id=" + report.getId() + "&format=PDF&download=true";
+		ClientDownloadHelper.triggerDownload(url);
+	}
 
 }

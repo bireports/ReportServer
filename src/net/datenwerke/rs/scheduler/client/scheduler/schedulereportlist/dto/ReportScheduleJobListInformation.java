@@ -41,6 +41,7 @@ public class ReportScheduleJobListInformation extends RsDto {
 	private Date nextScheduled;
 	private String ownerFirstName;
 	private String ownerLastName;
+	private boolean active;
 	
 	private Long jobId;
 	private boolean deleted;
@@ -48,9 +49,17 @@ public class ReportScheduleJobListInformation extends RsDto {
 	public Long getReportId() {
 		return reportId;
 	}
-
+	
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
+	}
+	
+	public boolean isActive() {
+		return active;
+	}
+	
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public String getReportName() {

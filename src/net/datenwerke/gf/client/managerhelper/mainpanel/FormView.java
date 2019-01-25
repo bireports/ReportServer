@@ -77,7 +77,7 @@ public abstract class FormView extends MainPanelView {
 	
 	protected FormPanel form;
 	
-	protected DwFlowContainer container;
+	protected VerticalLayoutContainer scrollWrapper;
 	
 	@Override
 	public ImageResource getIcon() {
@@ -86,8 +86,8 @@ public abstract class FormView extends MainPanelView {
 	
 	@Override
 	public Component getViewComponent() {
-		container = new DwFlowContainer();
-		container.setScrollMode(ScrollMode.AUTO);
+		scrollWrapper = new VerticalLayoutContainer();
+		scrollWrapper.setScrollMode(ScrollMode.AUTOY);
 
 		/* create form wrapper */
 		DwContentPanel formWrapper = new DwContentPanel();
@@ -104,8 +104,8 @@ public abstract class FormView extends MainPanelView {
 		/* create widget instance */
 		form = new FormPanel();
 		form.setLabelAlign(LabelAlign.TOP);
-		formWrapper.add(form, new MarginData(10));
-		container.add(formWrapper, new VerticalLayoutData(1,-1, new Margins(10)));
+		formWrapper.add(form);
+		scrollWrapper.add(formWrapper, new VerticalLayoutData(1,-1, new Margins(10)));
 		
 		/* create wrapper for fields */
 		VerticalLayoutContainer fieldWrapper = new VerticalLayoutContainer();
@@ -209,7 +209,7 @@ public abstract class FormView extends MainPanelView {
 			}
 		}
 		
-		return container;
+		return scrollWrapper;
 	}
 
 	/**

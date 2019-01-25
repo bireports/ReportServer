@@ -194,7 +194,7 @@ public class RSTableToXLS {
 			Class<?> cType = table.getColumnType(i);
 			
 			/* adjust column width */
-			if(cType.equals(Date.class) || cType.equals(Timestamp.class))
+			if(cType.equals(java.sql.Date.class) || cType.equals(Timestamp.class) || cType.equals(java.util.Date.class))
 				columnWidths[i] = Math.max(Math.max(messages.dateFormat().length(), name.length()), 15);
 			else if(cType.equals(Timestamp.class))
 				columnWidths[i] = Math.max(Math.max(messages.timeFormat().length(), name.length()), 15);
@@ -309,7 +309,7 @@ public class RSTableToXLS {
 		
 		/* date */
 		try{
-			if(cType.equals(java.util.Date.class)){ 
+			if(cType.equals(java.util.Date.class) || cType.equals(java.sql.Date.class)){ 
 				addDate((java.util.Date) content, workbook, sheet, column, cell, styles);
 			} else if(cType.equals(Time.class)){
 				addTime((Time) content, workbook, sheet, column, cell, styles);

@@ -23,10 +23,22 @@
  
 package net.datenwerke.scheduler.service.scheduler;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.configuration.Configuration;
+
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
+
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
+import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.dto.ReportScheduleJobListInformation;
+import net.datenwerke.rs.scheduler.service.scheduler.jobs.filter.ReportServerJobFilter;
+import net.datenwerke.rs.scheduler.service.scheduler.jobs.report.ReportExecuteJob;
 import net.datenwerke.rs.utils.config.ConfigService;
 import net.datenwerke.rs.utils.eventbus.EventBus;
 import net.datenwerke.scheduler.service.scheduler.annotations.DwSchedulerConfig;
@@ -50,12 +62,6 @@ import net.datenwerke.scheduler.service.scheduler.stores.jpa.filter.JobFilterCon
 import net.datenwerke.security.service.eventlogger.annotations.FireForceRemoveEntityEvents;
 import net.datenwerke.security.service.eventlogger.annotations.FireMergeEntityEvents;
 import net.datenwerke.security.service.eventlogger.annotations.FireRemoveEntityEvents;
-
-import org.apache.commons.configuration.Configuration;
-
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
 
 public class SchedulerServiceImpl implements SchedulerService {
 
@@ -361,6 +367,41 @@ public class SchedulerServiceImpl implements SchedulerService {
 	@Override
 	public boolean isEnabled() {
 		return !schedulerConfig.get().getBoolean(SchedulerModule.PROPERTY_SCHEDULER_DISABLED, false);
+	}
+
+	@Override
+	public List<ReportScheduleJobListInformation> getReportJobList(Report report) {
+		List<ReportScheduleJobListInformation> jobsInfos = new ArrayList<>();
+		JobStore jobStore = getJobStore();
+		JobFilterConfiguration filterConf = new JobFilterConfiguration();
+        filterConf.setInActive(true);
+        filterConf.setActive(true);
+        filterConf.setJobType(ReportExecuteJob.class);
+        
+        ReportServerJobFilter reportFilter = new ReportServerJobFilter();
+        reportFilter.setAnyUser();
+        reportFilter.setInActive(true);
+        reportFilter.setActive(true);
+        reportFilter.setJobType(ReportExecuteJob.class);
+        reportFilter.addReport(report);
+        
+        Collection<AbstractJob> jobs = jobStore.getJobsBy(filterConf, reportFilter);
+        for (AbstractJob job: jobs) {
+            ReportExecuteJob reportExecuteJob = (ReportExecuteJob) job;
+            
+            ReportScheduleJobListInformation jobInfo = new ReportScheduleJobListInformation();
+            jobInfo.setDeleted(false);
+            jobInfo.setJobId(reportExecuteJob.getId());
+            jobInfo.setReportId(report.getId());
+            jobInfo.setReportName(report.getName());
+            jobInfo.setReportDescription(report.getDescription());
+            jobInfo.setActive(reportExecuteJob.isActive());
+            jobInfo.setLastScheduled(reportExecuteJob.getLastExecution());
+            jobInfo.setNextScheduled(job.getTrigger().getNextScheduledFireTime());
+            
+            jobsInfos.add(jobInfo);
+        }
+		return jobsInfos;
 	}
 
 	

@@ -152,7 +152,7 @@ public class UserVariablesDefinitionPanel extends MainPanelView {
 		});
 		
 		VerticalLayoutContainer wrapper = new VerticalLayoutContainer();
-		wrapper.add(view, new VerticalLayoutData(1,-1, new Margins(10)));
+		wrapper.add(view, new VerticalLayoutData(1,1, new Margins(10)));
 		
 		return wrapper;
 	}

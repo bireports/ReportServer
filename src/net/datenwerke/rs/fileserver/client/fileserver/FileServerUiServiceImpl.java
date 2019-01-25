@@ -70,6 +70,8 @@ public class FileServerUiServiceImpl implements FileSeverUiService {
 		window.setHeadingText(file.getName());
 		window.setOnEsc(false);
 		window.setMaximizable(true);
+		window.setCollapsible(true);
+		window.setTitleCollapse(true);
 		
 		String mode = "none";
 		if(file.getName().endsWith(".rs") || file.getName().endsWith(".groovy")){

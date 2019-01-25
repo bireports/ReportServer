@@ -266,7 +266,7 @@ public class TsDiskServiceImpl extends LoggedTreeDbManagerImpl<AbstractTsDiskNod
 		/* create variant */
 		if(copyReport && report instanceof ReportVariant){
 			Report variant = report.createNewVariant(report);
-			variant.setName(report.getName());
+			variant.setName((null != report.getName() ? report.getName(): "") + " (copy)");
 			variant.setDescription(report.getDescription());
 			reportService.persist(variant);
 			
@@ -276,7 +276,7 @@ public class TsDiskServiceImpl extends LoggedTreeDbManagerImpl<AbstractTsDiskNod
 		
 		/* create reference */
 		TsDiskReportReference reference = new TsDiskReportReference();
-		reference.setName(report.getName());
+		reference.setName((null != report.getName() ? report.getName(): ""));
 		reference.setDescription(report.getDescription());
 		reference.setReport(report);
 		reference.setHardlink(report instanceof ReportVariant && ! isReference);

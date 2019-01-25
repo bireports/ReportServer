@@ -23,18 +23,15 @@
  
 package net.datenwerke.rs.base.ext.service.reportmanager.vfs;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.rs.core.service.reportmanager.ReportService;
 import net.datenwerke.rs.core.service.reportmanager.entities.AbstractReportManagerNode;
 import net.datenwerke.rs.core.service.reportmanager.entities.ReportFolder;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
-import net.datenwerke.rs.fileserver.service.fileserver.entities.AbstractFileServerNode;
-import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFile;
-import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFolder;
 import net.datenwerke.rs.terminal.service.terminal.vfs.VFSLocation;
 import net.datenwerke.rs.terminal.service.terminal.vfs.hooks.TreeBasedVirtualFileSystem;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class ReportManagerVFS extends TreeBasedVirtualFileSystem<AbstractReportManagerNode> {
 
@@ -43,7 +40,7 @@ public class ReportManagerVFS extends TreeBasedVirtualFileSystem<AbstractReportM
 	 */
 	private static final long serialVersionUID = -7186418223163754943L;
 	
-	private static final String FILESYSTEM_NAME = "reportmanager";
+	public static final String FILESYSTEM_NAME = "reportmanager";
 	
 	@Inject
 	public ReportManagerVFS(
@@ -55,6 +52,11 @@ public class ReportManagerVFS extends TreeBasedVirtualFileSystem<AbstractReportM
 	@Override
 	public String getFileSystemName() {
 		return FILESYSTEM_NAME;
+	}
+	
+	@Override
+	protected boolean doIsFolder(AbstractReportManagerNode node) {
+		return node instanceof ReportFolder;
 	}
 
 	@Override

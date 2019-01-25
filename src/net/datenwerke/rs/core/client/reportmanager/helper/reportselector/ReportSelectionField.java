@@ -70,7 +70,7 @@ public class ReportSelectionField extends DwTriggerField<ReportContainerDto> {
 	protected void initializeUI() {
 		/* configure triggerField */
 		setEditable(false);
-		setTriggerIcon(BaseIcon.SEARCH);
+		setTriggerIcon(BaseIcon.HAND_POINTER_O);
 		
 		/* listener */
 		addTriggerClickHandler(new TriggerClickHandler() {
@@ -84,10 +84,18 @@ public class ReportSelectionField extends DwTriggerField<ReportContainerDto> {
 	protected void triggerClicked() {
 		if(null == dialog){
 			dialog = dialogProvider.get();
+			dialog.initSubmitButton();
 			
 			dialog.initRepositories(repositoryConfigs);
 			
 			dialog.setEventHandler(new ReportSelectionDialogEventHandler() {
+				
+				@Override
+				public boolean handleSubmit(ReportContainerDto container) {
+					setValue(container, true);
+					return true;
+				}
+				
 				@Override
 				public void handleDoubleClick(ReportContainerDto dto,
 						ReportSelectionRepositoryProviderHook hooker, NativeEvent event,

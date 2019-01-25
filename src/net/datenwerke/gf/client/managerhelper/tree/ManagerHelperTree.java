@@ -71,6 +71,7 @@ public class ManagerHelperTree extends UITree {
 	private String historyLocation;
 	
 	private int doubleClicked = 0;
+	private AbstractTreeMainPanel selectionTarget;
 	
 	@Inject
 	public ManagerHelperTree(
@@ -98,6 +99,16 @@ public class ManagerHelperTree extends UITree {
 	@Override
 	public EnhancedTreeStore getStore() {
 		return (EnhancedTreeStore) super.getStore();
+	}
+	
+	public void showTab(String id){
+		if(null != selectionTarget && null != getSelectionModel().getSelectedItem())
+			selectionTarget.showTab(id, getSelectionModel().getSelectedItem(), this);
+	}
+	
+	public void showTabOnSelection(String id) {
+		if(null != selectionTarget)
+			selectionTarget.showTabOnSelection(id);
 	}
 
 	public void configureIconProvider() {
@@ -150,6 +161,8 @@ public class ManagerHelperTree extends UITree {
 	 * @param selectionProvider
 	 */
 	public void setSelectionProvider(final AbstractTreeMainPanel target){
+		this.selectionTarget = target;
+		
 		/* selection model */
 		final TreeSelectionModel<AbstractNodeDto> sModel = new TreeSelectionModel<AbstractNodeDto>();
 		sModel.setSelectionMode(SelectionMode.SINGLE);

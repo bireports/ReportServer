@@ -63,8 +63,8 @@ public class ImportReportDialogCreator {
 	}
 	
 	public void displayDialog(final TsDiskMainComponent mainComponent){
-		final ReportSelectionDialog window = dialogProvider.get();
-		window.initRepositories(new ReportCatalogRepositoryProvider.Config() {
+		final ReportSelectionDialog reportSelector = dialogProvider.get();
+		reportSelector.initRepositories(new ReportCatalogRepositoryProvider.Config() {
 			@Override
 			public boolean includeVariants() {
 				return false;
@@ -76,12 +76,17 @@ public class ImportReportDialogCreator {
 			}
 		});
 		
-		window.setHeadingText(TsFavoriteMessages.INSTANCE.importReportText());
-		window.setHeaderIcon(BaseIcon.REPORT_ADD);
-		window.setClosable(true);
-		window.setOnEsc(true);
+		reportSelector.setHeadingText(TsFavoriteMessages.INSTANCE.importReportText());
+		reportSelector.setHeaderIcon(BaseIcon.REPORT_ADD);
+		reportSelector.setClosable(true);
+		reportSelector.setOnEsc(true);
 		
-		window.setEventHandler(new ReportSelectionDialogEventHandler() {
+		reportSelector.setEventHandler(new ReportSelectionDialogEventHandler() {
+			
+			@Override
+			public boolean handleSubmit(ReportContainerDto container) {
+				return false;
+			}
 			
 			@Override
 			public void handleDoubleClick(final ReportContainerDto report,
@@ -122,7 +127,7 @@ public class ImportReportDialogCreator {
 			}
 		});
 		
-		window.show();
+		reportSelector.show();
 	}
 
 }
