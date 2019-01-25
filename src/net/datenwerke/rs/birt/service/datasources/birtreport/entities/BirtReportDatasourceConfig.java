@@ -27,12 +27,13 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.envers.Audited;
+
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
 import net.datenwerke.rs.birt.service.reportengine.entities.BirtReport;
+import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinitionConfig;
-
-import org.hibernate.envers.Audited;
 
 @Entity
 @Table(name="BIRT_REPORT_DATASRC_CFG")
@@ -93,4 +94,33 @@ public class BirtReportDatasourceConfig extends DatasourceDefinitionConfig {
 		this.targetType = targetType;
 	}
 
+	@Override
+	public boolean contentEquals(DatasourceDefinition definition, DatasourceDefinitionConfig config) {
+		if(! (config instanceof BirtReportDatasourceConfig))
+			return false;
+		if(! (definition instanceof BirtReportDatasourceDefinition))
+			return false;
+		
+		BirtReportDatasourceConfig otherConfig = (BirtReportDatasourceConfig) config;
+		
+		if(null != target && ! target.equals(otherConfig.target))
+			return false;
+		if(null == target && null != otherConfig.target)
+			return false;
+		
+		if(null != targetType && ! targetType.equals(otherConfig.targetType))
+			return false;
+		if(null == targetType && null != otherConfig.targetType)
+			return false;
+		
+		if(null != queryWrapper && ! queryWrapper.equals(otherConfig.queryWrapper))
+			return false;
+		if(null == queryWrapper && null != otherConfig.queryWrapper)
+			return false;
+		
+		if(null != report && ! report.idsMatch(otherConfig.report))
+			return false;
+		
+		return super.contentEquals(definition, config);
+	}
 }

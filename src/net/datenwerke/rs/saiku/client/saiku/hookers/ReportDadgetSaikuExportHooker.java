@@ -26,6 +26,7 @@ package net.datenwerke.rs.saiku.client.saiku.hookers;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -41,6 +42,7 @@ import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHook
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.lists.SFFCFancyStaticList;
 import net.datenwerke.gxtdto.client.resources.BaseResources;
 import net.datenwerke.rs.base.client.reportengines.table.dto.TableReportDto;
+import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.core.client.reportexecutor.ReportExecutorDao;
 import net.datenwerke.rs.core.client.reportexecutor.ReportExecutorUIService;
 import net.datenwerke.rs.core.client.reportexporter.ReportExporterDao;
@@ -177,13 +179,13 @@ public class ReportDadgetSaikuExportHooker extends ReportDadgetDefaultExportHook
 
 	@Override
 	public void displayReport(final ReportDadgetDto rDadget, ReportDto report,
-			final DadgetPanel panel) {
+			final DadgetPanel panel, final Set<ParameterInstanceDto> parameterInstances) {
 		final String config = rDadget.getConfig();
 		if(null == config)
 			return;
 		
 		if(FULL.equals(config) || PREVIEW.equals(config) || HTML.equals(config)){
-			super.displayReport(rDadget, report, panel);
+			super.displayReport(rDadget, report, panel, parameterInstances);
 			return;
 		} else {
 			reportExecutorDao.loadFullReportForExecution(report, new RsAsyncCallback<ReportDto>(){
@@ -195,8 +197,8 @@ public class ReportDadgetSaikuExportHooker extends ReportDadgetDefaultExportHook
 					final String exportToken = generateOrObtainExportToken(result);
 					
 					/* use dadget parameter instances */
-					if(null != rDadget.getParameterInstances() && !rDadget.getParameterInstances().isEmpty())
-						result.setParameterInstances(rDadget.getParameterInstances());
+					if(null != parameterInstances && !parameterInstances.isEmpty())
+						result.setParameterInstances(parameterInstances);
 					
 					String type = URL.encode(config);
 					

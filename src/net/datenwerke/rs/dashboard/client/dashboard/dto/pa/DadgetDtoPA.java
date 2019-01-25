@@ -29,8 +29,10 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import java.lang.Long;
+import java.util.Set;
 import net.datenwerke.dtoservices.dtogenerator.annotations.CorrespondingPoso;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
+import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetContainerDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.decorator.DadgetDtoDec;
@@ -54,6 +56,7 @@ public interface DadgetDtoPA extends PropertyAccess<DadgetDto> {
 	public ValueProvider<DadgetDto,Integer> height();
 	public ValueProvider<DadgetDto,Long> id();
 	public ValueProvider<DadgetDto,Integer> n();
+	public ValueProvider<DadgetDto,Set<ParameterInstanceDto>> parameterInstances();
 	public ValueProvider<DadgetDto,Long> reloadInterval();
 
 

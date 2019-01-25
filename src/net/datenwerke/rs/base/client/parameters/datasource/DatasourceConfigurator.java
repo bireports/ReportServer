@@ -81,6 +81,7 @@ import net.datenwerke.rs.core.client.parameters.dto.ParameterDefinitionDto;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterProposalDto;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
+import net.datenwerke.rs.enterprise.client.EnterpriseUiService;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
 
 /**
@@ -97,19 +98,22 @@ public class DatasourceConfigurator extends ParameterConfiguratorImpl<Datasource
 	private ListStore<DatasourceParameterDataDto> parameterDataStore;
 	private DatasourceEditComponentForInstance editComponentConfigurator;
 	private ScheduledCommand reloadCommand;
+	private EnterpriseUiService entpriseService;
 	
 	
 	@Inject
 	public DatasourceConfigurator(
 			DatasourceParameterDao rpcService,
 		Provider<DatasourceEditComponentForInstance> editComponentForInstanceProvider,
-		DatasourceParameterUiService dsParamService
+		DatasourceParameterUiService dsParamService,
+		EnterpriseUiService entpriseService
 		){
 		
 		/* store objects */
 		this.datasourceParamDao = rpcService;
 		this.editComponentForInstanceProvider = editComponentForInstanceProvider;
 		this.dsParamService = dsParamService;
+		this.entpriseService = entpriseService;
 	}
 	
 
@@ -267,10 +271,11 @@ public class DatasourceConfigurator extends ParameterConfiguratorImpl<Datasource
 				}
 		});
 		
+		form.setFieldWidth(1);
 		String formatKey = form.addField(String.class, DatasourceParameterDefinitionDtoPA.INSTANCE.format(), RsMessages.INSTANCE.format());
 		
+		form.setFieldWidth(210);
 		/* default value */
-		form.setFieldWidth(1);
 		singleDefaultValuesKey = form.addField(
 			List.class, 
 			DatasourceParameterDefinitionDtoPA.INSTANCE.singleDefaultValueSimpleData(),
@@ -294,6 +299,7 @@ public class DatasourceConfigurator extends ParameterConfiguratorImpl<Datasource
 			},new SFFCEditableDropDown(){}
 		);
 		
+		form.setFieldWidth(1);
 		multiDefaultValuesKey = form.addField(
 				List.class, 
 				DatasourceParameterDefinitionDtoPA.INSTANCE.multiDefaultValueSimpleData(),
@@ -470,6 +476,8 @@ public class DatasourceConfigurator extends ParameterConfiguratorImpl<Datasource
 		String type = proposal.getType();
 		if(List.class.getName().equals(type))
 			return true;
+		if(Boolean.class.getName().equals(type))
+			return true;
 
 		return false;
 	}
@@ -478,6 +486,19 @@ public class DatasourceConfigurator extends ParameterConfiguratorImpl<Datasource
 	public ParameterDefinitionDto getNewDto(ParameterProposalDto proposal, ReportDto report) {
 		DatasourceParameterDefinitionDto definition = (DatasourceParameterDefinitionDto) getNewDto(report);
 
+		if(Boolean.class.getName().equals(proposal.getType())){
+			definition.setMode(ModeDto.Single);
+			definition.setSingleSelectionMode(SingleSelectionModeDto.Radio);
+			definition.setReturnType(DatatypeDto.Boolean);
+			definition.setBoxLayoutMode(BoxLayoutModeDto.LeftRightTopDown);
+			definition.setBoxLayoutPackMode(BoxLayoutPackModeDto.Columns);
+			definition.setBoxLayoutPackColSize(1);
+			
+			if(entpriseService.isEnterprise())
+				definition.setPostProcess("[['true',true],['false',false]]");
+		}
+			
+		
 		return definition;
 	}
 

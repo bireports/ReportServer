@@ -128,4 +128,15 @@ public class FileServerFolder extends AbstractFileServerNode {
 	public boolean isFolder() {
 		return true;
 	}
+
+	public FileServerFolder getSubfolderByName(String name) {
+		if(null == name)
+			return null;
+		
+		for(FileServerFolder f : getChildrenOfType(FileServerFolder.class))
+			if(name.equals(f.getName()))
+				return f;
+		
+		return null;
+	}
 }

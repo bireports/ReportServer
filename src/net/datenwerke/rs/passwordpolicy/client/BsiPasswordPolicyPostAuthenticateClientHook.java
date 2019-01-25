@@ -25,6 +25,12 @@ package net.datenwerke.rs.passwordpolicy.client;
 
 import java.util.List;
 
+import com.google.inject.Inject;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
+import net.datenwerke.gxtdto.client.baseex.widget.mb.DwMessageBox;
 import net.datenwerke.gxtdto.client.dialog.error.SimpleErrorDialog;
 import net.datenwerke.gxtdto.client.servercommunication.callback.NotamCallback;
 import net.datenwerke.rs.authenticator.client.login.PostAuthenticateClientHook;
@@ -34,12 +40,6 @@ import net.datenwerke.security.client.login.resultinfos.AccountLockedAuthenticat
 import net.datenwerke.security.client.security.passwordpolicy.locale.PasswordPolicyMessages;
 import net.datenwerke.security.ext.client.password.PasswordServiceDao;
 import net.datenwerke.security.ext.client.password.ui.ChangePasswordDialog;
-
-import com.google.inject.Inject;
-import net.datenwerke.gxtdto.client.baseex.widget.mb.DwAlertMessageBox;
-import com.sencha.gxt.widget.core.client.box.MessageBox;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 public class BsiPasswordPolicyPostAuthenticateClientHook implements PostAuthenticateClientHook{
 
@@ -77,7 +77,7 @@ public class BsiPasswordPolicyPostAuthenticateClientHook implements PostAuthenti
 					autoProceed = false;
 					int expiresIn = ((PasswordExpiredAuthenticationResultInfo) info).getExpiresIn();
 					if( expiresIn > 0){
-						new MessageBox(PasswordPolicyMessages.INSTANCE.passwordExpiration(), PasswordPolicyMessages.INSTANCE.passwordExpirationWarning(expiresIn)){
+						new DwMessageBox(PasswordPolicyMessages.INSTANCE.passwordExpiration(), PasswordPolicyMessages.INSTANCE.passwordExpirationWarning(expiresIn)){
 							protected void onHide() {
 								final ChangePasswordDialog cpd = new ChangePasswordDialog(true);
 

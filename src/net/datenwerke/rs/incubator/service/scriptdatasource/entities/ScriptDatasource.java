@@ -33,6 +33,7 @@ import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
 import net.datenwerke.gf.base.service.annotations.Indexed;
 import net.datenwerke.gxtdto.client.dtomanager.DtoView;
+import net.datenwerke.rs.core.service.datasourcemanager.entities.CacheableDatasource;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinitionConfig;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFile;
@@ -44,7 +45,7 @@ import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFile;
 	dtoPackage="net.datenwerke.rs.incubator.client.scriptdatasource.dto"
 )
 @Indexed
-public class ScriptDatasource extends DatasourceDefinition {
+public class ScriptDatasource extends DatasourceDefinition implements CacheableDatasource{
 
 	/**
 	 * 

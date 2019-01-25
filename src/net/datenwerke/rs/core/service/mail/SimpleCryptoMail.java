@@ -153,15 +153,12 @@ public class SimpleCryptoMail extends SimpleMail implements NeedsPostprocessing 
 			
 			/* create attachements */
 			for(SimpleAttachement att : attachements){
-				MimeBodyPart mbp = new MimeBodyPart();
-				mbp.setContent(att.getAttachement(), att.getMimeType());
-				mbp.setFileName(att.getFileName());
-				multipart.addBodyPart(mbp);
+				multipart.addBodyPart(createAttachmentPart(att));
 			}
 			
 			/* set contents */
 			rootBodyPart.setContent(multipart);
-		} catch (MessagingException e) {
+		} catch (Exception e) {
 			logger.warn( e.getMessage(), e);
 		}
 	}

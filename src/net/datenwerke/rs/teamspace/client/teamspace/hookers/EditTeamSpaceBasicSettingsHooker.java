@@ -138,9 +138,9 @@ public class EditTeamSpaceBasicSettingsHooker extends TeamSpaceEditDialogHookImp
 
 	@Override
 	public void submitPressed(final SubmitTrackerToken token) {
-		boolean dataChanged = 
-			! (teamSpaceData.getName().equals(teamSpace.getName()) &&
-			teamSpaceData.getDescription().equals(teamSpace.getDescription()) );
+		boolean dataChanged = teamSpaceUIService.isAdmin(teamSpace) && 
+			(! (teamSpaceData.getName().equals(teamSpace.getName()) &&
+			teamSpaceData.getDescription().equals(teamSpace.getDescription()) ));
 			
 		if(! dataChanged)
 			token.setCompleted();

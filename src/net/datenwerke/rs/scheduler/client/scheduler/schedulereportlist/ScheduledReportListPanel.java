@@ -29,6 +29,50 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.assistedinject.Assisted;
+import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.IconHelper;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.data.client.loader.RpcProxy;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.loader.LoadResultListStoreBinding;
+import com.sencha.gxt.data.shared.loader.PagingLoadConfig;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoader;
+import com.sencha.gxt.widget.core.client.Component;
+import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.RowDoubleClickEvent;
+import com.sencha.gxt.widget.core.client.event.RowDoubleClickEvent.RowDoubleClickHandler;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.TextArea;
+import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
+import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.menu.Item;
+import com.sencha.gxt.widget.core.client.menu.Menu;
+import com.sencha.gxt.widget.core.client.menu.MenuItem;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
+import com.sencha.gxt.widget.core.client.toolbar.PagingToolBar;
+import com.sencha.gxt.widget.core.client.toolbar.SeparatorToolItem;
+import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+
 import net.datenwerke.gf.client.history.HistoryUiService;
 import net.datenwerke.gf.client.history.HistoryUiService.JumpToObjectCallback;
 import net.datenwerke.gf.client.history.HistoryUiService.JumpToObjectResultCallback;
@@ -38,6 +82,7 @@ import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwToggleButton;
 import net.datenwerke.gxtdto.client.baseex.widget.layout.DwBorderContainer;
 import net.datenwerke.gxtdto.client.baseex.widget.layout.DwNorthSouthContainer;
+import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
 import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenuItem;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
@@ -82,53 +127,6 @@ import net.datenwerke.security.client.security.SecurityUIService;
 import net.datenwerke.security.client.security.dto.ExecuteDto;
 import net.datenwerke.security.client.usermanager.dto.UserDto;
 import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
-
-import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.assistedinject.Assisted;
-import com.sencha.gxt.core.client.IdentityValueProvider;
-import com.sencha.gxt.core.client.Style.SelectionMode;
-import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.core.client.util.IconHelper;
-import com.sencha.gxt.core.client.util.Margins;
-import com.sencha.gxt.data.client.loader.RpcProxy;
-import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.loader.LoadResultListStoreBinding;
-import com.sencha.gxt.data.shared.loader.PagingLoadConfig;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoader;
-import com.sencha.gxt.widget.core.client.Component;
-import com.sencha.gxt.widget.core.client.WidgetComponent;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.RowDoubleClickEvent;
-import com.sencha.gxt.widget.core.client.event.RowDoubleClickEvent.RowDoubleClickHandler;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.TextArea;
-import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
-import com.sencha.gxt.widget.core.client.grid.ColumnModel;
-import com.sencha.gxt.widget.core.client.grid.Grid;
-import com.sencha.gxt.widget.core.client.menu.Item;
-import com.sencha.gxt.widget.core.client.menu.Menu;
-import net.datenwerke.gxtdto.client.baseex.widget.menu.DwMenu;
-import com.sencha.gxt.widget.core.client.menu.MenuItem;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
-import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
-import com.sencha.gxt.widget.core.client.toolbar.PagingToolBar;
-import com.sencha.gxt.widget.core.client.toolbar.SeparatorToolItem;
-import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 public class ScheduledReportListPanel extends DwBorderContainer {
 
@@ -684,8 +682,8 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 		WestPropertiesDialog dialog = new WestPropertiesDialog();
 		dialog.setHeadingText(SchedulerMessages.INSTANCE.scheduleEntryDetailHeader(selected.getReportName(), selected.getReportId(), selected.getJobId()));
 		
-		Widget mainCard = getDetailCardFor(data);
-		dialog.addCard(SchedulerMessages.INSTANCE.detailDialogMainCardHeader(), BaseIcon.EXCLAMATION, new WidgetComponent(mainCard));
+		Component mainCard = getDetailCardFor(data);
+		dialog.addCard(SchedulerMessages.INSTANCE.detailDialogMainCardHeader(), BaseIcon.EXCLAMATION, mainCard);
 		
 		for(ActionEntryDto action : data.getActionEntries()){
 			for(ActionLogEntryDetailHook hooker : hookHandler.getHookers(ActionLogEntryDetailHook.class)){
@@ -701,11 +699,17 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 		dialog.show();
 	}
 
-	protected Widget getDetailCardFor(ExecutionLogEntryDto data) {
+	protected Component getDetailCardFor(ExecutionLogEntryDto data) {
 		VerticalLayoutContainer container = new VerticalLayoutContainer();
-		container.setScrollMode(ScrollMode.AUTOY);
 		
-		container.add(createLabel(SchedulerMessages.INSTANCE.executionLogEntryLabel()));
+		DwContentPanel executionLogEntryPanel = new DwContentPanel();
+		executionLogEntryPanel.setLightDarkStyle();
+		executionLogEntryPanel.setHeadingText(SchedulerMessages.INSTANCE.executionLogEntryLabel());
+		
+		VerticalLayoutContainer executionLogEntryWrapper = new VerticalLayoutContainer();
+		executionLogEntryPanel.add(executionLogEntryWrapper);
+
+		container.add(executionLogEntryPanel, new VerticalLayoutData(1, -1, new Margins(5)));
 		
 		ListStore<KeyValueProperty> entryKeyValueStore = new ListStore<KeyValueProperty>(keyvpPa.id());
 		entryKeyValueStore.add(new KeyValueProperty(SchedulerMessages.INSTANCE.scheduled(), 
@@ -736,15 +740,15 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 		}
 		
 		Grid<KeyValueProperty> entryGrid = gridHelper.create(entryKeyValueStore);
-		container.add(entryGrid, new VerticalLayoutContainer.VerticalLayoutData(-1,-1, new Margins(5)));
+		executionLogEntryWrapper.add(entryGrid, new VerticalLayoutData(1,-1));
 		if(null != data.getBadErrorDescription() && ! "".equals(data.getBadErrorDescription())){
 			TextArea area = new TextArea();
 			area.setWidth(400);
 			area.setHeight(200);
 			area.setValue(data.getBadErrorDescription());
 			
-			container.add(createLabel(SchedulerMessages.INSTANCE.errorDescriptionLabel()));
-			container.add(area, new VerticalLayoutContainer.VerticalLayoutData(-1,-1, new Margins(5)));
+			executionLogEntryWrapper.add(createLabel(SchedulerMessages.INSTANCE.errorDescriptionLabel()), new VerticalLayoutContainer.VerticalLayoutData(1,-1, new Margins(5,0,0,0)));
+			executionLogEntryWrapper.add(area, new VerticalLayoutContainer.VerticalLayoutData(1,-1));
 		}
 		
 		if (OutcomeDto.VETO == data.getOutcome()){
@@ -753,8 +757,8 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 			area.setHeight(200);
 			area.setValue(data.getVetoExplanation());
 			
-			container.add(createLabel(SchedulerMessages.INSTANCE.vetoDescriptionLabel()));
-			container.add(area, new VerticalLayoutContainer.VerticalLayoutData(-1,-1, new Margins(5)));
+			executionLogEntryWrapper.add(createLabel(SchedulerMessages.INSTANCE.vetoDescriptionLabel()), new VerticalLayoutContainer.VerticalLayoutData(1,-1, new Margins(5,0,0,0)));
+			executionLogEntryWrapper.add(area, new VerticalLayoutContainer.VerticalLayoutData(1,-1));
 		}
 		
 		
@@ -776,9 +780,16 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 				break;
 			}
 			
+			
+			DwContentPanel jobDataPanel = new DwContentPanel();
+			jobDataPanel.setLightDarkStyle();
+			jobDataPanel.setHeadingText(SchedulerMessages.INSTANCE.jobDataLabel());
+			VerticalLayoutContainer jobDataWrapper = new VerticalLayoutContainer();
+			jobDataPanel.add(jobDataWrapper);
+			
 			Grid<KeyValueProperty> grid = gridHelper.create(jobKeyValueStore);
-			container.add(createLabel(SchedulerMessages.INSTANCE.jobDataLabel()));
-			container.add(grid, new VerticalLayoutContainer.VerticalLayoutData(-1,-1, new Margins(5)));
+			container.add(jobDataPanel, new VerticalLayoutContainer.VerticalLayoutData(1,-1, new Margins(5)));
+			jobDataWrapper.add(grid, new VerticalLayoutData(1,-1));
 			
 			if(OutcomeDto.FAILURE == job.getOutcome()){
 				TextArea area = new TextArea();
@@ -786,8 +797,8 @@ public class ScheduledReportListPanel extends DwBorderContainer {
 				area.setHeight(200);
 				area.setValue(job.getErrorDescription());
 				
-				container.add(createLabel(SchedulerMessages.INSTANCE.errorDescriptionLabel()));
-				container.add(area, new VerticalLayoutContainer.VerticalLayoutData(-1,-1, new Margins(5)));
+				jobDataWrapper.add(createLabel(SchedulerMessages.INSTANCE.errorDescriptionLabel()));
+				jobDataWrapper.add(area, new VerticalLayoutContainer.VerticalLayoutData(1,-1, new Margins(5)));
 			} 
 		}
 		

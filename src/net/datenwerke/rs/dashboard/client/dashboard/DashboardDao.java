@@ -118,11 +118,11 @@ public class DashboardDao extends Dao {
 		asyncService.setDashboardParameterInstances(dashboardDto, parameterInstances, transformAndKeepCallback(callback));
 	}
 
-	public void getDadgetParameterInstances(ReportDadgetDto dadgetDto, AsyncCallback<Map<String, ParameterInstanceDto>> callback){
+	public void getDadgetParameterInstances(DadgetDto dadgetDto, AsyncCallback<Map<String, ParameterInstanceDto>> callback){
 		asyncService.getDadgetParameterInstances(dadgetDto, transformAndKeepCallback(callback));
 	}
 
-	public void setDadgetParameterInstances(ReportDadgetDto dadgetDto, Set<ParameterInstanceDto> parameterInstances,
+	public void setDadgetParameterInstances(DadgetDto dadgetDto, Set<ParameterInstanceDto> parameterInstances,
 			AsyncCallback<DadgetDto> callback){
 		asyncService.setDadgetParameterInstances(dadgetDto, parameterInstances, transformAndKeepCallback(callback));
 	}
@@ -133,6 +133,10 @@ public class DashboardDao extends Dao {
 
 	public void loadDashboardForDisplay(DashboardDto dashboard, AsyncCallback<DashboardDto> callback) {
 		asyncService.loadDashboardForDisplay(dashboard, transformAndKeepCallback(callback));
+	}
+	
+	public void changeDashboardOrder(ArrayList<Long> dashboardIds, AsyncCallback<Void> callback) {
+		asyncService.changeDashboardOrder(dashboardIds, callback);
 	}
 	
 }

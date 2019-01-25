@@ -354,6 +354,7 @@ abstract public class DatabaseHelper {
 		case Types.VARCHAR:
 		case Types.LONGVARCHAR:
 		case Types.NVARCHAR:
+		case Types.NCHAR:
 		case Types.LONGNVARCHAR:
 			return String.class;
 		case Types.NUMERIC:

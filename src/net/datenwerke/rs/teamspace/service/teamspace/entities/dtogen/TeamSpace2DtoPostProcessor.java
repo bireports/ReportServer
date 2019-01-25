@@ -52,6 +52,7 @@ public class TeamSpace2DtoPostProcessor implements Poso2DtoPostProcessor<TeamSpa
 		TeamSpaceRole role = teamSpaceService.getRole(poso);
 		TeamSpaceRoleDto roleDto = (TeamSpaceRoleDto) dtoService.createDto(role);
 		dto.setRole(roleDto);
+		dto.setTeamSpaceOwner(teamSpaceService.isOwner(poso));
 	}
 
 	@Override

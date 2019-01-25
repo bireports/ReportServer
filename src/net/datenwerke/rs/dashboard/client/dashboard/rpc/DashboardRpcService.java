@@ -39,7 +39,6 @@ import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardNodeDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardReferenceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.FavoriteListDto;
-import net.datenwerke.rs.dashboard.client.dashboard.dto.ReportDadgetDto;
 import net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.AbstractTsDiskNodeDto;
 
 @RemoteServiceRelativePath("dashboard")
@@ -77,12 +76,15 @@ public interface DashboardRpcService extends RemoteService {
 	
 	public List<DadgetDto> setDashboardParameterInstances(DashboardDto dashboardDto, Set<ParameterInstanceDto> parameterInstances) throws ServerCallFailedException;
 
-	Map<String, ParameterInstanceDto> getDadgetParameterInstances(ReportDadgetDto dadgetDto) throws ServerCallFailedException;
+	Map<String, ParameterInstanceDto> getDadgetParameterInstances(DadgetDto dadgetDto) throws ServerCallFailedException;
 
-	DadgetDto setDadgetParameterInstances(ReportDadgetDto dadgetDto, Set<ParameterInstanceDto> parameterInstances)
+	DadgetDto setDadgetParameterInstances(DadgetDto dadgetDto, Set<ParameterInstanceDto> parameterInstances)
 			throws ServerCallFailedException;
 
 	DashboardDto resetReferencedDashboard(DashboardReferenceDto dashboardDto) throws ServerCallFailedException;
 
 	DashboardDto loadDashboardForDisplay(DashboardDto dashboard);
+	
+	public void changeDashboardOrder(ArrayList<Long> dashboardIds) throws ServerCallFailedException;
+
 }

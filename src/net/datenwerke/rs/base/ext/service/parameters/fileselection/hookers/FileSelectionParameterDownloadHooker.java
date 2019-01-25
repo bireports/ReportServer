@@ -28,6 +28,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
+
 import net.datenwerke.gf.service.download.hooks.FileDownloadHandlerHook;
 import net.datenwerke.rs.base.ext.client.parameters.fileselection.FileSelectionParameterUiModule;
 import net.datenwerke.rs.base.ext.service.parameters.fileselection.FileSelectionParameterInstance;
@@ -35,13 +39,10 @@ import net.datenwerke.rs.base.ext.service.parameters.fileselection.FileSelection
 import net.datenwerke.rs.base.ext.service.parameters.fileselection.SelectedParameterFile;
 import net.datenwerke.rs.core.service.reportmanager.ReportParameterService;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
+import net.datenwerke.rs.utils.misc.HttpUtils;
 import net.datenwerke.security.service.security.SecurityService;
 import net.datenwerke.security.service.security.exceptions.ViolatedSecurityException;
 import net.datenwerke.security.service.treedb.actions.ReadAction;
-
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
 
 public class FileSelectionParameterDownloadHooker implements FileDownloadHandlerHook {
 
@@ -49,18 +50,21 @@ public class FileSelectionParameterDownloadHooker implements FileDownloadHandler
 	private final Provider<FileSelectionParameterService> fileSelectionParameterServiceProvider;
 	private final Provider<ReportParameterService> parameterServiceProvider;
 	private final Provider<Injector> injectorProvider;
+	private final Provider<HttpUtils> httpUtilsProvider;
 	
 	@Inject
 	public FileSelectionParameterDownloadHooker(
 			Provider<SecurityService> securityServiceProvider,
 			Provider<FileSelectionParameterService> fileSelectionParameterServiceProvider,
 			Provider<ReportParameterService> parameterServiceProvider,
-			Provider<Injector> injectorProvider
+			Provider<Injector> injectorProvider, 
+			Provider<HttpUtils> httpUtilsProvider
 			) {
 		this.securityServiceProvider = securityServiceProvider;
 		this.fileSelectionParameterServiceProvider = fileSelectionParameterServiceProvider;
 		this.parameterServiceProvider = parameterServiceProvider;
 		this.injectorProvider = injectorProvider;
+		this.httpUtilsProvider = httpUtilsProvider;
 	}
 
 	@Override
@@ -88,7 +92,7 @@ public class FileSelectionParameterDownloadHooker implements FileDownloadHandler
 		if(! file.mayAccess(injectorProvider.get()))
 			throw new ViolatedSecurityException();
 		
-		response.setHeader("Content-Disposition", "attachment;filename=\"" + file.getName()); 
+		response.setHeader(HttpUtils.CONTENT_DISPOSITION, httpUtilsProvider.get().makeContentDispositionHeader(true, file.getName())); 
 		response.setCharacterEncoding("UTF-8"); //$NON-NLS-1$
 		if(null != file.getContent())
 			response.getOutputStream().write(file.getContent());

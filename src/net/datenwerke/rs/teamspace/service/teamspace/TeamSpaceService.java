@@ -335,4 +335,12 @@ public interface TeamSpaceService {
 	TeamSpaceRole getRole(TeamSpace teamSpace);
 
 	TeamSpaceRole getRole(User user, TeamSpace teamSpace);
+
+	/**
+	 * checks if the current user owns the TeamSpace
+	 * 
+	 * @param teamSpace
+	 * @return
+	 */
+	boolean isOwner(TeamSpace teamSpace);
 }

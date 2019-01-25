@@ -130,6 +130,7 @@ import net.datenwerke.rs.crystal.server.crystal.CrystalUtilsRpcDummyServiceImpl;
 import net.datenwerke.rs.dashboard.server.dashboard.DashboardRpcServiceImpl;
 import net.datenwerke.rs.dashboard.server.dashboard.DashboardTreeRpcServiceImpl;
 import net.datenwerke.rs.dashboard.service.dashboard.DashboardModule;
+import net.datenwerke.rs.demo.DemoDataModule;
 import net.datenwerke.rs.enterprise.server.CommunityEnterpriseCheckRpcServiceImpl;
 import net.datenwerke.rs.eximport.server.eximport.ImportRpcServiceImpl;
 import net.datenwerke.rs.eximport.server.eximport.QuickExportDownloadServlet;
@@ -222,7 +223,7 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 
 	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
-	public static final String CODE_VERSION = "2016-03-24-23-46-15";
+	public static final String CODE_VERSION = "2016-05-29-17-55-24";
 	
 	public static final String ENTERPRISE_MODULE_LOCATION = "net.datenwerke.rsenterprise.main.service.RsEnterpriseModule";
 	private static final String ENTERPRISE_MODULE_LOAD_MODULE_METHOD = "getEnterpriseModules";
@@ -530,6 +531,8 @@ public class ReportServerServiceConfig extends DwGwtFrameworkBase{
 			new DtoModule(),
 			
 			new ConditionModule(),
+
+			new DemoDataModule(),
 			
 			new EntityClonerModule(),
 			new ExportMetadataModule(),

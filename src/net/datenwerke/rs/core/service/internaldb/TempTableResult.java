@@ -48,7 +48,7 @@ public class TempTableResult implements CacheableResult {
 
 	@Override
 	public boolean validate() {
-		if(timeout > -1 && created + timeout < System.currentTimeMillis()){
+		if(0 == timeout || (timeout > -1 && created + timeout < System.currentTimeMillis())){
 			return false;
 		}else{
 			return true;

@@ -24,23 +24,28 @@
 package net.datenwerke.rs.dashboard.service.dashboard.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
-import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
-
-import org.hibernate.envers.Audited;
-
-import com.google.inject.Injector;
+import net.datenwerke.rs.core.service.parameters.entities.ParameterInstance;
+import net.datenwerke.rs.utils.entitycloner.annotation.EnclosedEntity;
 
 @Audited
 @Entity
@@ -79,6 +84,13 @@ public abstract class Dadget implements Serializable {
 	@ExposeToClient(id=true)
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	@JoinTable(name="DADGET_REPORT_2_PARAM_INST")
+	@ExposeToClient
+	@EnclosedEntity
+    @OneToMany(cascade={CascadeType.ALL}, orphanRemoval=true)
+	@NotAudited
+	private Set<ParameterInstance> parameterInstances = new HashSet<ParameterInstance>();
 	
 	public Long getId() {
 		return id;
@@ -140,4 +152,15 @@ public abstract class Dadget implements Serializable {
 		this.container = container;
 	}
 
+	public Set<ParameterInstance> getParameterInstances() {
+		return parameterInstances;
+	}
+
+	public void setParameterInstances(Set<ParameterInstance> parameterInstances) {
+		if(null == parameterInstances)
+			parameterInstances = new HashSet<ParameterInstance>();
+			
+		this.parameterInstances.clear();
+		this.parameterInstances.addAll(parameterInstances);
+	}
 }

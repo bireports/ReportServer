@@ -24,6 +24,7 @@
 package net.datenwerke.rs.scheduler.client.scheduler.dto;
 
 import com.google.gwt.core.client.GWT;
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -125,6 +126,42 @@ public class ReportServerJobFilterDto extends JobFilterConfigurationDto {
 		@Override
 		public boolean isModified(ReportServerJobFilterDto container) {
 			return container.isFromUserModified();
+		}
+	};
+
+	private String reportId;
+	private  boolean reportId_m;
+	public static final String PROPERTY_REPORT_ID = "dpi-reportserverjobfilter-reportid";
+
+	private transient static PropertyAccessor<ReportServerJobFilterDto, String> reportId_pa = new PropertyAccessor<ReportServerJobFilterDto, String>() {
+		@Override
+		public void setValue(ReportServerJobFilterDto container, String object) {
+			container.setReportId(object);
+		}
+
+		@Override
+		public String getValue(ReportServerJobFilterDto container) {
+			return container.getReportId();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return String.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "reportId";
+		}
+
+		@Override
+		public void setModified(ReportServerJobFilterDto container, boolean modified) {
+			container.reportId_m = modified;
+		}
+
+		@Override
+		public boolean isModified(ReportServerJobFilterDto container) {
+			return container.isReportIdModified();
 		}
 	};
 
@@ -349,6 +386,55 @@ public class ReportServerJobFilterDto extends JobFilterConfigurationDto {
 	}
 
 
+	public String getReportId()  {
+		if(! isDtoProxy()){
+			return this.reportId;
+		}
+
+		if(isReportIdModified())
+			return this.reportId;
+
+		if(! GWT.isClient())
+			return null;
+
+		String _value = dtoManager.getProperty(this, instantiatePropertyAccess().reportId());
+
+		return _value;
+	}
+
+
+	public void setReportId(String reportId)  {
+		/* old value */
+		String oldValue = null;
+		if(GWT.isClient())
+			oldValue = getReportId();
+
+		/* set new value */
+		this.reportId = reportId;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(reportId_pa, oldValue, reportId, this.reportId_m));
+
+		/* set indicator */
+		this.reportId_m = true;
+
+		this.fireObjectChangedEvent(ReportServerJobFilterDtoPA.INSTANCE.reportId(), oldValue);
+	}
+
+
+	public boolean isReportIdModified()  {
+		return reportId_m;
+	}
+
+
+	public static PropertyAccessor<ReportServerJobFilterDto, String> getReportIdPropertyAccessor()  {
+		return reportId_pa;
+	}
+
+
 	public Set<Long> getReports()  {
 		if(! isDtoProxy()){
 			Set<Long> _currentValue = this.reports;
@@ -528,6 +614,8 @@ public class ReportServerJobFilterDto extends JobFilterConfigurationDto {
 		this.fromCurrentUser_m = false;
 		this.fromUser = null;
 		this.fromUser_m = false;
+		this.reportId = null;
+		this.reportId_m = false;
 		this.reports = null;
 		this.reports_m = false;
 		this.toCurrentUser = false;
@@ -544,6 +632,8 @@ public class ReportServerJobFilterDto extends JobFilterConfigurationDto {
 			return true;
 		if(fromUser_m)
 			return true;
+		if(reportId_m)
+			return true;
 		if(reports_m)
 			return true;
 		if(toCurrentUser_m)
@@ -558,6 +648,7 @@ public class ReportServerJobFilterDto extends JobFilterConfigurationDto {
 		List<PropertyAccessor> list = super.getPropertyAccessors();
 		list.add(fromCurrentUser_pa);
 		list.add(fromUser_pa);
+		list.add(reportId_pa);
 		list.add(reports_pa);
 		list.add(toCurrentUser_pa);
 		list.add(toUser_pa);
@@ -571,6 +662,8 @@ public class ReportServerJobFilterDto extends JobFilterConfigurationDto {
 			list.add(fromCurrentUser_pa);
 		if(fromUser_m)
 			list.add(fromUser_pa);
+		if(reportId_m)
+			list.add(reportId_pa);
 		if(reports_m)
 			list.add(reports_pa);
 		if(toCurrentUser_m)
@@ -586,6 +679,7 @@ public class ReportServerJobFilterDto extends JobFilterConfigurationDto {
 		if(view.compareTo(DtoView.NORMAL) >= 0){
 			list.add(fromCurrentUser_pa);
 			list.add(fromUser_pa);
+			list.add(reportId_pa);
 			list.add(reports_pa);
 			list.add(toCurrentUser_pa);
 			list.add(toUser_pa);

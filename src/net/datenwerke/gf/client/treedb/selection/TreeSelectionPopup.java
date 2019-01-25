@@ -197,7 +197,7 @@ public class TreeSelectionPopup extends DwWindow {
 			public void onSelect(SelectEvent event) {
 				List<AbstractNodeDto> selectedItems = grid.getSelectionModel().getSelectedItems();
 				for(AbstractNodeDto node : selectedItems)
-					if(null == selectedItemsStore.findModel(node))
+					if(null != selectedItemsStore.findModel(node))
 						selectedItemsStore.remove(node);
 			}
 		});

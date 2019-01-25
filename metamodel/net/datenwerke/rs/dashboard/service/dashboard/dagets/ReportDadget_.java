@@ -24,10 +24,8 @@
 package net.datenwerke.rs.dashboard.service.dashboard.dagets;
 
 import javax.annotation.Generated;
-import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
-import net.datenwerke.rs.core.service.parameters.entities.ParameterInstance;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.tsreportarea.service.tsreportarea.entities.TsDiskReportReference;
 
@@ -35,7 +33,6 @@ import net.datenwerke.rs.tsreportarea.service.tsreportarea.entities.TsDiskReport
 @StaticMetamodel(ReportDadget.class)
 public abstract class ReportDadget_ extends net.datenwerke.rs.dashboard.service.dashboard.entities.Dadget_ {
 
-	public static volatile SetAttribute<ReportDadget, ParameterInstance> parameterInstances;
 	public static volatile SingularAttribute<ReportDadget, Report> report;
 	public static volatile SingularAttribute<ReportDadget, TsDiskReportReference> reportReference;
 	public static volatile SingularAttribute<ReportDadget, String> config;

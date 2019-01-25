@@ -38,11 +38,13 @@ import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterDefinitionDto;
@@ -124,16 +126,18 @@ public class ParameterDadgetProcessor implements DadgetProcessorHook {
 				ok.addSelectHandler(new SelectHandler() {
 					@Override
 					public void onSelect(SelectEvent event) {
+						panel.getView().mask(BaseMessages.INSTANCE.storingMsg());
 						dashboardDao.setDashboardParameterInstances(panel.getView().getDashboard(), instances, new AsyncCallback<List<DadgetDto>>() {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								// TODO Auto-generated method stub
-
+								panel.getView().unmask();
 							}
 
 							@Override
 							public void onSuccess(List<DadgetDto> result) {
+								panel.getView().unmask();
+								
 								for(DadgetDto dadget : result){
 									final DadgetPanel dadgetPanel = panel.getView().getPanel(dadget);
 									dadgetPanel.updateDadget(dadget);
@@ -151,16 +155,27 @@ public class ParameterDadgetProcessor implements DadgetProcessorHook {
 				
 				ParameterView pv = new ParameterView(definitions, instances);
 				VerticalLayoutContainer parameterContainer = pv.getParameterContainer();
-				parameterContainer.setScrollMode(ScrollMode.AUTO);
 				
 				ButtonBar bb = new ButtonBar();
 				bb.add(new FillToolItem());
 				bb.add(ok);
 				parameterContainer.add(bb);
 				
-				panel.add(parameterContainer);
+				DwFlowContainer wrapper = new DwFlowContainer();
+				wrapper.setScrollMode(ScrollMode.AUTO);
+				wrapper.add(parameterContainer);
+				
+				panel.add(wrapper);
 
 				panel.unmask();
+				
+				/* needed to activate scroll */
+				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						panel.forceLayout();
+					}
+				});
 			}
 		});
 		
@@ -178,6 +193,17 @@ public class ParameterDadgetProcessor implements DadgetProcessorHook {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public boolean supportsDadgetLibrary() {
+		return false;
+	}
+	
+	@Override
+	public boolean readyToDisplayParameters(DadgetPanel dadgetPanel) {
+		return false;
+	}
+
 
 	@Override
 	public void displayConfigDialog(DadgetDto dadget, DadgetConfigureCallback dadgetConfigureCallback) {

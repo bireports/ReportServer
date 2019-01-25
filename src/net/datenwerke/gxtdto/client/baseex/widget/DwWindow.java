@@ -137,7 +137,10 @@ public class DwWindow extends Window {
 	}
 	
 	public void setSize(int width, int height) {
-		super.setSize(width + "px", height + "px");
+		int maxHeight = com.google.gwt.user.client.Window.getClientHeight() - 10;
+		int maxWidth = com.google.gwt.user.client.Window.getClientWidth() - 10;
+		
+		super.setSize(Math.min(width, maxWidth) + "px", Math.min(height, maxHeight)+ "px");
 	}
 	
 	public DwTextButton addCancelButton(){

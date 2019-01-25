@@ -29,7 +29,14 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.name.Named;
+
+import net.datenwerke.rs.core.service.parameters.entities.ParameterDefinition;
+import net.datenwerke.rs.core.service.parameters.entities.ParameterInstance__;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
+import net.datenwerke.rs.core.service.reportmanager.interfaces.ReportVariant;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.FavoriteList;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.FavoriteListEntry;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.FavoriteListEntry__;
@@ -38,7 +45,9 @@ import net.datenwerke.rs.dashboard.service.dashboard.dagets.LibraryDadget;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.LibraryDadget__;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.ReportDadget;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.ReportDadget__;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.Dadget;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DadgetNode;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.Dadget__;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardNode;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardReference;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardReference__;
@@ -50,10 +59,6 @@ import net.datenwerke.rs.utils.simplequery.annotations.QueryByAttribute;
 import net.datenwerke.rs.utils.simplequery.annotations.SimpleQuery;
 import net.datenwerke.security.service.authenticator.AuthenticatorService;
 import net.datenwerke.security.service.usermanager.entities.User;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.name.Named;
 
 public class DadgetServiceImpl implements DadgetService {
 
@@ -131,16 +136,28 @@ public class DadgetServiceImpl implements DadgetService {
 
 	@Override
 	public void removeFromReportDadgets(Report report) {
-		Collection<ReportDadget> dadgets = getReportDadgetsWith(report);
-		if(null == dadgets)
-			return;
-		
 		EntityManager em = entityManagerProvider.get();
+
+		/* update report dagets */
+		Collection<ReportDadget> dadgets = getReportDadgetsWith(report);
+		if(null != dadgets){
+			for(ReportDadget dadget : dadgets){
+				dadget.setReport(null);
+				dadget.getParameterInstances().clear();
+				em.merge(dadget);
+			}
+		}
 		
-		for(ReportDadget dadget : dadgets){
-			dadget.setReport(null);
-			dadget.getParameterInstances().clear();
-			em.merge(dadget);
+		/* check for parameters */
+		if(! (report instanceof ReportVariant)){
+			for(ParameterDefinition def : report.getParameterDefinitions()){
+				Collection<Dadget> dadgetWithParamDef = getDadgetsWithParameterDefinition(def);
+				
+				for(Dadget dadget : dadgetWithParamDef){
+					dadget.getParameterInstances().clear();
+					em.merge(dadget);
+				}
+			}
 		}
 	}
 	
@@ -156,6 +173,11 @@ public class DadgetServiceImpl implements DadgetService {
 			dadget.setReportReference(null);
 			em.merge(dadget);
 		}
+	}
+	
+	@SimpleQuery(from=Dadget.class,join=@Join(joinAttribute=Dadget__.parameterInstances,where=@Predicate(attribute=ParameterInstance__.definition,value="pd")))
+	public Collection<Dadget> getDadgetsWithParameterDefinition(@Named("pd")ParameterDefinition pd) {
+		return null; // magic
 	}
 	
 	@Override

@@ -28,6 +28,7 @@ import com.google.gwt.editor.client.Editor.Path;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import java.lang.String;
 import java.util.Set;
 import net.datenwerke.dtoservices.dtogenerator.annotations.CorrespondingPoso;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
@@ -49,6 +50,7 @@ public interface ReportServerJobFilterDtoPA extends JobFilterConfigurationDtoPA 
 	/* Properties */
 	public ValueProvider<ReportServerJobFilterDto,Boolean> fromCurrentUser();
 	public ValueProvider<ReportServerJobFilterDto,UserDto> fromUser();
+	public ValueProvider<ReportServerJobFilterDto,String> reportId();
 	public ValueProvider<ReportServerJobFilterDto,Set<Long>> reports();
 	public ValueProvider<ReportServerJobFilterDto,Boolean> toCurrentUser();
 	public ValueProvider<ReportServerJobFilterDto,UserDto> toUser();

@@ -34,6 +34,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+
 import net.datenwerke.rs.compiledreportstore.entities.PersistentCompiledReport;
 import net.datenwerke.rs.core.service.reportmanager.engine.CompiledReport;
 import net.datenwerke.rs.core.service.reportserver.ReportServerService;
@@ -42,12 +46,8 @@ import net.datenwerke.rs.teamspace.service.teamspace.TeamSpaceService;
 import net.datenwerke.rs.teamspace.service.teamspace.entities.TeamSpace;
 import net.datenwerke.rs.tsreportarea.service.tsreportarea.TsDiskService;
 import net.datenwerke.rs.tsreportarea.service.tsreportarea.entities.AbstractTsDiskNode;
-import net.datenwerke.rs.utils.filename.FileNameService;
+import net.datenwerke.rs.utils.misc.HttpUtils;
 import net.datenwerke.security.server.SecuredHttpServlet;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
 
 @Singleton
 public class ExportScheduledAsFileReportServlet extends SecuredHttpServlet {
@@ -62,21 +62,21 @@ public class ExportScheduledAsFileReportServlet extends SecuredHttpServlet {
 	protected final Provider<ReportServerService> reportServerServiceProvider;
 	protected final Provider<TeamSpaceService> teamSpaceServiceProvider;
 	protected final Provider<TsDiskService> tsDiskServiceProvider;
-	protected final Provider<FileNameService> fileNameServiceProvider;
+	protected final Provider<HttpUtils> httpUtilsProvider;
 
 	@Inject
 	public ExportScheduledAsFileReportServlet(
 			Provider<ReportServerService> reportServerServiceProvider,
 			Provider<TeamSpaceService> teamSpaceServiceProvider,
-			Provider<TsDiskService> tsDiskServiceProvider,
-			Provider<FileNameService> fileNameServiceProvider
+			Provider<TsDiskService> tsDiskServiceProvider, 
+			Provider<HttpUtils> httpUtilsProvider
 		) {
 		
 		/* store objects */
 		this.reportServerServiceProvider = reportServerServiceProvider;
 		this.teamSpaceServiceProvider = teamSpaceServiceProvider;
 		this.tsDiskServiceProvider = tsDiskServiceProvider;
-		this.fileNameServiceProvider = fileNameServiceProvider;
+		this.httpUtilsProvider = httpUtilsProvider;
 	}
 
 
@@ -118,10 +118,9 @@ public class ExportScheduledAsFileReportServlet extends SecuredHttpServlet {
 			if("true".equals(req.getParameter("download")))
 				download = true;
 			
-			String cd = download ? "attachment" : "inline";
 			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
 			String fileName = format.format(Calendar.getInstance().getTime()) + "_" + makeExportFilename(reference.getName())+"."+ cReport.getFileExtension();
-			resp.setHeader("Content-Disposition", cd + "; filename=\"" + fileName  +"\"");
+			resp.setHeader(HttpUtils.CONTENT_DISPOSITION, httpUtilsProvider.get().makeContentDispositionHeader(download, fileName));
 			
 			/* set for disabled caching */
 			/* needed by ticket #775 - problems with multiple files with the same name */
@@ -157,7 +156,7 @@ public class ExportScheduledAsFileReportServlet extends SecuredHttpServlet {
 	protected String makeExportFilename(String reportName){
 		if(null == reportName)
 			return "unnamed";
-		return fileNameServiceProvider.get().sanitizeFileName(reportName);
+		return reportName;
 	}
 
 }

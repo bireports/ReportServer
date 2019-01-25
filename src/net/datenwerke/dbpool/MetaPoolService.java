@@ -59,18 +59,21 @@ public class MetaPoolService implements DbPoolService {
 	private final DbPoolService c3p0;
 	private final Provider<Boolean> useBoneCpProvider;
 	private final Provider<Boolean> useConnectionPool;
+	private final JdbcService jdbcService;
 	
 	@Inject
 	public MetaPoolService(
 		@PoolBoneCP DbPoolService boneCp,
 		@PoolC3P0 DbPoolService c3p0,
 		@UseConnectionPool Provider<Boolean> useConnectionPool,
-		@UseBoneCp Provider<Boolean> useBoneCpProvider
+		@UseBoneCp Provider<Boolean> useBoneCpProvider,
+		JdbcService jdbcService
 		) {
 		this.boneCp = boneCp;
 		this.c3p0 = c3p0;
 		this.useConnectionPool = useConnectionPool;
 		this.useBoneCpProvider = useBoneCpProvider;
+		this.jdbcService = jdbcService;
 	}
 	
 	protected boolean isUseBoneCp(){
@@ -146,7 +149,7 @@ public class MetaPoolService implements DbPoolService {
 				/* create connection */
 				try {
 					conn = DriverManager.getConnection(
-					         config.getJdbcUrl(),
+							 jdbcService.adaptJdbcUrl(config.getJdbcUrl()),
 					         config.getUsername(),
 					         config.getPassword() );
 					

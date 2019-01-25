@@ -47,7 +47,7 @@ public class UnzipCommandHelper {
 		this.mimeUtils = mimeUtils;
 	}
 	
-	public AbstractFileServerNode createFileAndFolders(AbstractFileServerNode base, String filename, boolean isDirectory){
+	public AbstractFileServerNode createFileAndFolders(FileServerFolder base, String filename, boolean isDirectory){
 		String[] pathComponents = filename.split("/");
 		Queue<String> q = new LinkedList<String>();
 		for(String s : pathComponents){
@@ -58,16 +58,14 @@ public class UnzipCommandHelper {
 		return createFileAndFolders(base, q, isDirectory);
 	}
 
-	private AbstractFileServerNode createFileAndFolders(AbstractFileServerNode base, Queue<String> filename, boolean isDirectory){
+	private AbstractFileServerNode createFileAndFolders(FileServerFolder base, Queue<String> filename, boolean isDirectory){
 
 		if(filename.size() > 1){
 			/* Check if folder exists */
-			for(AbstractFileServerNode c : base.getChildren()){
-				if(c instanceof FileServerFolder){
-					if(null != ((FileServerFolder) c).getName() && ((FileServerFolder) c).getName().equals(filename.peek())){
-						filename.poll();
-						return createFileAndFolders(c, filename, isDirectory);
-					}
+			for(FileServerFolder f : base.getChildrenOfType(FileServerFolder.class)){
+				if(null != f.getName() && f.getName().equals(filename.peek())){
+					filename.poll();
+					return createFileAndFolders(f, filename, isDirectory);
 				}
 			}
 			/* create folder */
@@ -81,6 +79,12 @@ public class UnzipCommandHelper {
 		}else{
 			AbstractFileServerNode file;
 			if(isDirectory){
+				/* check if folder already exists, if so return folder */
+				FileServerFolder existingFolder = base.getSubfolderByName(filename.peek());
+				if(null != existingFolder)
+					return existingFolder;
+				
+				/* folder does not exist .. create */
 				file = new FileServerFolder();
 				((FileServerFolder)file).setName(filename.poll());
 			}else{

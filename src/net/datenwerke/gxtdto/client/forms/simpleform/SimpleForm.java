@@ -537,6 +537,9 @@ public class SimpleForm extends DwContentPanel {
 					break;
 				index++;
 			}
+			
+			/* get layout data */
+			Object layoutData = displayedField.getLayoutData();
 
 			/* remove from parent */
 			displayedField.removeFromParent();
@@ -552,6 +555,11 @@ public class SimpleForm extends DwContentPanel {
 			/* add new field */
 			if(parent instanceof FlowLayoutContainer)
 				((FlowLayoutContainer)parent).insert(newField, index);
+			else if(parent instanceof VerticalLayoutContainer)
+				if(layoutData instanceof VerticalLayoutData)
+					((VerticalLayoutContainer)parent).insert(newField, index, (VerticalLayoutData) layoutData);
+				else
+					((VerticalLayoutContainer)parent).insert(newField, index);
 			else
 				parent.add(newField);
 

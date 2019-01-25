@@ -75,6 +75,9 @@ public class JobFilterConfiguration implements JobFilterCriteria{
 	@ExposeToClient
 	private Outcome lastOutcome = null;
 	
+	@ExposeToClient
+	private String jobId = null;
+	
 	private Class<? extends AbstractJob> jobType = AbstractJob.class;
 	
 	public String getSortField() {
@@ -133,6 +136,13 @@ public class JobFilterConfiguration implements JobFilterCriteria{
 		this.jobType = jobType;
 	}
 
+	public String getJobId() {
+		return jobId;
+	}
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
+	}
+	
 	public boolean validateSortField(String sortField) {
 		if(null == sortField)
 			return false;
@@ -176,6 +186,12 @@ public class JobFilterConfiguration implements JobFilterCriteria{
 		
 		if(null != lastOutcome)
 			predicates.add(root.get(AbstractJob_.lastOutcome).in(lastOutcome));
+
+		if(null != jobId){
+			String query = jobId.replace("?", "_").replace("*", "%");
+			if(! "".equals(query.trim()))
+				predicates.add(builder.like(root.get(AbstractJob_.id).as(String.class), query));
+		}
 		
 		return predicates;
 	}

@@ -32,6 +32,8 @@ import net.datenwerke.rs.base.service.datasources.definitions.CsvDatasource;
 import net.datenwerke.rs.base.service.datasources.eventhandler.HandleCsvDatasourceMergeEvents;
 import net.datenwerke.rs.base.service.datasources.hooker.BaseDatasourceProviderHooker;
 import net.datenwerke.rs.base.service.datasources.hooker.StandardConnectionHook;
+import net.datenwerke.rs.base.service.datasources.statementmanager.db.MonetDbStatementCancler;
+import net.datenwerke.rs.base.service.datasources.statementmanager.hooks.StatementCancellationHook;
 import net.datenwerke.rs.base.service.datasources.table.hookers.QueryCommentAdderHooker;
 import net.datenwerke.rs.base.service.datasources.table.impl.hooks.TableDbDatasourceOpenedHook;
 import net.datenwerke.rs.base.service.datasources.transformers.DataSourceDefinitionTransformer;
@@ -75,7 +77,9 @@ public class DatasourceExtensionStartup {
 		Database2JasperTransformer database2JasperTransformer, 
 		Database2JdbcConnectionTransformer database2JdbcConnectionTransformer, 
 		Database2JdbcDatasourceTransformer database2JdbcDatasourceTransformer, 
-		Database2TableTransformer database2TableTransformer 
+		Database2TableTransformer database2TableTransformer,
+		
+		Provider<MonetDbStatementCancler> monetDbCancler
 		){
 		
 		hookHandler.attachHooker(DatasourceProviderHook.class, databaseProvider);
@@ -98,5 +102,7 @@ public class DatasourceExtensionStartup {
 		hookHandler.attachHooker(DataSourceDefinitionTransformer.class, database2TableTransformer);
 		
 		eventBus.attachObjectEventHandler(MergeEntityEvent.class, CsvDatasource.class, csvDatasourceMergeHandler);
+		
+		hookHandler.attachHooker(StatementCancellationHook.class, monetDbCancler);
 	}
 }

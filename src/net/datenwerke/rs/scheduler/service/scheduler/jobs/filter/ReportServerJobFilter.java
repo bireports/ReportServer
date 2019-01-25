@@ -35,6 +35,9 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
@@ -46,9 +49,6 @@ import net.datenwerke.scheduler.service.scheduler.stores.jpa.filter.JobFilterCon
 import net.datenwerke.security.service.authenticator.AuthenticatorService;
 import net.datenwerke.security.service.usermanager.entities.User;
 import net.datenwerke.security.service.usermanager.entities.User__;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 @GenerateDto(
 	dtoPackage = "net.datenwerke.rs.scheduler.client.scheduler.dto"
@@ -72,6 +72,9 @@ public class ReportServerJobFilter extends JobFilterConfiguration {
 	
 	@ExposeToClient
 	private User fromUser = null;
+	
+	@ExposeToClient
+	private String reportId = null;
 	
 	
 	public void setAnyUser(){
@@ -131,6 +134,14 @@ public class ReportServerJobFilter extends JobFilterConfiguration {
 
 	public User getToUser() {
 		return toUser;
+	}
+	
+	public String getReportId() {
+		return reportId;
+	}
+	
+	public void setReportId(String reportId) {
+		this.reportId = reportId;
 	}
 	
 	@Override
@@ -195,6 +206,12 @@ public class ReportServerJobFilter extends JobFilterConfiguration {
 		
 		if(null != getReports() && ! getReports().isEmpty())
 			predicates.add(root.join(ReportExecuteJob__.report).get(Report__.id).in(getReports()));
+		
+		if(null != reportId){
+			String query = reportId.replace("?", "_").replace("*", "%");
+			if(! "".equals(query.trim()))
+				predicates.add(builder.like(root.join(ReportExecuteJob__.report).get(Report__.id).as(String.class), query));
+		}
 		
 		return predicates;
 	}

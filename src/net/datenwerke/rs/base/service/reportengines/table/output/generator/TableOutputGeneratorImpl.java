@@ -65,12 +65,15 @@ public abstract class TableOutputGeneratorImpl implements TableOutputGenerator {
 	protected ParameterSet parameters;
 	protected User user;
 
+	protected CellFormatter[] cellFormatters;
+
 	@Override
 	public void initialize(OutputStream os, TableDefinition td, boolean withSubtotals, TableReport report, TableReport originalReport, CellFormatter[] cellFormatters, 
 			ParameterSet parameters, User user, ReportExecutionConfig... configs) throws IOException {
 		this.configs = configs;
 		this.report = report;
 		this.originalReport = originalReport;
+		this.cellFormatters = cellFormatters;
 		this.td = td;
 		this.os = os;
 		this.withSubtotals = withSubtotals;

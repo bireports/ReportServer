@@ -23,17 +23,22 @@
  
 package net.datenwerke.rs.core.service.mail;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
+import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
+import javax.mail.util.ByteArrayDataSource;
 
 import net.datenwerke.rs.core.service.mail.annotations.MailModuleDefaultFrom;
 import net.datenwerke.rs.core.service.mail.interfaces.SessionProvider;
@@ -157,10 +162,7 @@ public class SimpleMail extends MimeMessage implements SessionProvider {
 			
 			/* create attachements */
 			for(SimpleAttachement att : attachements){
-				MimeBodyPart mbp = new MimeBodyPart();
-				mbp.setContent(att.getAttachement(), att.getMimeType());
-				mbp.setFileName(MimeUtility.encodeText(att.getFileName(), CHARSET_UTF8, null));
-				multipart.addBodyPart(mbp);
+				multipart.addBodyPart(createAttachmentPart(att));
 			}
 			
 			/* set contents */
@@ -169,6 +171,24 @@ public class SimpleMail extends MimeMessage implements SessionProvider {
 			logger.warn( e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
+	}
+	
+	protected MimeBodyPart createAttachmentPart(SimpleAttachement att) throws UnsupportedEncodingException, MessagingException{
+		MimeBodyPart mbp = new MimeBodyPart();
+		mbp.setFileName(MimeUtility.encodeText(att.getFileName(), CHARSET_UTF8, null));
+		
+		Object data = att.getAttachement();
+		if(data instanceof String) {
+			ContentType ct = new ContentType(att.getMimeType());
+			mbp.setText((String)data, CHARSET_UTF8, ct.getSubType());
+		}else if(data instanceof byte[]){
+			DataSource ds = new ByteArrayDataSource((byte[])data, att.getMimeType());
+			mbp.setDataHandler(new DataHandler(ds ));
+		}else{
+			mbp.setContent(data, att.getMimeType());
+		}
+		
+		return mbp;
 	}
 
 	public void setToRecipients(List<String> recipients){

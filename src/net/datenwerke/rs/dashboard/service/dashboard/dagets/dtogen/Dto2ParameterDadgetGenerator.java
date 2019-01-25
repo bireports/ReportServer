@@ -26,10 +26,13 @@ package net.datenwerke.rs.dashboard.service.dashboard.dagets.dtogen;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.lang.Exception;
+import java.lang.IllegalArgumentException;
 import java.lang.NullPointerException;
 import java.lang.RuntimeException;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
 import net.datenwerke.dtoservices.dtogenerator.dto2posogenerator.interfaces.Dto2PosoGenerator;
@@ -37,6 +40,8 @@ import net.datenwerke.dtoservices.dtogenerator.dto2posogenerator.validator.DtoPr
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.gxtdto.server.dtomanager.DtoMainService;
 import net.datenwerke.gxtdto.server.dtomanager.DtoService;
+import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
+import net.datenwerke.rs.core.service.parameters.entities.ParameterInstance;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetContainerDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.ParameterDadgetDto;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.ParameterDadget;
@@ -151,6 +156,50 @@ public class Dto2ParameterDadgetGenerator implements Dto2PosoGenerator<Parameter
 		} catch(NullPointerException e){
 		}
 
+		/*  set parameterInstances */
+		final Set<ParameterInstance> col_parameterInstances = new HashSet<ParameterInstance>();
+		/* load new data from dto */
+		Collection<ParameterInstanceDto> tmpCol_parameterInstances = dto.getParameterInstances();
+
+		/* load current data from poso */
+		if(null != poso.getParameterInstances())
+			col_parameterInstances.addAll(poso.getParameterInstances());
+
+		/* remove non existing data */
+		Set<ParameterInstance> remDto_parameterInstances = new HashSet<ParameterInstance>();
+		for(ParameterInstance ref : col_parameterInstances){
+			boolean found = false;
+			for(ParameterInstanceDto refDto : tmpCol_parameterInstances){
+				if(null != refDto && null != refDto.getId() && refDto.getId().equals(ref.getId())){
+					found = true;
+					break;
+				}
+			}
+			if(! found)
+				remDto_parameterInstances.add(ref);
+		}
+		for(ParameterInstance ref : remDto_parameterInstances)
+			col_parameterInstances.remove(ref);
+		dto2PosoSupervisor.enclosedObjectsRemovedFromCollection(dto, poso, remDto_parameterInstances, "parameterInstances");
+
+		/* merge or add data */
+		Set<ParameterInstance> new_col_parameterInstances = new HashSet<ParameterInstance>();
+		for(ParameterInstanceDto refDto : tmpCol_parameterInstances){
+			boolean found = false;
+			for(ParameterInstance ref : col_parameterInstances){
+				if(null != refDto && null != refDto.getId() && refDto.getId().equals(ref.getId())){
+					new_col_parameterInstances.add((ParameterInstance) dtoServiceProvider.get().loadAndMergePoso(refDto));
+					found = true;
+					break;
+				}
+			}
+			if(! found && null != refDto && null == refDto.getId() )
+				new_col_parameterInstances.add((ParameterInstance) dtoServiceProvider.get().createPoso(refDto));
+			else if(! found && null != refDto && null != refDto.getId() )
+				throw new IllegalArgumentException("dto should not have an id. property(parameterInstances) ");
+		}
+		poso.setParameterInstances(new_col_parameterInstances);
+
 		/*  set reloadInterval */
 		try{
 			poso.setReloadInterval(dto.getReloadInterval() );
@@ -188,6 +237,53 @@ public class Dto2ParameterDadgetGenerator implements Dto2PosoGenerator<Parameter
 				poso.setN(dto.getN() );
 			} catch(NullPointerException e){
 			}
+		}
+
+		/*  set parameterInstances */
+		if(dto.isParameterInstancesModified()){
+			final Set<ParameterInstance> col_parameterInstances = new HashSet<ParameterInstance>();
+			/* load new data from dto */
+			Collection<ParameterInstanceDto> tmpCol_parameterInstances = null;
+			tmpCol_parameterInstances = dto.getParameterInstances();
+
+			/* load current data from poso */
+			if(null != poso.getParameterInstances())
+				col_parameterInstances.addAll(poso.getParameterInstances());
+
+			/* remove non existing data */
+			Set<ParameterInstance> remDto_parameterInstances = new HashSet<ParameterInstance>();
+			for(ParameterInstance ref : col_parameterInstances){
+				boolean found = false;
+				for(ParameterInstanceDto refDto : tmpCol_parameterInstances){
+					if(null != refDto && null != refDto.getId() && refDto.getId().equals(ref.getId())){
+						found = true;
+						break;
+					}
+				}
+				if(! found)
+					remDto_parameterInstances.add(ref);
+			}
+			for(ParameterInstance ref : remDto_parameterInstances)
+				col_parameterInstances.remove(ref);
+			dto2PosoSupervisor.enclosedObjectsRemovedFromCollection(dto, poso, remDto_parameterInstances, "parameterInstances");
+
+			/* merge or add data */
+			Set<ParameterInstance> new_col_parameterInstances = new HashSet<ParameterInstance>();
+			for(ParameterInstanceDto refDto : tmpCol_parameterInstances){
+				boolean found = false;
+				for(ParameterInstance ref : col_parameterInstances){
+					if(null != refDto && null != refDto.getId() && refDto.getId().equals(ref.getId())){
+						new_col_parameterInstances.add((ParameterInstance) dtoServiceProvider.get().loadAndMergePoso(refDto));
+						found = true;
+						break;
+					}
+				}
+				if(! found && null != refDto && null == refDto.getId() )
+					new_col_parameterInstances.add((ParameterInstance) dtoServiceProvider.get().createPoso(refDto));
+				else if(! found && null != refDto && null != refDto.getId() )
+					throw new IllegalArgumentException("dto should not have an id. property(parameterInstances) ");
+			}
+			poso.setParameterInstances(new_col_parameterInstances);
 		}
 
 		/*  set reloadInterval */
@@ -230,6 +326,17 @@ public class Dto2ParameterDadgetGenerator implements Dto2PosoGenerator<Parameter
 		} catch(NullPointerException e){
 		}
 
+		/*  set parameterInstances */
+		final Set<ParameterInstance> col_parameterInstances = new HashSet<ParameterInstance>();
+		/* load new data from dto */
+		Collection<ParameterInstanceDto> tmpCol_parameterInstances = dto.getParameterInstances();
+
+		/* merge or add data */
+		for(ParameterInstanceDto refDto : tmpCol_parameterInstances){
+			col_parameterInstances.add((ParameterInstance) dtoServiceProvider.get().createUnmanagedPoso(refDto));
+		}
+		poso.setParameterInstances(col_parameterInstances);
+
 		/*  set reloadInterval */
 		try{
 			poso.setReloadInterval(dto.getReloadInterval() );
@@ -267,6 +374,20 @@ public class Dto2ParameterDadgetGenerator implements Dto2PosoGenerator<Parameter
 				poso.setN(dto.getN() );
 			} catch(NullPointerException e){
 			}
+		}
+
+		/*  set parameterInstances */
+		if(dto.isParameterInstancesModified()){
+			final Set<ParameterInstance> col_parameterInstances = new HashSet<ParameterInstance>();
+			/* load new data from dto */
+			Collection<ParameterInstanceDto> tmpCol_parameterInstances = null;
+			tmpCol_parameterInstances = dto.getParameterInstances();
+
+			/* merge or add data */
+			for(ParameterInstanceDto refDto : tmpCol_parameterInstances){
+				col_parameterInstances.add((ParameterInstance) dtoServiceProvider.get().createUnmanagedPoso(refDto));
+			}
+			poso.setParameterInstances(col_parameterInstances);
 		}
 
 		/*  set reloadInterval */

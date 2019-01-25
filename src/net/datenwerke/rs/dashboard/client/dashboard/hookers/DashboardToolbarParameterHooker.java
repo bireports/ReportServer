@@ -33,13 +33,19 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.event.ShowEvent;
+import com.sencha.gxt.widget.core.client.event.ShowEvent.ShowHandler;
 import com.sencha.gxt.widget.core.client.toolbar.SeparatorToolItem;
 
+import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
 import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
 import net.datenwerke.gxtdto.client.baseex.widget.DwWindow.OnButtonClickHandler;
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
 import net.datenwerke.gxtdto.client.dialog.error.DetailErrorDialog;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.gxtdto.client.utilityservices.toolbar.DwToolBar;
@@ -49,7 +55,9 @@ import net.datenwerke.rs.core.client.parameters.propertywidgets.ParameterView;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.dashboard.client.dashboard.DashboardDao;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetNodeDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.LibraryDadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.ParameterDadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.ReportDadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.hooks.DashboardToolbarHook;
@@ -110,9 +118,21 @@ public class DashboardToolbarParameterHooker implements DashboardToolbarHook {
 			return;
 		
 		final DwWindow dialog = new DwWindow();
-		dialog.setSize(640, 480);
 		dialog.setModal(true);
 		dialog.setHeaderIcon(BaseIcon.FILTER);
+
+		/* make sure it is not too huge */
+		dialog.addShowHandler(new ShowHandler() {
+			@Override
+			public void onShow(ShowEvent event) {
+				try{
+					int width = dialog.getElement().getWidth(true);
+					int height= dialog.getElement().getHeight(true);
+					if(width > 1200 || height > 1000)
+						dialog.setSize(800, 600);
+				}catch(Exception e){}
+			}
+		});
 		
 		
 		dashboardView.mask(BaseMessages.INSTANCE.loadingMsg());
@@ -137,7 +157,15 @@ public class DashboardToolbarParameterHooker implements DashboardToolbarHook {
 				}
 				
 				ParameterView pv = new ParameterView(definitions, instances);
-				dialog.add(pv.getViewComponent());
+				
+				DwFlowContainer wrapper = new DwFlowContainer();
+				wrapper.setScrollMode(ScrollMode.AUTO);
+				dialog.add(wrapper);
+				
+				DwContentPanel panelWrapper = DwContentPanel.newInlineInstance(pv.getParameterContainer());
+				panelWrapper.setLightDarkStyle();
+				
+				wrapper.add(panelWrapper, new MarginData(10));
 				dialog.setHeadingText(pv.getComponentHeader());
 				
 				dialog.addCancelButton();
@@ -183,6 +211,16 @@ public class DashboardToolbarParameterHooker implements DashboardToolbarHook {
 		boolean display = false;
 		
 		for(DadgetDto dadget : dashboard.getDadgets()){
+			/* if library dadget get referenced dadget */
+			if(dadget instanceof LibraryDadgetDto){
+				LibraryDadgetDto lDadget = (LibraryDadgetDto) dadget;
+				DadgetNodeDto dadgetNode = lDadget.getDadgetNode();
+				if(null != dadgetNode && null != dadgetNode.getDadget()){
+					dadget = dadgetNode.getDadget();
+				}
+			}
+			
+			/* if report dadget, check if parameters */
 			if(dadget instanceof ReportDadgetDto){
 				ReportDto report = ((ReportDadgetDto) dadget).getReport();
 				if(null != report && ! report.getParameterInstances().isEmpty())
@@ -191,6 +229,7 @@ public class DashboardToolbarParameterHooker implements DashboardToolbarHook {
 				if(null != reference && null != reference.getReport() && ! reference.getReport().getParameterInstances().isEmpty())
 					display = true;
 			}
+			
 			if(dadget instanceof ParameterDadgetDto){
 				display = false;
 				break;

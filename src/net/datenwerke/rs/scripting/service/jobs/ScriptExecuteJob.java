@@ -75,7 +75,18 @@ public class ScriptExecuteJob extends ReportServerJob {
 			VFSLocation location = session.getFileSystem().getLocationFor(script);
 			session.getFileSystem().setLocation(location.getParentLocation());
 			
-			scriptResult = scriptService.executeScript(script, session, new HashMap<String, Object>(), arguments == null ? "" : arguments);
+			try{
+				if(null != getUser())
+					authenticatiorServiceProvider.get().setAuthenticatedInThread(getUser().getId());
+				
+				HashMap<String, Object> objectMap = new HashMap<String, Object>();
+				objectMap.put("isScheduledScript", true);
+		
+				scriptResult = scriptService.executeScript(script, session, objectMap, arguments == null ? "" : arguments);
+			}finally{
+				if(null != getUser())
+					authenticatiorServiceProvider.get().logoffUserInThread();
+			}
 		} catch (Exception e) {
 			throw new JobExecutionException(e);
 		}

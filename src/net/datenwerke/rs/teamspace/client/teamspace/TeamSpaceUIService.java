@@ -63,4 +63,6 @@ public interface TeamSpaceUIService {
 	ListLoader<ListLoadConfig, ListLoadResult<TeamSpaceDto>> getTeamSpacesLoader();
 
 	ListLoader<ListLoadConfig, ListLoadResult<TeamSpaceDto>> getAllTeamSpacesLoader();
+
+	boolean hasTeamSpaceRemoveRight();
 }

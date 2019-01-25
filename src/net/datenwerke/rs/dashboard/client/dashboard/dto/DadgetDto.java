@@ -27,15 +27,23 @@ import com.google.gwt.core.client.GWT;
 import java.lang.IllegalStateException;
 import java.lang.Long;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
 import net.datenwerke.gf.base.client.dtogenerator.RsDto;
 import net.datenwerke.gxtdto.client.dtomanager.Dto2PosoMapper;
+import net.datenwerke.gxtdto.client.dtomanager.Dto;
 import net.datenwerke.gxtdto.client.dtomanager.DtoView;
 import net.datenwerke.gxtdto.client.dtomanager.IdedDto;
 import net.datenwerke.gxtdto.client.dtomanager.PropertyAccessor;
+import net.datenwerke.gxtdto.client.dtomanager.dtomod.collections.ChangeMonitoredSet;
+import net.datenwerke.gxtdto.client.dtomanager.dtomod.collections.MonitoredCollection;
 import net.datenwerke.gxtdto.client.dtomanager.redoundo.ChangeTracker;
+import net.datenwerke.gxtdto.client.eventbus.events.ObjectChangedEvent;
+import net.datenwerke.gxtdto.client.eventbus.handlers.ObjectChangedEventHandler;
+import net.datenwerke.gxtdto.client.eventbus.handlers.has.HasObjectChangedEventHandler;
+import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetContainerDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.pa.DadgetDtoPA;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.posomap.DadgetDto2PosoMap;
@@ -233,6 +241,42 @@ abstract public class DadgetDto extends RsDto implements IdedDto {
 		@Override
 		public boolean isModified(DadgetDto container) {
 			return container.isNModified();
+		}
+	};
+
+	private Set<ParameterInstanceDto> parameterInstances;
+	private  boolean parameterInstances_m;
+	public static final String PROPERTY_PARAMETER_INSTANCES = "dpi-dadget-parameterinstances";
+
+	private transient static PropertyAccessor<DadgetDto, Set<ParameterInstanceDto>> parameterInstances_pa = new PropertyAccessor<DadgetDto, Set<ParameterInstanceDto>>() {
+		@Override
+		public void setValue(DadgetDto container, Set<ParameterInstanceDto> object) {
+			container.setParameterInstances(object);
+		}
+
+		@Override
+		public Set<ParameterInstanceDto> getValue(DadgetDto container) {
+			return container.getParameterInstances();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return Set.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "parameterInstances";
+		}
+
+		@Override
+		public void setModified(DadgetDto container, boolean modified) {
+			container.parameterInstances_m = modified;
+		}
+
+		@Override
+		public boolean isModified(DadgetDto container) {
+			return container.isParameterInstancesModified();
 		}
 	};
 
@@ -493,6 +537,70 @@ abstract public class DadgetDto extends RsDto implements IdedDto {
 	}
 
 
+	public Set<ParameterInstanceDto> getParameterInstances()  {
+		if(! isDtoProxy()){
+			Set<ParameterInstanceDto> _currentValue = this.parameterInstances;
+			if(null == _currentValue)
+				this.parameterInstances = new HashSet<ParameterInstanceDto>();
+
+			return this.parameterInstances;
+		}
+
+		if(isParameterInstancesModified())
+			return this.parameterInstances;
+
+		if(! GWT.isClient())
+			return null;
+
+		Set<ParameterInstanceDto> _value = dtoManager.getProperty(this, instantiatePropertyAccess().parameterInstances());
+
+		_value = new ChangeMonitoredSet<ParameterInstanceDto>(_value);
+		if(_value instanceof HasObjectChangedEventHandler){
+			((HasObjectChangedEventHandler)_value).addObjectChangedHandler(new net.datenwerke.gxtdto.client.eventbus.handlers.ObjectChangedEventHandler(){
+				@Override
+				public void onObjectChangedEvent(net.datenwerke.gxtdto.client.eventbus.events.ObjectChangedEvent event){
+					if(! isParameterInstancesModified())
+						setParameterInstances((Set<ParameterInstanceDto>) ((MonitoredCollection) event.getObject()).getUnderlyingCollection());
+				}
+			}
+			);
+		}
+		return _value;
+	}
+
+
+	public void setParameterInstances(Set<ParameterInstanceDto> parameterInstances)  {
+		/* old value */
+		Set<ParameterInstanceDto> oldValue = null;
+		if(GWT.isClient())
+			oldValue = getParameterInstances();
+
+		/* set new value */
+		this.parameterInstances = parameterInstances;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(parameterInstances_pa, oldValue, parameterInstances, this.parameterInstances_m));
+
+		/* set indicator */
+		this.parameterInstances_m = true;
+
+		this.fireObjectChangedEvent(DadgetDtoPA.INSTANCE.parameterInstances(), oldValue);
+	}
+
+
+	public boolean isParameterInstancesModified()  {
+		return parameterInstances_m;
+	}
+
+
+	public static PropertyAccessor<DadgetDto, Set<ParameterInstanceDto>> getParameterInstancesPropertyAccessor()  {
+		return parameterInstances_pa;
+	}
+
+
 	public long getReloadInterval()  {
 		if(! isDtoProxy()){
 			return this.reloadInterval;
@@ -593,6 +701,8 @@ abstract public class DadgetDto extends RsDto implements IdedDto {
 		this.id_m = false;
 		this.n = 0;
 		this.n_m = false;
+		this.parameterInstances = null;
+		this.parameterInstances_m = false;
 		this.reloadInterval = 0;
 		this.reloadInterval_m = false;
 	}
@@ -611,6 +721,8 @@ abstract public class DadgetDto extends RsDto implements IdedDto {
 			return true;
 		if(n_m)
 			return true;
+		if(parameterInstances_m)
+			return true;
 		if(reloadInterval_m)
 			return true;
 		return false;
@@ -624,6 +736,7 @@ abstract public class DadgetDto extends RsDto implements IdedDto {
 		list.add(height_pa);
 		list.add(id_pa);
 		list.add(n_pa);
+		list.add(parameterInstances_pa);
 		list.add(reloadInterval_pa);
 		return list;
 	}
@@ -641,6 +754,8 @@ abstract public class DadgetDto extends RsDto implements IdedDto {
 			list.add(id_pa);
 		if(n_m)
 			list.add(n_pa);
+		if(parameterInstances_m)
+			list.add(parameterInstances_pa);
 		if(reloadInterval_m)
 			list.add(reloadInterval_pa);
 		return list;
@@ -657,6 +772,7 @@ abstract public class DadgetDto extends RsDto implements IdedDto {
 			list.add(container_pa);
 			list.add(height_pa);
 			list.add(n_pa);
+			list.add(parameterInstances_pa);
 			list.add(reloadInterval_pa);
 		}
 		return list;
@@ -665,11 +781,13 @@ abstract public class DadgetDto extends RsDto implements IdedDto {
 
 	public List<PropertyAccessor> getPropertyAccessorsForDtos()  {
 		List<PropertyAccessor> list = super.getPropertyAccessorsForDtos();
+		list.add(parameterInstances_pa);
 		return list;
 	}
 
 
 
-	net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetContainerDto wl_0;
+	net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto wl_0;
+	net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetContainerDto wl_1;
 
 }

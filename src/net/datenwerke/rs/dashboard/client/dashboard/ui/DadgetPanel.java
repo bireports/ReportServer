@@ -93,6 +93,10 @@ public class DadgetPanel extends DwContentPanel {
 					if(reloadCounter != myCounter) 
 						return false;
 					
+					/* if not visible do not reload */
+					if(! isVisible(true))
+						return false;
+					
 					clear();
 					getProcessor().draw(dadget, DadgetPanel.this);
 					forceLayout();
@@ -102,6 +106,12 @@ public class DadgetPanel extends DwContentPanel {
 			}, (int) dadget.getReloadInterval()*1000);
 		} else 
 			reloadCounter = 0;
+	}
+	
+	@Override
+	protected void onShow() {
+		super.onShow();
+		initReload();
 	}
 
 
@@ -208,6 +218,10 @@ public class DadgetPanel extends DwContentPanel {
 
 	public void setHeaderIcon(BaseIcon icon) {
 		getHeader().setIcon(icon.toImageResource());
+	}
+
+	public void makeAwareOfSelection() {
+		initReload();
 	}
 
 

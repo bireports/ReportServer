@@ -32,7 +32,6 @@ import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
 public class ReportDadget__ extends net.datenwerke.rs.dashboard.service.dashboard.entities.Dadget__ implements net.datenwerke.entityservices.metadatagenerator.interfaces.EntityMetadataProvider {
 
 	public static final String config = "config";
-	public static final String parameterInstances = "parameterInstances";
 	public static final String report = "report";
 	public static final String reportReference = "reportReference";
 	public static final String serialVersionUID = "serialVersionUID";

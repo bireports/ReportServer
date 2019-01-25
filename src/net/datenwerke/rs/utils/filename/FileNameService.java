@@ -29,4 +29,6 @@ import com.google.inject.ImplementedBy;
 public interface FileNameService {
 
 	public String sanitizeFileName(String name);
+	
+	public String sanitizeFileNameStrict(String name);
 }

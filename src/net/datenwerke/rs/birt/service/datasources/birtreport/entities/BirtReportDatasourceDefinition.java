@@ -29,6 +29,7 @@ import javax.persistence.Transient;
 
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
+import net.datenwerke.rs.core.service.datasourcemanager.entities.CacheableDatasource;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinitionConfig;
 
@@ -40,7 +41,7 @@ import org.hibernate.envers.Audited;
 @GenerateDto(
 	dtoPackage="net.datenwerke.rs.birt.client.datasources.dto"
 )
-public class BirtReportDatasourceDefinition extends DatasourceDefinition {
+public class BirtReportDatasourceDefinition extends DatasourceDefinition implements CacheableDatasource {
 
 	private static final long serialVersionUID = -2945350730488549534L;
 

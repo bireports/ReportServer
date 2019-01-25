@@ -41,6 +41,7 @@ import net.datenwerke.rs.core.service.reportserver.ReportServerService;
 import net.datenwerke.rs.utils.config.ConfigService;
 import net.datenwerke.rs.utils.exception.ExceptionServices;
 import net.datenwerke.rs.utils.filename.FileNameService;
+import net.datenwerke.rs.utils.misc.HttpUtils;
 import net.datenwerke.security.service.authenticator.AuthenticatorService;
 import net.datenwerke.security.service.security.SecurityService;
 import net.datenwerke.security.service.security.annotation.SecurityChecked;
@@ -83,13 +84,12 @@ public class HttpAuthExecuteServlet extends ReportExportServlet {
 			ParameterSetFactory parameterSetFactory, 
 			Provider<TempFileService> tempFileService, Provider<ExceptionServices> exceptionServices,
 			Provider<ReportSessionCache> sessionCacheProvider,
-			Provider<FileNameService> fileNameServiceProvider
+			Provider<HttpUtils> httpUtilsProvider
 			) {
 		
 		super(authenticatorService, hookHandlerProvider, securityServiceProvider,
 				reportExecutor, reportService, reportServerService, errorHelperProvider, 
-				parameterSetFactory, tempFileService, exceptionServices, configService,sessionCacheProvider,
-				fileNameServiceProvider);
+				parameterSetFactory, tempFileService, exceptionServices, configService,sessionCacheProvider, httpUtilsProvider);
 
 		this.userManagerProvider = userManagerProvider;
 	}

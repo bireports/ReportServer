@@ -457,7 +457,7 @@ public class DashboardView extends DwFlowContainer {
 		});
 	}
 
-	protected List<DadgetPanel> getAllDagetPanels() {
+	public List<DadgetPanel> getAllDagetPanels() {
 		List<DadgetPanel> panels = new ArrayList<DadgetPanel>();
 		for(Widget w : topContainer)
 			panels.add((DadgetPanel)w);
@@ -908,6 +908,19 @@ public class DashboardView extends DwFlowContainer {
 	
 	public DashboardDto getDashboard() {
 		return dashboard;
+	}
+
+	public void makeAwareOfSelection() {
+		for(DadgetPanel panel : getAllDagetPanels())
+			panel.makeAwareOfSelection();
+	}
+
+	public void doForceLayout() {
+		if(null != scrollWrapper)
+			scrollWrapper.onResize();
+		
+		adjustTopBottomContainers();
+		updatePanelSize();
 	}
 
 }

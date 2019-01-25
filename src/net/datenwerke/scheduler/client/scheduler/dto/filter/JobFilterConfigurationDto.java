@@ -163,6 +163,42 @@ public class JobFilterConfigurationDto extends RsDto implements JobFilterCriteri
 		}
 	};
 
+	private String jobId;
+	private  boolean jobId_m;
+	public static final String PROPERTY_JOB_ID = "dpi-jobfilterconfiguration-jobid";
+
+	private transient static PropertyAccessor<JobFilterConfigurationDto, String> jobId_pa = new PropertyAccessor<JobFilterConfigurationDto, String>() {
+		@Override
+		public void setValue(JobFilterConfigurationDto container, String object) {
+			container.setJobId(object);
+		}
+
+		@Override
+		public String getValue(JobFilterConfigurationDto container) {
+			return container.getJobId();
+		}
+
+		@Override
+		public Class<?> getType() {
+			return String.class;
+		}
+
+		@Override
+		public String getPath() {
+			return "jobId";
+		}
+
+		@Override
+		public void setModified(JobFilterConfigurationDto container, boolean modified) {
+			container.jobId_m = modified;
+		}
+
+		@Override
+		public boolean isModified(JobFilterConfigurationDto container) {
+			return container.isJobIdModified();
+		}
+	};
+
 	private OutcomeDto lastOutcome;
 	private  boolean lastOutcome_m;
 	public static final String PROPERTY_LAST_OUTCOME = "dpi-jobfilterconfiguration-lastoutcome";
@@ -495,6 +531,55 @@ public class JobFilterConfigurationDto extends RsDto implements JobFilterCriteri
 	}
 
 
+	public String getJobId()  {
+		if(! isDtoProxy()){
+			return this.jobId;
+		}
+
+		if(isJobIdModified())
+			return this.jobId;
+
+		if(! GWT.isClient())
+			return null;
+
+		String _value = dtoManager.getProperty(this, instantiatePropertyAccess().jobId());
+
+		return _value;
+	}
+
+
+	public void setJobId(String jobId)  {
+		/* old value */
+		String oldValue = null;
+		if(GWT.isClient())
+			oldValue = getJobId();
+
+		/* set new value */
+		this.jobId = jobId;
+
+		if(! GWT.isClient())
+			return;
+
+		if(isTrackChanges())
+			addChange(new ChangeTracker(jobId_pa, oldValue, jobId, this.jobId_m));
+
+		/* set indicator */
+		this.jobId_m = true;
+
+		this.fireObjectChangedEvent(JobFilterConfigurationDtoPA.INSTANCE.jobId(), oldValue);
+	}
+
+
+	public boolean isJobIdModified()  {
+		return jobId_m;
+	}
+
+
+	public static PropertyAccessor<JobFilterConfigurationDto, String> getJobIdPropertyAccessor()  {
+		return jobId_pa;
+	}
+
+
 	public OutcomeDto getLastOutcome()  {
 		if(! isDtoProxy()){
 			return this.lastOutcome;
@@ -760,6 +845,8 @@ public class JobFilterConfigurationDto extends RsDto implements JobFilterCriteri
 		this.executionStatus_m = false;
 		this.inActive = false;
 		this.inActive_m = false;
+		this.jobId = null;
+		this.jobId_m = false;
 		this.lastOutcome = null;
 		this.lastOutcome_m = false;
 		this.limit = 0;
@@ -782,6 +869,8 @@ public class JobFilterConfigurationDto extends RsDto implements JobFilterCriteri
 			return true;
 		if(inActive_m)
 			return true;
+		if(jobId_m)
+			return true;
 		if(lastOutcome_m)
 			return true;
 		if(limit_m)
@@ -801,6 +890,7 @@ public class JobFilterConfigurationDto extends RsDto implements JobFilterCriteri
 		list.add(active_pa);
 		list.add(executionStatus_pa);
 		list.add(inActive_pa);
+		list.add(jobId_pa);
 		list.add(lastOutcome_pa);
 		list.add(limit_pa);
 		list.add(offset_pa);
@@ -818,6 +908,8 @@ public class JobFilterConfigurationDto extends RsDto implements JobFilterCriteri
 			list.add(executionStatus_pa);
 		if(inActive_m)
 			list.add(inActive_pa);
+		if(jobId_m)
+			list.add(jobId_pa);
 		if(lastOutcome_m)
 			list.add(lastOutcome_pa);
 		if(limit_m)
@@ -838,6 +930,7 @@ public class JobFilterConfigurationDto extends RsDto implements JobFilterCriteri
 			list.add(active_pa);
 			list.add(executionStatus_pa);
 			list.add(inActive_pa);
+			list.add(jobId_pa);
 			list.add(lastOutcome_pa);
 			list.add(limit_pa);
 			list.add(offset_pa);

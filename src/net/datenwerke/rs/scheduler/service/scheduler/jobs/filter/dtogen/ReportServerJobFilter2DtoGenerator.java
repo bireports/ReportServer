@@ -100,6 +100,9 @@ public class ReportServerJobFilter2DtoGenerator implements Poso2DtoGenerator<Rep
 			/*  set inActive */
 			dto.setInActive(poso.isInActive() );
 
+			/*  set jobId */
+			dto.setJobId(StringEscapeUtils.escapeXml(StringUtils.left(poso.getJobId(),8192)));
+
 			/*  set lastOutcome */
 			Object tmpDtoOutcomeDtogetLastOutcome = dtoServiceProvider.get().createDto(poso.getLastOutcome(), referenced, referenced);
 			dto.setLastOutcome((OutcomeDto)tmpDtoOutcomeDtogetLastOutcome);
@@ -127,6 +130,9 @@ public class ReportServerJobFilter2DtoGenerator implements Poso2DtoGenerator<Rep
 						dto.setOrder((OrderDto)refDto);
 				}
 			});
+
+			/*  set reportId */
+			dto.setReportId(StringEscapeUtils.escapeXml(StringUtils.left(poso.getReportId(),8192)));
 
 			/*  set reports */
 			Set<Long> col_reports = new HashSet<Long>();

@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 
 import net.datenwerke.gf.client.administration.AdministrationUIService;
+import net.datenwerke.gf.client.login.LoginService;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.waitonevent.SynchronousCallbackOnEventTrigger;
 import net.datenwerke.gxtdto.client.waitonevent.WaitOnEventTicket;
@@ -86,7 +87,7 @@ public class RSParametersUIStartup implements ParameterProviderHook{
 		parameters.add(headline);
 		parameters.add(separator);
 		
-		waitOnEventService.callbackOnEvent(AdministrationUIService.REPORTSERVER_EVENT_HAS_ADMIN_RIGHTS, new SynchronousCallbackOnEventTrigger(){
+		waitOnEventService.callbackOnEvent(LoginService.REPORTSERVER_EVENT_AFTER_INITIAL_LOGIN, new SynchronousCallbackOnEventTrigger(){
 			public void execute(final WaitOnEventTicket ticket) {
 				waitOnEventService.signalProcessingDone(ticket);
 				dsParamDao.allowDatasourceParameterPostProcessing(new RsAsyncCallback<Boolean>(){

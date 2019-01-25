@@ -36,6 +36,7 @@ public class Dadget__ implements net.datenwerke.entityservices.metadatagenerator
 	public static final String height = "height";
 	public static final String id = "id";
 	public static final String n = "n";
+	public static final String parameterInstances = "parameterInstances";
 	public static final String reloadInterval = "reloadInterval";
 	public static final String serialVersionUID = "serialVersionUID";
 	public static final String version = "version";

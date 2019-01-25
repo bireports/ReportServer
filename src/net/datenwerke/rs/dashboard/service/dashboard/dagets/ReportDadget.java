@@ -75,12 +75,6 @@ public class ReportDadget extends Dadget {
 	@Type(type = "net.datenwerke.rs.utils.hibernate.RsClobType")
 	private String config;
 	
-	@JoinTable(name="DADGET_REPORT_2_PARAM_INST")
-	@ExposeToClient
-	@EnclosedEntity
-    @OneToMany(cascade={CascadeType.ALL}, orphanRemoval=true)
-    private Set<ParameterInstance> parameterInstances = new HashSet<ParameterInstance>();
-	
 	public void setReport(Report report) {
 		this.report = report;
 		if(null != report)
@@ -107,18 +101,6 @@ public class ReportDadget extends Dadget {
 
 	public void setConfig(String config) {
 		this.config = config;
-	}
-
-	public Set<ParameterInstance> getParameterInstances() {
-		return parameterInstances;
-	}
-
-	public void setParameterInstances(Set<ParameterInstance> parameterInstances) {
-		if(null == parameterInstances)
-			parameterInstances = new HashSet<ParameterInstance>();
-			
-		this.parameterInstances.clear();
-		this.parameterInstances.addAll(parameterInstances);
 	}
 
 }

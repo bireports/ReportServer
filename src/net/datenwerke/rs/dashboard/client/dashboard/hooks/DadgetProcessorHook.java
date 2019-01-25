@@ -60,4 +60,8 @@ public interface DadgetProcessorHook extends Hook {
 	public void addTools(DadgetPanel dadgetPanel);
 
 	public boolean isRedrawOnMove();
+
+	public boolean supportsDadgetLibrary();
+
+	public boolean readyToDisplayParameters(DadgetPanel dadgetPanel);
 }

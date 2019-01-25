@@ -43,6 +43,7 @@ import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
 import net.datenwerke.rs.core.service.reportserver.ReportServerService;
 import net.datenwerke.rs.reportdoc.service.ReportDocumentationService;
 import net.datenwerke.rs.utils.filename.FileNameService;
+import net.datenwerke.rs.utils.misc.HttpUtils;
 import net.datenwerke.security.server.SecuredHttpServlet;
 import net.datenwerke.security.service.security.SecurityService;
 import net.datenwerke.security.service.security.exceptions.ViolatedSecurityException;
@@ -68,7 +69,7 @@ public class ReportDocumentationServlet extends SecuredHttpServlet {
 	private final Provider<SecurityService> securityServiceProvider;
 	private final Provider<ReportService> reportServiceProvider;
 	private final Provider<ReportServerService> reportServerServiceProvider;
-	private final Provider<FileNameService> fileNameServiceProvider;
+	private final Provider<HttpUtils> httpUtilsProvider;
 	
 	@Inject
 	public ReportDocumentationServlet(
@@ -76,14 +77,14 @@ public class ReportDocumentationServlet extends SecuredHttpServlet {
 		Provider<SecurityService> securityServiceProvider,
 		Provider<ReportService> reportServiceProvider,
 		Provider<ReportServerService> reportServerServiceProvider,
-		Provider<FileNameService> fileNameServiceProvider
+		Provider<HttpUtils> httpUtilsProvider
 		) {
 		super();
 		this.documentationServiceProvider = documentationServiceProvider;
 		this.securityServiceProvider = securityServiceProvider;
 		this.reportServiceProvider = reportServiceProvider;
 		this.reportServerServiceProvider = reportServerServiceProvider;
-		this.fileNameServiceProvider = fileNameServiceProvider;
+		this.httpUtilsProvider = httpUtilsProvider;
 	}
 
 
@@ -208,8 +209,7 @@ public class ReportDocumentationServlet extends SecuredHttpServlet {
 	protected void output(HttpServletRequest request, HttpServletResponse response,  CompiledReport compiledReport, String name) throws IOException {
 		/* output file name */
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-		String fileName = dateFormat.format(Calendar.getInstance().getTime()) + "_";
-		fileName += fileNameServiceProvider.get().sanitizeFileName(name);
+		String fileName = dateFormat.format(Calendar.getInstance().getTime()) + "_" + name;
 
 		/* set mime type */
 		response.setContentType(compiledReport.getMimeType());
@@ -222,9 +222,9 @@ public class ReportDocumentationServlet extends SecuredHttpServlet {
 		/* set header and encoding */
 		fileName += "." + compiledReport.getFileExtension();
 		
-		String cd = "true".equals(request.getParameter(PROPERTY_DOWNLOAD)) ? "attachment" : "inline";
+		boolean download = "true".equals(request.getParameter(PROPERTY_DOWNLOAD));
 		
-		response.setHeader("Content-Disposition", cd + "; filename=\"" + fileName  +"\""); 
+		response.setHeader(HttpUtils.CONTENT_DISPOSITION, httpUtilsProvider.get().makeContentDispositionHeader(download, fileName));
 
 		if(compiledReport.isStringReport()){
 			/* get charset */

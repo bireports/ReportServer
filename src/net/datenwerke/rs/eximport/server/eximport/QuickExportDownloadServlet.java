@@ -32,20 +32,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
+
 import net.datenwerke.rs.eximport.service.eximport.ex.http.HttpExportService;
 import net.datenwerke.rs.eximport.service.genrights.ExportSecurityTarget;
-import net.datenwerke.rs.utils.filename.FileNameService;
+import net.datenwerke.rs.utils.misc.HttpUtils;
 import net.datenwerke.rs.utils.zip.ZipUtilsService;
 import net.datenwerke.security.server.SecuredHttpServlet;
 import net.datenwerke.security.service.authenticator.AuthenticatorService;
 import net.datenwerke.security.service.security.SecurityService;
 import net.datenwerke.security.service.security.exceptions.ViolatedSecurityException;
 import net.datenwerke.security.service.security.rights.Execute;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
 
 /**
  * 
@@ -63,7 +63,8 @@ public class QuickExportDownloadServlet extends SecuredHttpServlet {
 	private final Provider<SecurityService> securityServiceProvider;
 	private final Provider<HttpExportService> httpExportServiceProvider;
 	private final Provider<ZipUtilsService> zipServiceProvider;
-	private final Provider<FileNameService> fileNameServiceProvider;
+	private final Provider<HttpUtils> httpUtilsProvider;
+
 	
 	@Inject
 	public QuickExportDownloadServlet(
@@ -71,7 +72,7 @@ public class QuickExportDownloadServlet extends SecuredHttpServlet {
 		Provider<SecurityService> securityServiceProvider,
 		Provider<HttpExportService> httpExportServiceProvider,
 		Provider<ZipUtilsService> zipServiceProvider,
-		Provider<FileNameService> fileNameServiceProvider
+		Provider<HttpUtils> httpUtilsProvider
 		){
 	
 		/* store objects */
@@ -79,7 +80,7 @@ public class QuickExportDownloadServlet extends SecuredHttpServlet {
 		this.securityServiceProvider = securityServiceProvider;
 		this.httpExportServiceProvider = httpExportServiceProvider;
 		this.zipServiceProvider = zipServiceProvider;
-		this.fileNameServiceProvider = fileNameServiceProvider;
+		this.httpUtilsProvider = httpUtilsProvider;
 	}
 	
 	@Override
@@ -96,8 +97,8 @@ public class QuickExportDownloadServlet extends SecuredHttpServlet {
 		response.setContentType("application/octet-stream"); //$NON-NLS-1$
 		response.setHeader("Cache-Control", "no-cache"); //$NON-NLS-1$ //$NON-NLS-2$
 		String exName = new SimpleDateFormat("yyyyMMdd-hhmm").format(Calendar.getInstance().getTime()) + "-export-" + name + ".zip";
-		exName = fileNameServiceProvider.get().sanitizeFileName(exName);
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + exName + "\""); //$NON-NLS-1$ 
+		
+		response.setHeader(HttpUtils.CONTENT_DISPOSITION, httpUtilsProvider.get().makeContentDispositionHeader(true, exName));
 		
 		/* zip */
 		ZipUtilsService zipUtils = zipServiceProvider.get();

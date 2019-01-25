@@ -63,16 +63,19 @@ public class BoneCpPoolServiceImpl extends DbPoolServiceImpl<BoneCP> implements 
 	
 	private final EntityDiffService entityDiffService;
 	private Boolean enableStatistics;
+	private final JdbcService jdbcService;
 	
 	@Inject
 	public BoneCpPoolServiceImpl(
 		EntityDiffService entityDiffService,
-		Provider<BoneCpConnectionHook> connectionHookProvider
+		Provider<BoneCpConnectionHook> connectionHookProvider,
+		JdbcService jdbcService
 		){
 	
 		/* store objects */
 		this.entityDiffService = entityDiffService;
 		this.connectionHookProvider = connectionHookProvider;
+		this.jdbcService = jdbcService;
 	}
 
 	@Override
@@ -225,7 +228,7 @@ public class BoneCpPoolServiceImpl extends DbPoolServiceImpl<BoneCP> implements 
 		
 		boneConfig.setUsername(config.getUsername());
 		boneConfig.setPassword(config.getPassword());
-		boneConfig.setJdbcUrl(config.getJdbcUrl());
+		boneConfig.setJdbcUrl(jdbcService.adaptJdbcUrl(config.getJdbcUrl()));
 		
 		boneConfig.setConnectionHook(connectionHookProvider.get());
 		
@@ -283,7 +286,7 @@ public class BoneCpPoolServiceImpl extends DbPoolServiceImpl<BoneCP> implements 
 				/* create connection */
 				try {
 					conn = DriverManager.getConnection(
-					         config.getJdbcUrl(),
+							 jdbcService.adaptJdbcUrl(config.getJdbcUrl()),
 					         config.getUsername(),
 					         config.getPassword() );
 					

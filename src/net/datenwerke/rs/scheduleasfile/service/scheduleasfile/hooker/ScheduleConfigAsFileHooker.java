@@ -119,7 +119,7 @@ public class ScheduleConfigAsFileHooker implements ScheduleConfigProviderHook {
 		if(! teamSpaceService.hasRole(teamSpace, TeamSpaceRole.USER))
 			throw new IllegalArgumentException("Insufficient TeamSpace rights");
 		
-		if(! (node instanceof TsDiskFolder) && !(node instanceof TsDiskRoot))
+		if(null != node && ! (node instanceof TsDiskFolder) && !(node instanceof TsDiskRoot))
 			throw new IllegalArgumentException("Expected Folder or Root.");
 		
 		info.setFolder((AbstractTsDiskNodeDto) dtoService.createDto(node));

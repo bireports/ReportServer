@@ -23,6 +23,18 @@
  
 package net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.hookers.actionlog;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.form.TextArea;
+import com.sencha.gxt.widget.core.client.grid.Grid;
+
+import net.datenwerke.gxtdto.client.baseex.widget.DwContentPanel;
 import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
 import net.datenwerke.gxtdto.client.ui.helper.grid.keyvalue.KeyValueGridHelper;
 import net.datenwerke.gxtdto.client.ui.helper.grid.keyvalue.KeyValueProperty;
@@ -32,15 +44,6 @@ import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.Scheduled
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.hooks.ActionLogEntryDetailHook;
 import net.datenwerke.scheduler.client.scheduler.dto.OutcomeDto;
 import net.datenwerke.scheduler.client.scheduler.dto.history.ActionEntryDto;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.form.TextArea;
-import com.sencha.gxt.widget.core.client.grid.Grid;
 
 public class GenericActionLogEntryDetailHooker implements ActionLogEntryDetailHook {
 
@@ -78,8 +81,16 @@ public class GenericActionLogEntryDetailHooker implements ActionLogEntryDetailHo
 		
 		Grid<KeyValueProperty> grid = gridHelper.create(store);
 		
-		panel.add(scheduledReportListPanel.createLabel(SchedulerMessages.INSTANCE.executionActionLogEntryLabel()));
-		panel.add(grid, new MarginData(5));
+		DwContentPanel executionActionLogPanel = new DwContentPanel();
+		executionActionLogPanel.setLightDarkStyle();
+		executionActionLogPanel.setHeadingText(SchedulerMessages.INSTANCE.executionActionLogEntryLabel());
+		
+		VerticalLayoutContainer executionActionLogWrapper = new VerticalLayoutContainer();
+		executionActionLogPanel.add(executionActionLogWrapper);
+		
+		panel.add(executionActionLogPanel);
+		
+		executionActionLogWrapper.add(grid, new VerticalLayoutData(1,-1));
 		
 		if(OutcomeDto.FAILURE == action.getOutcome()){
 			TextArea area = new TextArea();
@@ -87,8 +98,8 @@ public class GenericActionLogEntryDetailHooker implements ActionLogEntryDetailHo
 			area.setHeight(300);
 			area.setValue(action.getErrorDescription());
 			
-			panel.add(scheduledReportListPanel.createLabel(SchedulerMessages.INSTANCE.errorDescriptionLabel()));
-			panel.add(area, new MarginData(5));
+			executionActionLogWrapper.add(scheduledReportListPanel.createLabel(SchedulerMessages.INSTANCE.errorDescriptionLabel()), new VerticalLayoutData(1,-1, new Margins(5,0,0,0)));
+			executionActionLogWrapper.add(area, new VerticalLayoutData(1,-1));
 		}
 		
 		return panel;

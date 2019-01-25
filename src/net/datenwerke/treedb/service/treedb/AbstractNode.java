@@ -578,6 +578,10 @@ public abstract class AbstractNode<N extends AbstractNode<N>> implements Seriali
 	public Long getOldTransientId() {
 		return oldTransientId;
 	}
+	
+	public Long getIdOrOldTransient(){
+		return null != id ? id : oldTransientId;
+	}
 
 	public void setFlags(long flags) {
 		this.flags = flags;
@@ -630,4 +634,22 @@ public abstract class AbstractNode<N extends AbstractNode<N>> implements Seriali
 	abstract public String getNodeName();
 
 	abstract public String getRootNodeName();
+	
+	public boolean idsMatch(AbstractNode<?> node){
+		if(null == node)
+			return false;
+		
+		if (getClass() != node.getClass())
+			return false;
+		
+		Long id = getIdOrOldTransient();
+		Long otherId = node.getIdOrOldTransient();
+		
+		if(null != id && ! id.equals(otherId))
+			return false;
+		if(null == id && null != otherId)
+			return false;
+		
+		return true;
+	}
 }

@@ -25,9 +25,12 @@ package net.datenwerke.dbpool;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyVetoException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.sql.Wrapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -41,18 +44,25 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 
-import net.datenwerke.dbpool.config.ConnectionConfig;
-import net.datenwerke.dbpool.config.ConnectionPoolConfig;
-import net.datenwerke.dbpool.config.predefined.StandardConnectionConfig;
-import net.datenwerke.dbpool.exceptions.DriverNotFoundException;
-import net.datenwerke.dbpool.hooks.C3p0ConnectionHook;
-import net.datenwerke.rs.utils.entitydiff.EntityDiffService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.reflect.AbstractInvocationHandler;
 import com.google.inject.Inject;
 import com.mchange.v2.beans.BeansUtils;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.cfg.C3P0Config;
 import com.mchange.v2.log.MLevel;
+
+import net.datenwerke.dbpool.config.ConnectionConfig;
+import net.datenwerke.dbpool.config.ConnectionPoolConfig;
+import net.datenwerke.dbpool.config.predefined.StandardConnectionConfig;
+import net.datenwerke.dbpool.exceptions.DriverNotFoundException;
+import net.datenwerke.dbpool.hooks.C3p0ConnectionHook;
+import net.datenwerke.dbpool.proxy.ConnectionPoolAware;
+import net.datenwerke.dbpool.proxy.ProxiedConnectionHandler;
+import net.datenwerke.rs.utils.config.ConfigService;
+import net.datenwerke.rs.utils.entitydiff.EntityDiffService;
 
 /**
  * Implementation of {@link DbPoolService} using C3P0 as connection pool.
@@ -60,6 +70,8 @@ import com.mchange.v2.log.MLevel;
  *
  */
 public class DbC3p0PoolServiceImpl extends DbPoolServiceImpl<ComboPooledDataSource> implements DbPoolService<ComboPooledDataSource> {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 	
 	private Map<ConnectionPoolConfig, ComboPooledDataSource> poolMap = new ConcurrentHashMap<ConnectionPoolConfig, ComboPooledDataSource>();
 	private Map<ConnectionPoolConfig, ConnectionPoolConfig> configMap = new ConcurrentHashMap<ConnectionPoolConfig, ConnectionPoolConfig>();
@@ -67,14 +79,20 @@ public class DbC3p0PoolServiceImpl extends DbPoolServiceImpl<ComboPooledDataSour
 	private Map<ConnectionPoolConfig, ReentrantLock> lockMap = new ConcurrentHashMap<ConnectionPoolConfig, ReentrantLock>();
 	
 	private final EntityDiffService entityDiffService;
+	private final ConfigService configService;
+	private final JdbcService jdbcService;
 	
 	@Inject
 	public DbC3p0PoolServiceImpl(
-		EntityDiffService entityDiffService
+		EntityDiffService entityDiffService,
+		ConfigService configService,
+		JdbcService jdbcService
 		){
 	
 		/* store objects */
 		this.entityDiffService = entityDiffService;
+		this.configService = configService;
+		this.jdbcService = jdbcService;
 	}
 
 	@Override
@@ -121,7 +139,7 @@ public class DbC3p0PoolServiceImpl extends DbPoolServiceImpl<ComboPooledDataSour
 		}
 	}
 	
-	protected Future<Connection> getConnectionFromPool(ConnectionPoolConfig poolConfig, final ConnectionConfig connConfig) throws SQLException {
+	protected Future<Connection> getConnectionFromPool(final ConnectionPoolConfig poolConfig, final ConnectionConfig connConfig) throws SQLException {
 		ReentrantLock lock;
 		synchronized (DbC3p0PoolServiceImpl.class) {
 			if(! lockMap.containsKey(poolConfig))
@@ -167,11 +185,25 @@ public class DbC3p0PoolServiceImpl extends DbPoolServiceImpl<ComboPooledDataSour
 						return null;
 					
 					try {
-						Connection connection = pool.getConnection();
+						final Connection connection = pool.getConnection();
 						configureConnection(connection, connConfig);
 						
 						done = true;
-						return connection;
+						
+						boolean useProxy = true;
+						try{
+							/* for test purposes .. remove after next release */
+							useProxy = configService.getConfigFailsafe(DbPoolModule.CONFIG_FILE).getBoolean("pool.connection.proxy.enable", true);
+						} catch(Exception e){
+							logger.warn("Could not read pool config", e);
+						}
+						
+						if(! useProxy)
+							return connection;
+						
+						return (Connection) Proxy.newProxyInstance(connection.getClass().getClassLoader(), 
+								new Class[]{Connection.class, Wrapper.class, ConnectionPoolAware.class}, 
+								new ProxiedConnectionHandler(connection, poolConfig)); 
 					} catch (SQLException e) {
 						Throwable lastFailure;
 						try {
@@ -244,7 +276,7 @@ public class DbC3p0PoolServiceImpl extends DbPoolServiceImpl<ComboPooledDataSour
 		}
 		pool.setUser(config.getUsername());
 		pool.setPassword(config.getPassword());
-		pool.setJdbcUrl(config.getJdbcUrl());
+		pool.setJdbcUrl(jdbcService.adaptJdbcUrl(config.getJdbcUrl()));
 
 		pool.setConnectionCustomizerClassName(C3p0ConnectionHook.class.getName());
 		

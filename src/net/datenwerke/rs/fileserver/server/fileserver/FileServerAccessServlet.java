@@ -47,6 +47,7 @@ import net.datenwerke.rs.fileserver.service.fileserver.entities.AbstractFileServ
 import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFile;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFolder;
 import net.datenwerke.rs.utils.filename.FileNameService;
+import net.datenwerke.rs.utils.misc.HttpUtils;
 import net.datenwerke.rs.utils.zip.ZipUtilsService;
 import net.datenwerke.rs.utils.zip.ZipUtilsService.FileFilter;
 import net.datenwerke.security.server.SecuredHttpServlet;
@@ -79,7 +80,7 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 	private final Provider<FileServerService> fileServerService;
 	private final Provider<AuthenticatorService> authenticatorServiceProvider;
 	private final Provider<ZipUtilsService> zipServiceProvider;
-	private final Provider<FileNameService> fileNameServiceProvider;
+	private final Provider<HttpUtils> httpUtilsProvider;
 
 	
 	@Inject
@@ -87,8 +88,8 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 		Provider<SecurityService> securityServiceProvider,
 		Provider<FileServerService> fileServerService, 
 		Provider<AuthenticatorService> authenticatorServiceProvider,
-		Provider<ZipUtilsService> zipServiceProvider,
-		Provider<FileNameService> fileNameServiceProvider
+		Provider<ZipUtilsService> zipServiceProvider, 
+		Provider<HttpUtils> httpUtilsProvider
 		){
 		
 		/* store objects */
@@ -96,7 +97,7 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 		this.fileServerService = fileServerService;
 		this.authenticatorServiceProvider = authenticatorServiceProvider;
 		this.zipServiceProvider = zipServiceProvider;
-		this.fileNameServiceProvider = fileNameServiceProvider;
+		this.httpUtilsProvider = httpUtilsProvider;
 	}
 	
 	@Override
@@ -165,7 +166,7 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 		validateAccess(folder, request, response);
 		
 		response.setContentType("application/zip");
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileNameServiceProvider.get().sanitizeFileName(folder.getName()) + ".zip\"");
+		response.setHeader(HttpUtils.CONTENT_DISPOSITION, httpUtilsProvider.get().makeContentDispositionHeader(true, folder.getName() + ".zip"));
 		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 		response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
 		response.setDateHeader("Expires", 0); // Proxies.
@@ -212,11 +213,11 @@ public class FileServerAccessServlet extends SecuredHttpServlet {
 		
 		String content = file.getContentType()  == null ? "" : file.getContentType().toLowerCase();
 		if(null != request.getParameter(KEY_DOWNLOAD)){
-			String cd = "attachment";
+			boolean download = true;
 			if(!"true".equals(request.getParameter(KEY_DOWNLOAD)))
-				cd = " inline";
+				download = false;
 
-			response.setHeader("Content-Disposition", cd + "; filename=\"" + fileNameServiceProvider.get().sanitizeFileName(file.getName()) + "\"");
+			response.setHeader(HttpUtils.CONTENT_DISPOSITION, httpUtilsProvider.get().makeContentDispositionHeader(download, file.getName()));
 		}
 		
 		if("image/png".equals(content) || "image/jpeg".equals(content))

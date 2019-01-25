@@ -84,7 +84,7 @@ public class DadgetNodeForm extends SimpleFormView {
 						map = new HashMap<String, DadgetDto>();
 					
 						for(DadgetProcessorHook processor : hookHandler.getHookers(DadgetProcessorHook.class)){
-							if(! (processor instanceof LibraryDadgetProcessor) )
+							if(processor.supportsDadgetLibrary())
 								map.put(processor.getTitle(), processor.instantiateDadget());
 						}
 					}

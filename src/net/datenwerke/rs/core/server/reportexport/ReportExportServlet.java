@@ -82,8 +82,7 @@ import net.datenwerke.rs.core.service.reportmanager.parameters.ParameterSetFacto
 import net.datenwerke.rs.core.service.reportserver.ReportServerService;
 import net.datenwerke.rs.utils.config.ConfigService;
 import net.datenwerke.rs.utils.exception.ExceptionServices;
-import net.datenwerke.rs.utils.filename.FileNameService;
-import net.datenwerke.rs.utils.filename.hooks.FileNameSanitizerHook;
+import net.datenwerke.rs.utils.misc.HttpUtils;
 import net.datenwerke.security.server.SecuredHttpServlet;
 import net.datenwerke.security.service.authenticator.AuthenticatorService;
 import net.datenwerke.security.service.security.SecurityService;
@@ -124,7 +123,7 @@ public class ReportExportServlet extends SecuredHttpServlet{
 	protected final Provider<ExceptionServices> exceptionServices;
 	protected final Provider<ConfigService> configService;
 	protected final Provider<ReportSessionCache> sessionCacheProvider;
-	protected final Provider<FileNameService> fileNameServiceProvider; 
+	protected final Provider<HttpUtils> httpUtilsProvider; 
 
 
 	@Inject
@@ -141,7 +140,7 @@ public class ReportExportServlet extends SecuredHttpServlet{
 		Provider<ExceptionServices> exceptionServices, 
 		Provider<ConfigService> configService,
 		Provider<ReportSessionCache> sessionCacheProvider,
-		Provider<FileNameService> fileNameServiceProvider
+		Provider<HttpUtils> httpUtilsProvider
 		) {
 		
 		super();
@@ -157,7 +156,7 @@ public class ReportExportServlet extends SecuredHttpServlet{
 		this.exceptionServices = exceptionServices;
 		this.configService = configService;
 		this.sessionCacheProvider = sessionCacheProvider;
-		this.fileNameServiceProvider = fileNameServiceProvider;
+		this.httpUtilsProvider = httpUtilsProvider;
 	}
 
 	protected void validateRequest(Report report, Report adjustedReport, HttpServletRequest req) {
@@ -511,21 +510,12 @@ public class ReportExportServlet extends SecuredHttpServlet{
 	private void sendHeaders(HttpServletResponse resp, HttpServletRequest request, String baseFilename, String mimetype, String extension, boolean isStringRprt, boolean download) {
 		/* output file name */
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-		String fileName = dateFormat.format(Calendar.getInstance().getTime()) + "_";
-		fileName += fileNameServiceProvider.get().sanitizeFileName(baseFilename); 
+		String fileName = dateFormat.format(Calendar.getInstance().getTime()) + "_" + baseFilename + "." + extension;
 
-		/* set mime type */
 		resp.setContentType(mimetype);
-
-		/* set header and encoding */
-		fileName += "."+ extension;
-		
-		String cd = download ? "attachment" : "inline";
-		
-		resp.setHeader("Content-Disposition", cd + "; filename=\"" + fileName  +"\""); 
+		resp.setHeader(HttpUtils.CONTENT_DISPOSITION, httpUtilsProvider.get().makeContentDispositionHeader(download, fileName));
 
 		if(isStringRprt){
-			/* get charset */
 			String charset = reportServerService.get().getCharset();
 			resp.setCharacterEncoding(charset); 
 			
@@ -580,7 +570,7 @@ public class ReportExportServlet extends SecuredHttpServlet{
 			reportName = (((Report)report.getParent()).getName() + " - " + report.getName());
 		}
 		
-		return fileNameServiceProvider.get().sanitizeFileName(reportName);
+		return reportName;
 	}
 
 	private boolean isValidBackLink(HttpServletRequest req, String backlinkId) {

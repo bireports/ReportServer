@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Widget;
@@ -40,6 +41,7 @@ import net.datenwerke.gxtdto.client.forms.simpleform.conditions.SimpleFormCondit
 import net.datenwerke.gxtdto.client.forms.simpleform.hooks.FormFieldProviderHook;
 import net.datenwerke.gxtdto.client.forms.simpleform.providers.configs.lists.SFFCFancyStaticList;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
+import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.core.client.reportexecutor.ReportExecutorDao;
 import net.datenwerke.rs.core.client.reportexecutor.ReportExecutorUIService;
 import net.datenwerke.rs.core.client.reportexecutor.ui.ReportExecutorMainPanelView;
@@ -173,7 +175,7 @@ public abstract class ReportDadgetDefaultExportHooker implements ReportDadgetExp
 
 	@Override
 	public void displayReport(final ReportDadgetDto rDadget, ReportDto report,
-			final DadgetPanel panel) {
+			final DadgetPanel panel, final Set<ParameterInstanceDto> parameterInstances) {
 		final String config = rDadget.getConfig();
 		if(null == config)
 			return;
@@ -185,8 +187,8 @@ public abstract class ReportDadgetDefaultExportHooker implements ReportDadgetExp
 				panel.unmask();
 				
 				/* use dadget parameter instances */
-				if(null != rDadget.getParameterInstances() && !rDadget.getParameterInstances().isEmpty())
-					result.setParameterInstances(rDadget.getParameterInstances());
+				if(null != parameterInstances && !parameterInstances.isEmpty())
+					result.setParameterInstances(parameterInstances);
 				
 				if(FULL.equals(config) ) {
 					Component executeReportComponent = reportExecutorService.getExecuteReportComponent(result);
@@ -216,8 +218,8 @@ public abstract class ReportDadgetDefaultExportHooker implements ReportDadgetExp
 					final String exportToken = generateOrObtainExportToken(result);
 					
 					/* use dadget parameter instances */
-					if(null != rDadget.getParameterInstances() && !rDadget.getParameterInstances().isEmpty())
-						result.setParameterInstances(rDadget.getParameterInstances());
+					if(null != parameterInstances && !parameterInstances.isEmpty())
+						result.setParameterInstances(parameterInstances);
 					
 					reportExporterDao.storeInSessionForExport(result, exportToken, null != config ? config.toUpperCase() : config, new RsAsyncCallback<Void>(){
 						@Override

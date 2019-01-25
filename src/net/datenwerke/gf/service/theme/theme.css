@@ -516,14 +516,20 @@ div.rs-tp-scroll-br {
 	color: #999999 /*col:icon.light*/ !important;
 }
 
+.rs-paramview-w .rs-sf .rs-cp-body .rs-cp-content  {
+	padding: 0px !important;
+}
+
 .rs-paramview-l {
 	margin-right: 20px;
+	padding-top: 4px;
 }
  
 .rs-paramview-b {
 	margin-right: 4px;
 	color: #3E4059 /*col:hl.dark.bg*/ !important;
 	cursor: pointer;
+	padding-top: 4px;
 }
 
 .rs-paramview-b:hover {
@@ -1329,6 +1335,10 @@ table.rs-terminal-tab tr.rs-terminal-tab-odd {
 
 .rs-scheduler-series label {
 	padding-right: 3px !important;
+}
+
+.schedule-detail-label {
+	font-size: 13px;
 }
 
 /* column filter */

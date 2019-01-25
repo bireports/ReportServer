@@ -26,7 +26,6 @@ package net.datenwerke.rs.dashboard.client.dashboard.dto;
 import com.google.gwt.core.client.GWT;
 import java.lang.String;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
@@ -34,13 +33,10 @@ import net.datenwerke.gxtdto.client.dtomanager.Dto2PosoMapper;
 import net.datenwerke.gxtdto.client.dtomanager.Dto;
 import net.datenwerke.gxtdto.client.dtomanager.DtoView;
 import net.datenwerke.gxtdto.client.dtomanager.PropertyAccessor;
-import net.datenwerke.gxtdto.client.dtomanager.dtomod.collections.ChangeMonitoredSet;
-import net.datenwerke.gxtdto.client.dtomanager.dtomod.collections.MonitoredCollection;
 import net.datenwerke.gxtdto.client.dtomanager.redoundo.ChangeTracker;
 import net.datenwerke.gxtdto.client.eventbus.events.ObjectChangedEvent;
 import net.datenwerke.gxtdto.client.eventbus.handlers.ObjectChangedEventHandler;
 import net.datenwerke.gxtdto.client.eventbus.handlers.has.HasObjectChangedEventHandler;
-import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.decorator.DadgetDtoDec;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.pa.ReportDadgetDtoPA;
@@ -94,42 +90,6 @@ abstract public class ReportDadgetDto extends DadgetDtoDec {
 		@Override
 		public boolean isModified(ReportDadgetDto container) {
 			return container.isConfigModified();
-		}
-	};
-
-	private Set<ParameterInstanceDto> parameterInstances;
-	private  boolean parameterInstances_m;
-	public static final String PROPERTY_PARAMETER_INSTANCES = "dpi-reportdadget-parameterinstances";
-
-	private transient static PropertyAccessor<ReportDadgetDto, Set<ParameterInstanceDto>> parameterInstances_pa = new PropertyAccessor<ReportDadgetDto, Set<ParameterInstanceDto>>() {
-		@Override
-		public void setValue(ReportDadgetDto container, Set<ParameterInstanceDto> object) {
-			container.setParameterInstances(object);
-		}
-
-		@Override
-		public Set<ParameterInstanceDto> getValue(ReportDadgetDto container) {
-			return container.getParameterInstances();
-		}
-
-		@Override
-		public Class<?> getType() {
-			return Set.class;
-		}
-
-		@Override
-		public String getPath() {
-			return "parameterInstances";
-		}
-
-		@Override
-		public void setModified(ReportDadgetDto container, boolean modified) {
-			container.parameterInstances_m = modified;
-		}
-
-		@Override
-		public boolean isModified(ReportDadgetDto container) {
-			return container.isParameterInstancesModified();
 		}
 	};
 
@@ -256,70 +216,6 @@ abstract public class ReportDadgetDto extends DadgetDtoDec {
 
 	public static PropertyAccessor<ReportDadgetDto, String> getConfigPropertyAccessor()  {
 		return config_pa;
-	}
-
-
-	public Set<ParameterInstanceDto> getParameterInstances()  {
-		if(! isDtoProxy()){
-			Set<ParameterInstanceDto> _currentValue = this.parameterInstances;
-			if(null == _currentValue)
-				this.parameterInstances = new HashSet<ParameterInstanceDto>();
-
-			return this.parameterInstances;
-		}
-
-		if(isParameterInstancesModified())
-			return this.parameterInstances;
-
-		if(! GWT.isClient())
-			return null;
-
-		Set<ParameterInstanceDto> _value = dtoManager.getProperty(this, instantiatePropertyAccess().parameterInstances());
-
-		_value = new ChangeMonitoredSet<ParameterInstanceDto>(_value);
-		if(_value instanceof HasObjectChangedEventHandler){
-			((HasObjectChangedEventHandler)_value).addObjectChangedHandler(new net.datenwerke.gxtdto.client.eventbus.handlers.ObjectChangedEventHandler(){
-				@Override
-				public void onObjectChangedEvent(net.datenwerke.gxtdto.client.eventbus.events.ObjectChangedEvent event){
-					if(! isParameterInstancesModified())
-						setParameterInstances((Set<ParameterInstanceDto>) ((MonitoredCollection) event.getObject()).getUnderlyingCollection());
-				}
-			}
-			);
-		}
-		return _value;
-	}
-
-
-	public void setParameterInstances(Set<ParameterInstanceDto> parameterInstances)  {
-		/* old value */
-		Set<ParameterInstanceDto> oldValue = null;
-		if(GWT.isClient())
-			oldValue = getParameterInstances();
-
-		/* set new value */
-		this.parameterInstances = parameterInstances;
-
-		if(! GWT.isClient())
-			return;
-
-		if(isTrackChanges())
-			addChange(new ChangeTracker(parameterInstances_pa, oldValue, parameterInstances, this.parameterInstances_m));
-
-		/* set indicator */
-		this.parameterInstances_m = true;
-
-		this.fireObjectChangedEvent(ReportDadgetDtoPA.INSTANCE.parameterInstances(), oldValue);
-	}
-
-
-	public boolean isParameterInstancesModified()  {
-		return parameterInstances_m;
-	}
-
-
-	public static PropertyAccessor<ReportDadgetDto, Set<ParameterInstanceDto>> getParameterInstancesPropertyAccessor()  {
-		return parameterInstances_pa;
 	}
 
 
@@ -474,8 +370,6 @@ abstract public class ReportDadgetDto extends DadgetDtoDec {
 	public void clearModified()  {
 		this.config = null;
 		this.config_m = false;
-		this.parameterInstances = null;
-		this.parameterInstances_m = false;
 		this.report = null;
 		this.report_m = false;
 		this.reportReference = null;
@@ -488,8 +382,6 @@ abstract public class ReportDadgetDto extends DadgetDtoDec {
 			return true;
 		if(config_m)
 			return true;
-		if(parameterInstances_m)
-			return true;
 		if(report_m)
 			return true;
 		if(reportReference_m)
@@ -501,7 +393,6 @@ abstract public class ReportDadgetDto extends DadgetDtoDec {
 	public List<PropertyAccessor> getPropertyAccessors()  {
 		List<PropertyAccessor> list = super.getPropertyAccessors();
 		list.add(config_pa);
-		list.add(parameterInstances_pa);
 		list.add(report_pa);
 		list.add(reportReference_pa);
 		return list;
@@ -512,8 +403,6 @@ abstract public class ReportDadgetDto extends DadgetDtoDec {
 		List<PropertyAccessor> list = super.getModifiedPropertyAccessors();
 		if(config_m)
 			list.add(config_pa);
-		if(parameterInstances_m)
-			list.add(parameterInstances_pa);
 		if(report_m)
 			list.add(report_pa);
 		if(reportReference_m)
@@ -528,7 +417,6 @@ abstract public class ReportDadgetDto extends DadgetDtoDec {
 			list.add(config_pa);
 		}
 		if(view.compareTo(DtoView.NORMAL) >= 0){
-			list.add(parameterInstances_pa);
 			list.add(report_pa);
 			list.add(reportReference_pa);
 		}
@@ -538,7 +426,6 @@ abstract public class ReportDadgetDto extends DadgetDtoDec {
 
 	public List<PropertyAccessor> getPropertyAccessorsForDtos()  {
 		List<PropertyAccessor> list = super.getPropertyAccessorsForDtos();
-		list.add(parameterInstances_pa);
 		list.add(report_pa);
 		list.add(reportReference_pa);
 		return list;
@@ -547,7 +434,6 @@ abstract public class ReportDadgetDto extends DadgetDtoDec {
 
 
 	net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto wl_0;
-	net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto wl_1;
-	net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto wl_2;
+	net.datenwerke.rs.tsreportarea.client.tsreportarea.dto.TsDiskReportReferenceDto wl_1;
 
 }

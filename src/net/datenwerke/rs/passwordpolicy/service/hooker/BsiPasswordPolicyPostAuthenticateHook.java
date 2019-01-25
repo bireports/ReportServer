@@ -96,7 +96,7 @@ public class BsiPasswordPolicyPostAuthenticateHook implements PostAuthenticateHo
 				data.registerSuccessfulLogin();
 
 				/* Check if password has expired */
-				if(bsiPasswordPolicy.getPasswordMaxAge() == -1){
+				if(bsiPasswordPolicy.getPasswordMaxAge() > 0){
 					if(null != user.getPassword()){
 						int expiresIn = 0;
 

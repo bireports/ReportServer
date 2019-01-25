@@ -29,10 +29,8 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import java.lang.String;
-import java.util.Set;
 import net.datenwerke.dtoservices.dtogenerator.annotations.CorrespondingPoso;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GeneratedType;
-import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.ReportDadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.decorator.ReportDadgetDtoDec;
@@ -52,7 +50,6 @@ public interface ReportDadgetDtoPA extends DadgetDtoPA {
 
 	/* Properties */
 	public ValueProvider<ReportDadgetDto,String> config();
-	public ValueProvider<ReportDadgetDto,Set<ParameterInstanceDto>> parameterInstances();
 	public ValueProvider<ReportDadgetDto,ReportDto> report();
 	public ValueProvider<ReportDadgetDto,TsDiskReportReferenceDto> reportReference();
 

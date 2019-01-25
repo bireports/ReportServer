@@ -153,6 +153,9 @@ public class Dto2ReportServerJobFilterGenerator implements Dto2PosoGenerator<Rep
 		} catch(NullPointerException e){
 		}
 
+		/*  set jobId */
+		poso.setJobId(dto.getJobId() );
+
 		/*  set lastOutcome */
 		OutcomeDto tmpDto_lastOutcome = dto.getLastOutcome();
 		poso.setLastOutcome((Outcome)dtoServiceProvider.get().createPoso(tmpDto_lastOutcome));
@@ -172,6 +175,9 @@ public class Dto2ReportServerJobFilterGenerator implements Dto2PosoGenerator<Rep
 		/*  set order */
 		OrderDto tmpDto_order = dto.getOrder();
 		poso.setOrder((Order)dtoServiceProvider.get().createPoso(tmpDto_order));
+
+		/*  set reportId */
+		poso.setReportId(dto.getReportId() );
 
 		/*  set reports */
 		poso.setReports(dto.getReports() );
@@ -266,6 +272,11 @@ public class Dto2ReportServerJobFilterGenerator implements Dto2PosoGenerator<Rep
 			}
 		}
 
+		/*  set jobId */
+		if(dto.isJobIdModified()){
+			poso.setJobId(dto.getJobId() );
+		}
+
 		/*  set lastOutcome */
 		if(dto.isLastOutcomeModified()){
 			OutcomeDto tmpDto_lastOutcome = dto.getLastOutcome();
@@ -292,6 +303,11 @@ public class Dto2ReportServerJobFilterGenerator implements Dto2PosoGenerator<Rep
 		if(dto.isOrderModified()){
 			OrderDto tmpDto_order = dto.getOrder();
 			poso.setOrder((Order)dtoServiceProvider.get().createPoso(tmpDto_order));
+		}
+
+		/*  set reportId */
+		if(dto.isReportIdModified()){
+			poso.setReportId(dto.getReportId() );
 		}
 
 		/*  set reports */
@@ -399,6 +415,9 @@ public class Dto2ReportServerJobFilterGenerator implements Dto2PosoGenerator<Rep
 		} catch(NullPointerException e){
 		}
 
+		/*  set jobId */
+		poso.setJobId(dto.getJobId() );
+
 		/*  set lastOutcome */
 		OutcomeDto tmpDto_lastOutcome = dto.getLastOutcome();
 		poso.setLastOutcome((Outcome)dtoServiceProvider.get().createPoso(tmpDto_lastOutcome));
@@ -418,6 +437,9 @@ public class Dto2ReportServerJobFilterGenerator implements Dto2PosoGenerator<Rep
 		/*  set order */
 		OrderDto tmpDto_order = dto.getOrder();
 		poso.setOrder((Order)dtoServiceProvider.get().createPoso(tmpDto_order));
+
+		/*  set reportId */
+		poso.setReportId(dto.getReportId() );
 
 		/*  set reports */
 		poso.setReports(dto.getReports() );
@@ -526,6 +548,11 @@ public class Dto2ReportServerJobFilterGenerator implements Dto2PosoGenerator<Rep
 			}
 		}
 
+		/*  set jobId */
+		if(dto.isJobIdModified()){
+			poso.setJobId(dto.getJobId() );
+		}
+
 		/*  set lastOutcome */
 		if(dto.isLastOutcomeModified()){
 			OutcomeDto tmpDto_lastOutcome = dto.getLastOutcome();
@@ -552,6 +579,11 @@ public class Dto2ReportServerJobFilterGenerator implements Dto2PosoGenerator<Rep
 		if(dto.isOrderModified()){
 			OrderDto tmpDto_order = dto.getOrder();
 			poso.setOrder((Order)dtoServiceProvider.get().createPoso(tmpDto_order));
+		}
+
+		/*  set reportId */
+		if(dto.isReportIdModified()){
+			poso.setReportId(dto.getReportId() );
 		}
 
 		/*  set reports */

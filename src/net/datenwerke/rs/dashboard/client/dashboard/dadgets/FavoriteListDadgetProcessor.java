@@ -172,7 +172,18 @@ public class FavoriteListDadgetProcessor implements DadgetProcessorHook {
 	public Widget getAdminConfigDialog(DadgetDto dadget, SimpleForm wrappingForm) {
 		return null;
 	}
+	
+	@Override
+	public boolean supportsDadgetLibrary() {
+		return false;
+	}
 
+	@Override
+	public boolean readyToDisplayParameters(DadgetPanel dadgetPanel) {
+		return false;
+	}
+
+	
 	@Override
 	public boolean hasConfigDialog() {
 		return false;

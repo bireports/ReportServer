@@ -25,14 +25,13 @@ package net.datenwerke.rs.installation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
-import net.datenwerke.dbpool.DbPoolService;
-import net.datenwerke.dbpool.config.predefined.StandardConnectionConfig;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.datenwerke.rs.base.service.datasources.definitions.DatabaseDatasource;
 import net.datenwerke.rs.base.service.dbhelper.DBHelperService;
 import net.datenwerke.rs.base.service.dbhelper.DatabaseHelper;
@@ -40,13 +39,7 @@ import net.datenwerke.rs.base.service.dbhelper.db.H2;
 import net.datenwerke.rs.core.service.datasourcemanager.DatasourceService;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.AbstractDatasourceManagerNode;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceFolder;
-import net.datenwerke.rs.core.service.internaldb.MondrianLoader;
-import net.datenwerke.rs.core.service.internaldb.pool.DemoDbConnectionPool;
 import net.datenwerke.rs.saiku.service.datasource.MondrianDatasource;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DemoDataInstallTask implements DbInstallationTask {
 
@@ -55,57 +48,20 @@ public class DemoDataInstallTask implements DbInstallationTask {
 	private static final String DEMO_DATASOURCES_FOLDER_NAME = "sample data";
 	private static final String DEMO_DATA_SOURCE_NAME = "Demo Data";
 
-	private DbPoolService<Connection> dbPoolService;
 	private DatasourceService datasourceService;
 	private DBHelperService dbHelperService;
 
 	@Inject
 	public DemoDataInstallTask(
-			DbPoolService dbPoolService, 
 			DatasourceService datasourceService,
 			DBHelperService dbHelperService
 			) {
-
-		this.dbPoolService = dbPoolService;
 		this.datasourceService = datasourceService;
 		this.dbHelperService = dbHelperService;
 	}
 
 	@Override
 	public void executeOnStartup() {
-		logger.info("Loading demodata");
-		try(Connection connection = getDemoConnection().get()){
-
-			connection.prepareStatement("DROP ALL OBJECTS").execute();
-
-			/* classicmodes */
-			connection.prepareStatement("RUNSCRIPT FROM 'classpath:resources/demo/demodata.sql'").execute();
-			connection.commit();
-
-			/* foodmart */
-			MondrianLoader ml = new MondrianLoader();
-			ml.setAggregates(true);
-			ml.setTables(true);
-			ml.setData(true);
-			ml.setIndexes(true);
-			ml.setJdbcOutput(true);
-			ml.setConnection(connection);
-			ml.load();
-
-
-		} catch (Exception e) {
-			logger.warn("Failed to load demodata", e);
-		}
-
-
-	}
-
-	protected Future<Connection> getDemoConnection() throws SQLException{
-		return dbPoolService.getConnection(new DemoDbConnectionPool(getDemoJdbcConnectionUrl()), new StandardConnectionConfig());
-	}
-
-	private String getDemoJdbcConnectionUrl() {
-		return "jdbc:h2:mem:demodata;DB_CLOSE_DELAY=-1";
 	}
 
 	@Override
@@ -114,6 +70,8 @@ public class DemoDataInstallTask implements DbInstallationTask {
 	}
 
 	protected void installDatasource() {
+		logger.info("install demo data datasources");
+		
 		DatasourceFolder folder = new DatasourceFolder(); 
 		folder.setName(DEMO_DATASOURCES_FOLDER_NAME); //$NON-NLS-1$
 
@@ -121,7 +79,7 @@ public class DemoDataInstallTask implements DbInstallationTask {
 		root.addChild(folder);
 		datasourceService.persist(folder);
 
-		String url = getDemoJdbcConnectionUrl();
+		String url = "rs:demodata";
 		String username = "demo";
 		String password = "demo";
 		String driver = "org.h2.Driver";
@@ -150,7 +108,7 @@ public class DemoDataInstallTask implements DbInstallationTask {
 
 		mds.setUsername(username);
 		mds.setPassword(password);
-		mds.setUrl("jdbc:mondrian:Jdbc=" + url);
+		mds.setUrl("rs:mondrian:demodata");
 
 		try {
 			mds.setMondrianSchema(IOUtils.toString(is));

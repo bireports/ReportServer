@@ -35,6 +35,7 @@ import org.hibernate.envers.Audited;
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
 import net.datenwerke.gf.base.service.annotations.Indexed;
+import net.datenwerke.rs.core.service.datasourcemanager.entities.CacheableDatasource;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinitionConfig;
 
 @Entity
@@ -44,7 +45,7 @@ import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefin
 	dtoPackage="net.datenwerke.rs.base.client.datasources.dto"
 )
 @Indexed
-public class CsvDatasource extends FormatBasedDatasourceDefinition {
+public class CsvDatasource extends FormatBasedDatasourceDefinition implements CacheableDatasource {
 
 	/**
 	 * 

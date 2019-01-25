@@ -23,9 +23,19 @@
  
 package net.datenwerke.rs.authenticator.service.pam;
 
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import net.datenwerke.rs.utils.properties.ApplicationPropertiesService;
 import net.datenwerke.security.client.login.AuthToken;
@@ -34,12 +44,6 @@ import net.datenwerke.security.service.authenticator.ReportServerPAM;
 import net.datenwerke.security.service.authenticator.exceptions.AuthenticatorRuntimeException;
 import net.datenwerke.security.service.usermanager.UserManagerService;
 import net.datenwerke.security.service.usermanager.entities.User;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class ClientCertificateMatchEmailPAM implements ReportServerPAM{
 	
@@ -84,7 +88,6 @@ public class ClientCertificateMatchEmailPAM implements ReportServerPAM{
 			if(debug) System.out.println(crt);
 			String mail = null;
 			
-
 			try{
 				if(debug) System.out.println("trying subject alternative names");
 				if (crt.getSubjectAlternativeNames() != null) {
@@ -106,6 +109,15 @@ public class ClientCertificateMatchEmailPAM implements ReportServerPAM{
 				logger.warn( "Error reading names from certificate", e);
 			}
 
+			
+			if(null == mail){
+				if(debug) System.out.println("trying subject");
+				try {
+					mail = IETFUtils.valueToString(new JcaX509CertificateHolder(crt).getSubject().getRDNs(BCStyle.E)[0].getFirst().getValue());
+				} catch (Exception e1) {
+					if(debug) System.out.println("no email in subject");
+				}
+			}
 
 			if(null != mail){
 				if(debug) System.out.println("performing certauth with email " + mail);

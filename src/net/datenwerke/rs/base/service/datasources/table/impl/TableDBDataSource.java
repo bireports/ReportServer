@@ -287,7 +287,7 @@ public class TableDBDataSource implements TableDataSource {
 			PreparedStatement getColumnsStmt = plainMQuery.prepareStatement(connection);
 			getColumnsStmt.setMaxRows(0);
 			
-			statementManagerService.registerStatement(executorToken, getColumnsStmt);
+			statementManagerService.registerStatement(executorToken, getColumnsStmt, connection);
 			ResultSetMetaData metaData = getColumnsStmt.executeQuery().getMetaData();
 			
 			this.plainTableDefinition = TableDefinition.fromResultSetMetaData(metaData);
@@ -319,7 +319,7 @@ public class TableDBDataSource implements TableDataSource {
 		} 
 		try {
 			eventBus.fireEvent(new OpenTableDatasourceEvent(stmt, uuid));
-			statementManagerService.registerStatement(executorToken, stmt);
+			statementManagerService.registerStatement(executorToken, stmt, connection);
 			
 			resultSet = stmt.executeQuery();
 			resultSetHandler = dbHelper.createResultSetHandler(resultSet, connection);

@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,24 +45,27 @@ import net.datenwerke.gxtdto.client.dtomanager.DtoView;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ExpectedException;
 import net.datenwerke.gxtdto.client.servercommunication.exceptions.ServerCallFailedException;
 import net.datenwerke.gxtdto.server.dtomanager.DtoService;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.core.service.parameters.entities.ParameterDefinition;
 import net.datenwerke.rs.core.service.parameters.entities.ParameterInstance;
 import net.datenwerke.rs.core.service.reportmanager.entities.reports.Report;
+import net.datenwerke.rs.core.service.reportmanager.hooks.ParameterInstanceCreatedFromDtoHook;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardContainerDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardNodeDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardReferenceDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.FavoriteListDto;
-import net.datenwerke.rs.dashboard.client.dashboard.dto.ReportDadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.rpc.DashboardRpcService;
 import net.datenwerke.rs.dashboard.service.dashboard.DadgetService;
 import net.datenwerke.rs.dashboard.service.dashboard.DashboardService;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.FavoriteList;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.FavoriteListEntry;
+import net.datenwerke.rs.dashboard.service.dashboard.dagets.LibraryDadget;
 import net.datenwerke.rs.dashboard.service.dashboard.dagets.ReportDadget;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.Dadget;
+import net.datenwerke.rs.dashboard.service.dashboard.entities.DadgetNode;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.Dashboard;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardContainer;
 import net.datenwerke.rs.dashboard.service.dashboard.entities.DashboardNode;
@@ -103,8 +107,10 @@ public class DashboardRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 	private final SecurityService securityService;
 	private final Injector injector;
 	private final EntityClonerService entityCloner;
+	private final HookHandlerService hookHandler;
+	private final TsDiskService diskService;
 
-	private TsDiskService diskService;
+
 
 	@Inject
 	public DashboardRpcServiceImpl(
@@ -116,6 +122,7 @@ public class DashboardRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 			TsDiskService diskService,
 			SecurityService securityService,
 			EntityClonerService entityCloner,
+			HookHandlerService hookHandler,
 			Injector injector
 			){
 		this.authenticatorProvider = authenticatorProvider;
@@ -126,6 +133,7 @@ public class DashboardRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		this.diskService = diskService;
 		this.securityService = securityService;
 		this.entityCloner = entityCloner;
+		this.hookHandler = hookHandler;
 		this.injector = injector;
 
 	}
@@ -202,6 +210,39 @@ public class DashboardRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 			throws ServerCallFailedException {
 		for(DashboardDto dashboard : dashboards)
 			editDashboard(dashboard);
+	}
+	
+	@Override
+	@Transactional(rollbackOn=Exception.class)
+	public void changeDashboardOrder(ArrayList<Long> dashboardIds) throws ServerCallFailedException {
+		User user = authenticatorProvider.get().getCurrentUser();
+		DashboardContainer container = dashboardService.getDashboardFor(user);
+		HashMap<Long, Dashboard> tmp = new HashMap<>();
+		
+		for(Dashboard d : container.getDashboards()){
+			tmp.put(d.getId(), d);
+		}
+		
+		container.getDashboards().clear();
+		
+		int n = 0;
+		for(Long id : dashboardIds){
+			Dashboard d = tmp.remove(id);
+			if(null != d){
+				d.setN(n++);
+				container.getDashboards().add(d);
+			}
+		}
+		
+		for(Long id : tmp.keySet()){
+			Dashboard d = tmp.get(id);
+			if(null != d){
+				d.setN(n++);
+				container.getDashboards().add(d);
+			}
+		}
+		
+		dashboardService.merge(container);
 	}
 
 	@Override
@@ -555,7 +596,7 @@ public class DashboardRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 
 	@Override
 	public Map<String, ParameterInstanceDto> getDashboardParameterInstances(DashboardDto dashboardDto) throws ServerCallFailedException {
-		HashMap<String, ParameterInstanceDto> res = new HashMap<String, ParameterInstanceDto>();
+		HashMap<String, ParameterInstanceDto> res = new LinkedHashMap<String, ParameterInstanceDto>();
 		Dashboard dashboard = (Dashboard) dtoService.loadPoso(dashboardDto);
 		
 		/* security */
@@ -564,13 +605,13 @@ public class DashboardRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		
 		for(Dadget dadget : dashboard.getDadgets()){
 			if(dadget instanceof ReportDadget){
-				if(null != ((ReportDadget) dadget).getReport()){
-					Report report = ((ReportDadget) dadget).getReport();
-					for(ParameterInstance instance: report.getParameterInstances()){
-						res.put(instance.getDefinition().getKey(), (ParameterInstanceDto) dtoService.createDto(instance, DtoView.ALL, DtoView.ALL));
-					}
-					for(ParameterInstance instance: ((ReportDadget) dadget).getParameterInstances()){
-						res.put(instance.getDefinition().getKey(), (ParameterInstanceDto) dtoService.createDto(instance, DtoView.ALL, DtoView.ALL));
+				addParameterInstancesFor(res, ((ReportDadget) dadget).getReport(), dadget);
+			} else if(dadget instanceof LibraryDadget){
+				DadgetNode dadgetNode = ((LibraryDadget)dadget).getDadgetNode();
+				if(null != dadgetNode){
+					Dadget referencedDadget = dadgetNode.getDadget();
+					if(referencedDadget instanceof ReportDadget){
+						addParameterInstancesFor(res, ((ReportDadget) referencedDadget).getReport(), dadget);
 					}
 				}
 			}
@@ -579,23 +620,42 @@ public class DashboardRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 	}
 
 	@Override
-	public Map<String, ParameterInstanceDto> getDadgetParameterInstances(ReportDadgetDto dadgetDto) throws ServerCallFailedException {
-		ReportDadget dadget = (ReportDadget) dtoService.loadPoso(dadgetDto);
+	public Map<String, ParameterInstanceDto> getDadgetParameterInstances(DadgetDto dadgetDto) throws ServerCallFailedException {
+		Dadget dadget = (Dadget) dtoService.loadPoso(dadgetDto);
 
 		/* security */
 		Dashboard dashboard = dashboardService.getDashboardFor(dadget);
 		DashboardContainer container = dashboardService.getDashboardContainerFor(dashboard);
 		checkAccess(dashboard, container);
 		
-		HashMap<String, ParameterInstanceDto> res = new HashMap<String, ParameterInstanceDto>();
-		if(null != dadget && null != ((ReportDadget) dadget).getReport()){
-			Report report = ((ReportDadget) dadget).getReport();
-			for(ParameterInstance instance: report.getParameterInstances())
-				res.put(instance.getDefinition().getKey(), (ParameterInstanceDto) dtoService.createDto(instance, DtoView.ALL, DtoView.ALL));
-			for(ParameterInstance instance: ((ReportDadget) dadget).getParameterInstances())
-				res.put(instance.getDefinition().getKey(), (ParameterInstanceDto) dtoService.createDto(instance, DtoView.ALL, DtoView.ALL));
+		LinkedHashMap<String, ParameterInstanceDto> res = new LinkedHashMap<String, ParameterInstanceDto>();
+		if(null == dadget)
+			return res;
+		
+		if(dadget instanceof ReportDadget){
+			addParameterInstancesFor(res, ((ReportDadget) dadget).getReport(), dadget);
+		} else if(dadget instanceof LibraryDadget){
+			DadgetNode dadgetNode = ((LibraryDadget)dadget).getDadgetNode();
+			if(null != dadgetNode){
+				Dadget referencedDadget = dadgetNode.getDadget();
+				if(referencedDadget instanceof ReportDadget){
+					addParameterInstancesFor(res, ((ReportDadget) referencedDadget).getReport(), dadget);
+				}
+			}
 		}
 		return res;
+	}
+
+	private void addParameterInstancesFor(HashMap<String, ParameterInstanceDto> res, Report report, Dadget dadget) {
+		if(null != report){
+			/* loop over definition to get order right */
+			for(ParameterDefinition definition: report.getParameterDefinitions()){
+				ParameterInstance instance = report.getParameterInstanceFor(definition);
+				res.put(definition.getKey(), (ParameterInstanceDto) dtoService.createDto(instance, DtoView.ALL, DtoView.ALL));
+			} 
+			for(ParameterInstance instance:  dadget.getParameterInstances())
+				res.put(instance.getDefinition().getKey(), (ParameterInstanceDto) dtoService.createDto(instance, DtoView.ALL, DtoView.ALL));
+		}
 	}
 
 	@Override
@@ -609,38 +669,55 @@ public class DashboardRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		checkAccess(dashboard, container);
 		
 		for(Dadget dadget : dashboard.getDadgets()){
-			if(dadget instanceof ReportDadget){
-				Report report = ((ReportDadget) dadget).getReport();
-				if(null != report){
-					Set<ParameterInstance> instancesForReport = getInstancesForReport(report, parameterInstances);
-					((ReportDadget) dadget).getParameterInstances().clear();
-					((ReportDadget) dadget).getParameterInstances().addAll(instancesForReport);
+			Report report = null;
+			if(dadget instanceof ReportDadget)
+				report = ((ReportDadget) dadget).getReport();
+			else if(dadget instanceof LibraryDadget){
+				DadgetNode dadgetNode = ((LibraryDadget)dadget).getDadgetNode();
+				if(null == dadgetNode || ! (dadgetNode.getDadget() instanceof ReportDadget))
+					continue;
+				
+				report = ((ReportDadget)dadgetNode.getDadget()).getReport();
+			} 	
+			
+			if(null != report){
+				Set<ParameterInstance> instancesForReport = getInstancesForReport(report, parameterInstances);
+				dadget.getParameterInstances().clear();
+				dadget.getParameterInstances().addAll(instancesForReport);
 
-					if(!instancesForReport.isEmpty()){
-						dashboardService.merge(dadget);
-						res.add((DadgetDto) dtoService.createDto(dadget));
-					}
+				if(!instancesForReport.isEmpty()){
+					dashboardService.merge(dadget);
+					res.add((DadgetDto) dtoService.createDto(dadget));
 				}
 			}
+
 		}
 		return res;
 	}
 
 	@Override
 	@Transactional(rollbackOn=Exception.class)
-	public DadgetDto setDadgetParameterInstances(ReportDadgetDto dadgetDto, Set<ParameterInstanceDto> parameterInstances) throws ServerCallFailedException {
-		ReportDadget dadget= (ReportDadget) dtoService.loadPoso(dadgetDto);
+	public DadgetDto setDadgetParameterInstances(DadgetDto dadgetDto, Set<ParameterInstanceDto> parameterInstances) throws ServerCallFailedException {
+		Dadget dadget= (Dadget) dtoService.loadPoso(dadgetDto);
 
 		/* security */
 		Dashboard dashboard = dashboardService.getDashboardFor(dadget);
 		DashboardContainer container = dashboardService.getDashboardContainerFor(dashboard);
 		checkAccess(dashboard, container);
 		
-		Report report = ((ReportDadget) dadget).getReport();
+		Report report = null;
+		if(dadget instanceof ReportDadget)
+			report = ((ReportDadget) dadget).getReport();
+		else if(dadget instanceof LibraryDadget){
+			DadgetNode dadgetNode = ((LibraryDadget)dadget).getDadgetNode();
+			if(null != dadgetNode && (dadgetNode.getDadget() instanceof ReportDadget))
+				report = ((ReportDadget)dadgetNode.getDadget()).getReport();
+		}
+		
 		if(null != report){
 			Set<ParameterInstance> instancesForReport = getInstancesForReport(report, parameterInstances);
-			((ReportDadget) dadget).getParameterInstances().clear();
-			((ReportDadget) dadget).getParameterInstances().addAll(instancesForReport);
+			dadget.getParameterInstances().clear();
+			dadget.getParameterInstances().addAll(instancesForReport);
 
 			dashboardService.merge(dadget);
 			return ((DadgetDto) dtoService.createDto(dadget));
@@ -659,6 +736,14 @@ public class DashboardRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		for(ParameterInstanceDto pidto : instances){
 			if(keys.containsKey(pidto.getDefinition().getKey())){
 				ParameterInstance pi = (ParameterInstance) dtoService.createUnmanagedPoso(pidto);
+				
+				/* postprocess parameter instances */
+				for(ParameterInstanceCreatedFromDtoHook hook : hookHandler.getHookers(ParameterInstanceCreatedFromDtoHook.class)){
+					if(hook.consumes(pidto)){
+						hook.posoCreated(pidto, pi);
+					}
+				}
+				
 				pi.setDefinition(keys.get(pidto.getDefinition().getKey()));
 				res.add(pi);
 			}

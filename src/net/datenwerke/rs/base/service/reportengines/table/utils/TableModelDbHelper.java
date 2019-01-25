@@ -102,7 +102,10 @@ public class TableModelDbHelper {
 	}
 	
 	public int writeRsTableModel(RSTableModel rsTableModel, Connection connection, String tableName, OverwriteMode overwriteMode, String createTableStatement) throws DatabaseException, SQLException{
-		Database db =  DatabaseFactory.getInstance().findCorrectDatabaseImplementation( new JdbcConnection(connection));
+		Database db;
+		synchronized (this) { // liquibase is not happy if two threads concurrently create a database factory
+			db = DatabaseFactory.getInstance().findCorrectDatabaseImplementation( new JdbcConnection(connection));
+		}
 		
 		StringBuilder createqry = new StringBuilder();
 		StringBuilder insertstmt = new StringBuilder();
@@ -165,6 +168,7 @@ public class TableModelDbHelper {
 				s += "("+scale+")";
 			}
 
+			// in contrast to above, datatype factory has its synchronized block...
 			LiquibaseDataType lbdt = DataTypeFactory.getInstance().fromDescription(s, null);
 			DatabaseDataType type = lbdt.toDatabaseDataType(db);
 			

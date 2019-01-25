@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.regex.Matcher;
@@ -296,6 +297,10 @@ public class RemoteMessageServiceImpl extends RemoteServiceServlet implements Re
 				Field pathField = loader.getClass().getDeclaredField("paths");
 				pathField.setAccessible(true);
 				Object paths = pathField.get(loader);
+				
+				if(paths instanceof AtomicReference){
+					paths = ((AtomicReference) paths).get();
+				}
 				
 				Method getAllPaths = paths.getClass().getDeclaredMethod("getAllPaths");
 				getAllPaths.setAccessible(true);

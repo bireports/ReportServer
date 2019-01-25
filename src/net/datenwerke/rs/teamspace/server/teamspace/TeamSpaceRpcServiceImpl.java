@@ -112,7 +112,7 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		TeamSpace teamSpace = (TeamSpace) dtoService.loadPoso(teamSpaceDto);
 		
 		if(! teamSpaceService.mayAccess(teamSpace))
-			throw new ViolatedSecurityExceptionDto("insufficient rights");
+			throw new ViolatedSecurityExceptionDto("insufficient rights: tried to use a teamspace you have no access to as your primary teamspace");
 
 		teamSpaceService.setPrimarySpace(teamSpace);
 	}
@@ -197,7 +197,7 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		
 		/* check rights */
 		if(! teamSpaceService.isAdmin(teamSpace))
-			throw new ViolatedSecurityExceptionDto("insufficient rights");
+			throw new ViolatedSecurityExceptionDto("insufficient rights: to remove a teamspace \"admin\" level access is required");
 
 		/* delete team space */
 		teamSpaceService.remove(teamSpace);
@@ -215,7 +215,7 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 
 		/* check rights */
 		if(! teamSpaceService.isAdmin(teamSpace))
-			throw new ViolatedSecurityExceptionDto("insufficient rights");
+			throw new ViolatedSecurityExceptionDto("insufficient rights: editing teamspace properties requires \"admin\" level access");
 
 		/* merge and persist */
 		dtoService.mergePoso(teamSpaceDto, teamSpace);
@@ -238,15 +238,17 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 		
 		/* check rights */
 		if(! teamSpaceService.isManager(teamSpace))
-			throw new ViolatedSecurityExceptionDto("insufficient rights");
+			throw new ViolatedSecurityExceptionDto("insufficient rights: to edit teamspace members the \"manager\" level access is required");
 		
 		Collection<Long> validMemberIds = new HashSet<Long>();
 		
 		for(StrippedDownTeamSpaceMemberDto strippedMember : members){
 			try{
 				User user = (User) userManager.getNodeById(strippedMember.getUserId());
-				if(teamSpace.isOwner(user))
+				if(teamSpace.isOwner(user)){
 					continue;
+					//throw new ExpectedException("DEBUG: tried to add the teamspace owner as a member. aborting. ");
+				}
 				
 				/* new role */
 				TeamSpaceRole role = (TeamSpaceRole) dtoService.createPoso(strippedMember.getRole());
@@ -303,7 +305,7 @@ public class TeamSpaceRpcServiceImpl extends SecuredRemoteServiceServlet impleme
 
 		/* make sure user is allowed */
 		if(! teamSpaceService.mayAccess(teamSpace))
-			throw new ViolatedSecurityExceptionDto("insufficient rights");
+			throw new ViolatedSecurityExceptionDto("insufficient rights: you tried to load a teamspace you have no access to");
 			
 		return (TeamSpaceDto) dtoService.createDto(teamSpace);
 	}

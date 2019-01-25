@@ -23,19 +23,6 @@
  
 package net.datenwerke.rs.teamspace.client.teamspace;
 
-import net.datenwerke.gf.client.login.LoginService;
-import net.datenwerke.gxtdto.client.stores.LoadableListStore;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceMemberDto;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.decorator.TeamSpaceDtoDec;
-import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.TeamSpaceDtoPA;
-import net.datenwerke.rs.teamspace.client.teamspace.security.TeamSpaceGenericTargetIdentifier;
-import net.datenwerke.rs.teamspace.client.teamspace.security.rights.TeamSpaceAdministratorDto;
-import net.datenwerke.security.client.security.SecurityUIService;
-import net.datenwerke.security.client.security.dto.WriteDto;
-import net.datenwerke.security.client.usermanager.dto.UserDto;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -43,6 +30,18 @@ import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.loader.ListLoadConfig;
 import com.sencha.gxt.data.shared.loader.ListLoadResult;
 import com.sencha.gxt.data.shared.loader.ListLoader;
+
+import net.datenwerke.gf.client.login.LoginService;
+import net.datenwerke.gxtdto.client.stores.LoadableListStore;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceDto;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.TeamSpaceRoleDto;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.decorator.TeamSpaceDtoDec;
+import net.datenwerke.rs.teamspace.client.teamspace.dto.pa.TeamSpaceDtoPA;
+import net.datenwerke.rs.teamspace.client.teamspace.security.TeamSpaceGenericTargetIdentifier;
+import net.datenwerke.rs.teamspace.client.teamspace.security.rights.TeamSpaceAdministratorDto;
+import net.datenwerke.security.client.security.SecurityUIService;
+import net.datenwerke.security.client.security.dto.DeleteDto;
+import net.datenwerke.security.client.security.dto.WriteDto;
 
 /**
  * 
@@ -78,6 +77,11 @@ public class TeamSpaceUIServiceImpl implements TeamSpaceUIService {
 	public boolean hasTeamSpaceCreateRight() {
 		return securityService.hasRight(TeamSpaceGenericTargetIdentifier.class, WriteDto.class);
 	}
+	
+	@Override
+	public boolean hasTeamSpaceRemoveRight() {
+		return securityService.hasRight(TeamSpaceGenericTargetIdentifier.class, DeleteDto.class);
+	}
 
 	@Override
 	public boolean isAdmin(TeamSpaceDto teamSpace) {
@@ -100,7 +104,7 @@ public class TeamSpaceUIServiceImpl implements TeamSpaceUIService {
 	}
 
 	private boolean hasRole(TeamSpaceDto teamSpace, TeamSpaceRoleDto roleToHave) {
-		if(isGlobalTsAdmin())
+		if(isGlobalTsAdmin() || isOwner(teamSpace))
 			return true;
 		TeamSpaceRoleDto role = getRole(teamSpace);
 		if(null == role)
@@ -108,6 +112,12 @@ public class TeamSpaceUIServiceImpl implements TeamSpaceUIService {
 		return roleToHave.compareTo(role) >= 0;
 	}
 	
+	private boolean isOwner(TeamSpaceDto teamSpace) {
+		if(null == teamSpace)
+			return false;
+		return ((TeamSpaceDtoDec)teamSpace).isTeamSpaceOwner();
+	}
+
 	@Override
 	public TeamSpaceRoleDto getRole(TeamSpaceDto teamSpace){
 		return ((TeamSpaceDtoDec)teamSpace).getRole();

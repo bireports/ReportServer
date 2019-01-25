@@ -24,6 +24,7 @@
 package net.datenwerke.rs.base.service.reportengines.table.output.object;
 
 import java.io.Serializable;
+import java.util.List;
 
 import net.datenwerke.dtoservices.dtogenerator.annotations.ExposeToClient;
 import net.datenwerke.dtoservices.dtogenerator.annotations.GenerateDto;
@@ -57,6 +58,10 @@ public class RSTableRow implements Serializable{
 	public RSTableRow(TableDefinition tableDefinition, Object[] row) {
 		this.tableDefinition = tableDefinition;
 		this.row = row;
+	}
+	
+	public RSTableRow(TableDefinition tableDefinition, List<Object> row) {
+		this(tableDefinition, row.toArray());
 	}
 	
 	public TableDefinition getTableDefinition() {

@@ -80,14 +80,16 @@ public interface DashboardRpcServiceAsync {
 
 	void setDashboardParameterInstances(DashboardDto dashboardDto, Set<ParameterInstanceDto> parameterInstances, AsyncCallback<List<DadgetDto>> callback);
 
-	void getDadgetParameterInstances(ReportDadgetDto dadgetDto, AsyncCallback<Map<String, ParameterInstanceDto>> callback);
+	void getDadgetParameterInstances(DadgetDto dadgetDto, AsyncCallback<Map<String, ParameterInstanceDto>> callback);
 
-	void setDadgetParameterInstances(ReportDadgetDto dadgetDto, Set<ParameterInstanceDto> parameterInstances,
+	void setDadgetParameterInstances(DadgetDto dadgetDto, Set<ParameterInstanceDto> parameterInstances,
 			AsyncCallback<DadgetDto> callback);
 
 	void resetReferencedDashboard(DashboardReferenceDto dashboardDto, AsyncCallback<DashboardDto> callback);
 
 	void loadDashboardForDisplay(DashboardDto dashboard, AsyncCallback<DashboardDto> transformAndKeepCallback);
 
+	void changeDashboardOrder(ArrayList<Long> dashboardIds, AsyncCallback<Void> callback);
 
+	
 }

@@ -229,47 +229,32 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 
 				columns.add(colConfig);
 			}
-			
-				/* create grid */
+
+			/* create grid */
 			grid = new Grid<String[]>(store, new ColumnModel<String[]>(columns));
-			
-			grid.addDomHandler(new ContextMenuHandler() {
-				@Override 
-				public void onContextMenu(ContextMenuEvent event) {
-					event.preventDefault();
-					event.stopPropagation();
-				}
-			}, ContextMenuEvent.getType());
-			
-			
+
 			grid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			grid.getView().setStripeRows(true);
-			grid.getView().getHeader().addBeforeShowContextMenuHandler(new BeforeShowContextMenuHandler() {
-				@Override
-				public void onBeforeShowContextMenu(BeforeShowContextMenuEvent event) {
-					event.setCancelled(true);
-				}
-			});
 			grid.setColumnReordering(true);
-
-			grid.addHeaderDoubleClickHandler(new HeaderDoubleClickHandler() {
-				@Override
-				public void onHeaderDoubleClick(HeaderDoubleClickEvent event) {
-					displayHeaderMenu(model, event.getColumnIndex(), event.getEvent().getClientX(), event.getEvent().getClientY() );
-				}
-			});
-
+			grid.setContextMenu(new DwMenu());
+			
 			grid.addHeaderMouseDownHandler(new HeaderMouseDownHandler() {
 				@Override
-				public void onHeaderMouseDown(final HeaderMouseDownEvent event) {
+				public void onHeaderMouseDown(HeaderMouseDownEvent event) {
 					if(event.getEvent().getButton() == NativeEvent.BUTTON_RIGHT){
-						Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-							
-							@Override
-							public void execute() {
-								displayHeaderMenu(model, event.getColumnIndex(), event.getEvent().getClientX(), event.getEvent().getClientY());
-							}
-						});
+						configureHeaderMenu(model, event.getColumnIndex(), event.getEvent().getClientX(), event.getEvent().getClientY());
+						grid.setContextMenu(menu);
+					}
+				}
+			});
+
+			grid.addCellMouseDownHandler(new CellMouseDownHandler() {
+				@Override
+				public void onCellMouseDown(final CellMouseDownEvent event) {
+					if(event.getEvent().getButton() == NativeEvent.BUTTON_RIGHT){
+						int cellIndex = event.getCellIndex();
+						configureMenu(cellIndex, event.getRowIndex(), model, event);
+						grid.setContextMenu(menu);
 					}
 				}
 			});
@@ -282,26 +267,9 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 			});
 
 			grid.getColumnModel().addColumnWidthChangeHandler(new ColumnWidthChangeHandler() {
-				
 				@Override
 				public void onColumnWidthChange(ColumnWidthChangeEvent event) {
 					updateColumnWidths();
-				}
-			});
-			
-			grid.addCellMouseDownHandler(new CellMouseDownHandler() {
-				@Override
-				public void onCellMouseDown(final CellMouseDownEvent event) {
-					if(event.getEvent().getButton() == NativeEvent.BUTTON_RIGHT){
-						Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-							
-							@Override
-							public void execute() {
-								int cellIndex = event.getCellIndex();
-								displayMenu(cellIndex, event.getRowIndex(), model, event);
-							}
-						});
-					}
 				}
 			});
 
@@ -339,11 +307,11 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 		Integer columnWidth = tReport.getColumnWidth(column);
 		if(null != columnWidth)
 			return columnWidth;
-		
+
 		return BASE_COLUMN_WIDTH;
 	}
 
-	protected void displayHeaderMenu(PreviewModel model, final int colIndex, int posX, int posY) {
+	protected void configureHeaderMenu(PreviewModel model, final int colIndex, int posX, int posY) {
 		menu = new DwMenu();
 
 		MenuItem setColumnWidth = new DwMenuItem(TableMessages.INSTANCE.columnWidth());
@@ -361,9 +329,9 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 								return;
 							try{
 								int width = Math.max(10, Math.min(800, Integer.parseInt(value)));
-								
+
 								((TableReportDtoDec)report).setPreviewColumnWidth(((TableReportDtoDec)report).getVisibleColumnByPos(colIndex), width);
-								
+
 								grid.getColumnModel().getColumn(colIndex).setWidth(width);
 								grid.getView().refresh(true);
 							} catch(Exception e){}
@@ -408,9 +376,9 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 								return;
 							try{
 								int width = Math.max(10, Math.min(800, Integer.parseInt(value)));
-								
+
 								((TableReportDtoDec)report).setPreviewColumnWidth(width);
-								
+
 								for(ColumnConfig<?,?> col : grid.getColumnModel().getColumns())
 									col.setWidth(width);
 								grid.getView().refresh(true);
@@ -449,13 +417,11 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 			}
 		});
 		menu.add(setOptimalColumnWidth);
-
-		menu.showAt(posX, posY);
 	}
 
 	protected void setOptimalColumnWidth() {
 		((TableReportDtoDec)report).setOptimalPreviewColumnWidth();
-		
+
 		try{
 			int cwidth = computeOptimalColumnWidth(((TableReportDtoDec)report));
 			for(ColumnConfig<?,?> col : grid.getColumnModel().getColumns())
@@ -511,7 +477,7 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 		window.show();
 	}
 
-	protected void displayMenu(int pos, final int row, PreviewModel model, CellMouseDownEvent event) {
+	protected void configureMenu(int pos, final int row, PreviewModel model, CellMouseDownEvent event) {
 		if(menu != null)
 			menu.hide();
 
@@ -536,10 +502,6 @@ public class TableReportPreviewView extends AbstractReportPreviewView implements
 			boolean separator = enhancer.enhanceMenu(this, menu, tReport, column, value, rawValue);
 			if(iterator.hasNext() && separator)
 				menu.add(new SeparatorMenuItem());
-		}
-
-		if(foundEnhancer){
-			menu.showAt(event.getEvent().getClientX(), event.getEvent().getClientY());
 		}
 	}
 

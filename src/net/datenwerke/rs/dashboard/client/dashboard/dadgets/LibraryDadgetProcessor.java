@@ -36,10 +36,14 @@ import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.forms.simpleform.SimpleForm;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
 import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.core.client.reportmanager.dto.reports.ReportDto;
 import net.datenwerke.rs.dashboard.client.dashboard.DashboardTreeLoaderDao;
+import net.datenwerke.rs.dashboard.client.dashboard.DashboardUiService;
+import net.datenwerke.rs.dashboard.client.dashboard.dadgets.i.LibrarySpeficDrawer;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetNodeDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.LibraryDadgetDto;
+import net.datenwerke.rs.dashboard.client.dashboard.dto.ReportDadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.decorator.LibraryDadgetDtoDec;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.pa.LibraryDadgetDtoPA;
 import net.datenwerke.rs.dashboard.client.dashboard.hooks.DadgetProcessorHook;
@@ -52,18 +56,21 @@ import net.datenwerke.treedb.client.treedb.dto.AbstractNodeDto;
 public class LibraryDadgetProcessor implements DadgetProcessorHook {
 
 	private final UITree dashboardTree;
-	private HookHandlerService hookHandler;
-	private DashboardTreeLoaderDao dashboardTreeLoader;
-
+	private final HookHandlerService hookHandler;
+	private final DashboardTreeLoaderDao dashboardTreeLoader;
+	private final DashboardUiService dashboardService;
+	
 	@Inject
 	public LibraryDadgetProcessor(
 		@DashboardTreeBasic UITree dashboardTree,
 		DashboardTreeLoaderDao dashboardTreeLoader,
-		HookHandlerService hookHandler
+		HookHandlerService hookHandler,
+		DashboardUiService dashboardService
 		) {
 		this.dashboardTree = dashboardTree;
 		this.dashboardTreeLoader = dashboardTreeLoader;
 		this.hookHandler = hookHandler;
+		this.dashboardService = dashboardService;
 	}
 	
 	@Override
@@ -105,7 +112,10 @@ public class LibraryDadgetProcessor implements DadgetProcessorHook {
 			if(null != d){
 				for(final DadgetProcessorHook processor : hookHandler.getHookers(DadgetProcessorHook.class)){
 					if(processor.consumes(d) && processor.hasConfigDialog()){
-						processor.draw(d, panel);
+						if(processor instanceof LibrarySpeficDrawer)
+							((LibrarySpeficDrawer)processor).drawForLibrary((LibraryDadgetDto) dadget, d, panel);
+						else
+							processor.draw(d, panel);
 						panel.setHeadingText(dadgetNode.getName());
 						return;
 					}
@@ -113,6 +123,7 @@ public class LibraryDadgetProcessor implements DadgetProcessorHook {
 			}
 		}
 	}
+	
 
 	@Override
 	public void displayConfigDialog(final DadgetDto dadget,
@@ -186,13 +197,32 @@ public class LibraryDadgetProcessor implements DadgetProcessorHook {
 	}
 
 	@Override
+	public boolean supportsDadgetLibrary() {
+		return false;
+	}
+	
+	@Override
+	public boolean readyToDisplayParameters(DadgetPanel dadgetPanel) {
+		LibraryDadgetDto dadget = (LibraryDadgetDto) dadgetPanel.getDadget();
+		DadgetNodeDto dadgetNode = dadget.getDadgetNode();
+		if(null != dadgetNode){
+			DadgetDto d = dadgetNode.getDadget();
+			if(d instanceof ReportDadgetDto){
+				ReportDto report = ((ReportDadgetDto) d).getReport();
+				return null != report && ! report.getParameterInstances().isEmpty();
+			}
+		}
+		return false;
+	}
+
+	
+	@Override
 	public boolean hasConfigDialog() {
 		return true;
 	}
 
 	@Override
 	public void addTools(DadgetPanel dadgetPanel) {
-		// TODO Auto-generated method stub
-		
+		dashboardService.addParameterToolButtonTo(dadgetPanel, this);
 	}
 }

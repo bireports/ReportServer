@@ -122,6 +122,9 @@ public class Dto2JobFilterConfigurationGenerator implements Dto2PosoGenerator<Jo
 		} catch(NullPointerException e){
 		}
 
+		/*  set jobId */
+		poso.setJobId(dto.getJobId() );
+
 		/*  set lastOutcome */
 		OutcomeDto tmpDto_lastOutcome = dto.getLastOutcome();
 		poso.setLastOutcome((Outcome)dtoServiceProvider.get().createPoso(tmpDto_lastOutcome));
@@ -168,6 +171,11 @@ public class Dto2JobFilterConfigurationGenerator implements Dto2PosoGenerator<Jo
 				poso.setInActive(dto.isInActive() );
 			} catch(NullPointerException e){
 			}
+		}
+
+		/*  set jobId */
+		if(dto.isJobIdModified()){
+			poso.setJobId(dto.getJobId() );
 		}
 
 		/*  set lastOutcome */
@@ -229,6 +237,9 @@ public class Dto2JobFilterConfigurationGenerator implements Dto2PosoGenerator<Jo
 		} catch(NullPointerException e){
 		}
 
+		/*  set jobId */
+		poso.setJobId(dto.getJobId() );
+
 		/*  set lastOutcome */
 		OutcomeDto tmpDto_lastOutcome = dto.getLastOutcome();
 		poso.setLastOutcome((Outcome)dtoServiceProvider.get().createPoso(tmpDto_lastOutcome));
@@ -275,6 +286,11 @@ public class Dto2JobFilterConfigurationGenerator implements Dto2PosoGenerator<Jo
 				poso.setInActive(dto.isInActive() );
 			} catch(NullPointerException e){
 			}
+		}
+
+		/*  set jobId */
+		if(dto.isJobIdModified()){
+			poso.setJobId(dto.getJobId() );
 		}
 
 		/*  set lastOutcome */

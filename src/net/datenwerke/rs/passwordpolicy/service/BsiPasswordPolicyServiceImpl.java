@@ -25,10 +25,14 @@ package net.datenwerke.rs.passwordpolicy.service;
 
 import groovy.lang.Singleton;
 import net.datenwerke.rs.configservice.service.configservice.hooks.ReloadConfigNotificationHook;
+import net.datenwerke.rs.utils.config.ConfigFileNotFoundException;
 import net.datenwerke.rs.utils.eventbus.EventBus;
 import net.datenwerke.security.service.eventlogger.events.InvalidConfigEvent;
 import net.datenwerke.security.service.usermanager.UserPropertiesService;
 import net.datenwerke.security.service.usermanager.entities.User;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -36,6 +40,8 @@ import com.google.inject.Provider;
 @Singleton
 public class BsiPasswordPolicyServiceImpl implements BsiPasswordPolicyService, ReloadConfigNotificationHook {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
+	
 	private final UserPropertiesService userPropertiesService;
 	private final Provider<BsiPasswordPolicy> policyProvider;
 	private final EventBus eventBus;
@@ -78,7 +84,12 @@ public class BsiPasswordPolicyServiceImpl implements BsiPasswordPolicyService, R
 			bsiPasswordPolicy = policyProvider.get();
 			try{
 				bsiPasswordPolicy.loadConfig();
+				logger.info("password policy loaded. policy is: " + (bsiPasswordPolicy.isValid() ? " valid" : "invalid"));
 			} catch(Exception e){
+				if(e instanceof ConfigFileNotFoundException)
+					logger.info("Passowrd policy not active: " + e.getMessage());
+				else
+					logger.warn("Could not load password policy: ", e);
 				eventBus.fireEvent(new InvalidConfigEvent("password policy", e.getMessage()));
 			}
 		}

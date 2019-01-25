@@ -45,6 +45,8 @@ import net.datenwerke.rs.base.service.parameterreplacements.provider.ReportForJu
 import net.datenwerke.rs.base.service.reportengines.locale.ReportEnginesMessages;
 import net.datenwerke.rs.base.service.reportengines.table.entities.Column;
 import net.datenwerke.rs.base.service.reportengines.table.entities.Column.CellFormatter;
+import net.datenwerke.rs.base.service.reportengines.table.entities.Column.ColumnFormatCellFormatter;
+import net.datenwerke.rs.base.service.reportengines.table.entities.format.ColumnFormatNumber;
 import net.datenwerke.rs.base.service.reportengines.table.entities.TableReport;
 import net.datenwerke.rs.base.service.reportengines.table.output.object.CompiledHTMLTableReport;
 import net.datenwerke.rs.base.service.reportengines.table.output.object.TableDefinition;
@@ -241,6 +243,16 @@ public class HTMLOutputGenerator extends TableOutputGeneratorImpl {
 
 	protected void doAddCss() throws IOException {
 		writer.append(themeServiceProvider.get().getTheme());
+		
+		if(null != cellFormatters){
+			for(int i = 0; i < cellFormatters.length; i++){
+				if(cellFormatters[i] instanceof ColumnFormatCellFormatter && ((ColumnFormatCellFormatter)cellFormatters[i]).getColumnFormat() instanceof ColumnFormatNumber){
+					writer.append("tr td:nth-child(");
+					writer.append("" + (i+1));
+					writer.append(") { text-align: right; }");
+				}
+			}
+		}
 		
 		String style = configFile.getString(STYLE_PROPERTY, "");
 		if(null != style && ! "".equals(style.trim())){

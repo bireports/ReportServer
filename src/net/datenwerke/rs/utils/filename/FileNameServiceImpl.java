@@ -54,6 +54,21 @@ public class FileNameServiceImpl implements FileNameService {
 		for(FileNameSanitizerHook hooker : hookHandlerService.getHookers(FileNameSanitizerHook.class))
 			return hooker.sanitizeFileName(name);
 
+		String sanitized = name.replaceAll("[/\\\\:\\*<>|]+"," ").trim();
+		if(".".equals(sanitized) || "..".equals(sanitized)){
+			sanitized = "file-" + sanitized;
+		}
+		return sanitized;
+	}
+	
+	@Override
+	public String sanitizeFileNameStrict(String name) {
+		if(null == name)
+			return "";
+
+		for(FileNameSanitizerHook hooker : hookHandlerService.getHookers(FileNameSanitizerHook.class))
+			return hooker.sanitizeFileName(name);
+
 		if(Locale.GERMAN.equals(LocalizationServiceImpl.getLocale()) ||
 				Locale.GERMANY.equals(LocalizationServiceImpl.getLocale())){
 			return name.trim().replaceAll("[^a-zA-ZüÜöÖäÄß\\(\\)\\[\\] \\-\\.0-9]+","_");

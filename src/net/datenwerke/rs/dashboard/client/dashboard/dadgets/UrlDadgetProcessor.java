@@ -147,11 +147,16 @@ public class UrlDadgetProcessor implements DadgetProcessorHook {
 		form.addField(String.class, UrlDadgetDtoPA.INSTANCE.title(), DashboardMessages.INSTANCE.staticHtmlDadgetTitleLabel());
 		form.addField(String.class, UrlDadgetDtoPA.INSTANCE.url(), DashboardMessages.INSTANCE.urlLabel());
 		form.addField(Long.class, UrlDadgetDtoPA.INSTANCE.reloadInterval(), DashboardMessages.INSTANCE.reloadIntervalLabel());
-		form.addField(Double.class, UrlDadgetDtoPA.INSTANCE.height(), DashboardMessages.INSTANCE.heightLabel());
+		form.addField(Integer.class, UrlDadgetDtoPA.INSTANCE.height(), DashboardMessages.INSTANCE.heightLabel());
 		
 		form.bind(dadget);
 		
 		return form;
+	}
+	
+	@Override
+	public boolean supportsDadgetLibrary() {
+		return true;
 	}
 
 	@Override
@@ -159,6 +164,11 @@ public class UrlDadgetProcessor implements DadgetProcessorHook {
 		return true;
 	}
 
+	@Override
+	public boolean readyToDisplayParameters(DadgetPanel dadgetPanel) {
+		return false;
+	}
+	
 	@Override
 	public void addTools(DadgetPanel dadgetPanel) {
 		// TODO Auto-generated method stub

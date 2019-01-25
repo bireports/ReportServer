@@ -47,6 +47,11 @@ import net.datenwerke.security.service.security.exceptions.ViolatedSecurityExcep
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 
+/**
+ * 
+ *  This should be a dto post processor.. no idea why this is implemented in such an annoying way. 
+ */
+@Deprecated
 public class FileSelectionParameterDtoHelper {
 	
 	

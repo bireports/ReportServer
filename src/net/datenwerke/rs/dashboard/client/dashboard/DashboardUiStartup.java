@@ -55,6 +55,7 @@ import net.datenwerke.rs.dashboard.client.dashboard.dispatcher.DashboardInlineDi
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.DashboardNodeDto;
 import net.datenwerke.rs.dashboard.client.dashboard.hookers.DashboardToolbarParameterHooker;
+import net.datenwerke.rs.dashboard.client.dashboard.hookers.DashboardToolbarRefreshHooker;
 import net.datenwerke.rs.dashboard.client.dashboard.hookers.MainPanelViewProviderHooker;
 import net.datenwerke.rs.dashboard.client.dashboard.hookers.MarkNodeAsFavoriteHooker;
 import net.datenwerke.rs.dashboard.client.dashboard.hooks.DadgetProcessorHook;
@@ -106,6 +107,7 @@ public class DashboardUiStartup {
 		final Provider<MarkNodeAsFavoriteHooker> markNodeAsFavoriteHooker,
 		
 		final DashboardToolbarParameterHooker dashboardToolbarParameterHooker,
+		final DashboardToolbarRefreshHooker dashboardToolbarRefreshHooker,
 		
 		final Provider<DashboardClientMainModule> mainModuleProvider,
 		
@@ -144,7 +146,8 @@ public class DashboardUiStartup {
 					hookHandler.attachHooker(DadgetProcessorHook.class, libraryDadgetProcessor);
 					hookHandler.attachHooker(DadgetProcessorHook.class, parameterDadgetProcessor);
 					
-					hookHandler.attachHooker(DashboardToolbarHook.class, dashboardToolbarParameterHooker);
+					hookHandler.attachHooker(DashboardToolbarHook.class, dashboardToolbarParameterHooker,20);
+					hookHandler.attachHooker(DashboardToolbarHook.class, dashboardToolbarRefreshHooker,30);
 				}
 				
 				waitOnEventService.signalProcessingDone(ticket);

@@ -70,7 +70,7 @@ public class FileSelectionParameterAdjustVariantHooker implements
 			if(instance.isStillDefault())
 				continue;
 			
-			ParameterInstance<?> referenceInstance = originalReport.getParamInstanceById(instance.getId() == null ? instance.getTransientId() : instance.getId());
+			ParameterInstance<?> referenceInstance = originalReport.getParamInstanceByDefinitionId(instance.getDefinition().getId() == null ? instance.getDefinition().getOldTransientId() : instance.getDefinition().getId());
 			if(! (referenceInstance instanceof FileSelectionParameterInstance))
 				throw new IllegalStateException("expected an instanceof a FileSelectionParameterInstance");
 			FileSelectionParameterInstance refInstance = (FileSelectionParameterInstance) referenceInstance;

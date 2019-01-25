@@ -25,9 +25,14 @@ package net.datenwerke.rs.fileserver.service.fileserver.terminal.commands;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
+
 import net.datenwerke.rs.fileserver.service.fileserver.FileServerService;
-import net.datenwerke.rs.fileserver.service.fileserver.entities.AbstractFileServerNode;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFile;
+import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFolder;
 import net.datenwerke.rs.fileserver.service.fileserver.locale.FileserverMessages;
 import net.datenwerke.rs.fileserver.service.fileserver.terminal.commands.unzip.BasepathZipExtractConfigFactory;
 import net.datenwerke.rs.fileserver.service.fileserver.vfs.FileServerVfs;
@@ -43,11 +48,6 @@ import net.datenwerke.rs.terminal.service.terminal.vfs.exceptions.VFSException;
 import net.datenwerke.rs.utils.zip.ZipExtractionConfig;
 import net.datenwerke.rs.utils.zip.ZipUtilsService;
 import net.datenwerke.security.service.security.rights.Read;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.inject.Inject;
 
 public class UnzipCommand implements TerminalCommandHook {
 	
@@ -89,11 +89,13 @@ public class UnzipCommand implements TerminalCommandHook {
 			if(! (location.getFilesystemManager() instanceof FileServerVfs))
 				return new CommandResult("wrong filesystem");
 
-			AbstractFileServerNode parent = null;
+			FileServerFolder parent = null;
 			try {
-				parent = (AbstractFileServerNode) location.getObject();
+				parent = (FileServerFolder) location.getObject();
 			} catch (VFSException e) {
 				return new CommandResult(e.getMessage());
+			} catch(ClassCastException e){
+				return new CommandResult("Can only unzip to folder");
 			}
 
 			ZipExtractionConfig zec = extractConfigFactory.create(parent);

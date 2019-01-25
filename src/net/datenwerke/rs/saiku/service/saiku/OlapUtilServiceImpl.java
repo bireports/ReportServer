@@ -34,13 +34,6 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
-import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
-import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceContainer;
-import net.datenwerke.rs.saiku.service.datasource.MondrianDatasource;
-import net.datenwerke.rs.saiku.service.datasource.MondrianDatasourceConfig;
-import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReport;
-import net.datenwerke.rs.saiku.service.saiku.reportengine.hooks.OlapConnectionHook;
-
 import org.olap4j.OlapConnection;
 import org.olap4j.OlapException;
 import org.olap4j.metadata.Cube;
@@ -51,16 +44,27 @@ import org.olap4j.metadata.Measure;
 import org.olap4j.metadata.Member;
 import org.saiku.datasources.connection.ISaikuConnection;
 
+import net.datenwerke.dbpool.JdbcService;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
+import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceContainer;
+import net.datenwerke.rs.saiku.service.datasource.MondrianDatasource;
+import net.datenwerke.rs.saiku.service.datasource.MondrianDatasourceConfig;
+import net.datenwerke.rs.saiku.service.saiku.entities.SaikuReport;
+import net.datenwerke.rs.saiku.service.saiku.reportengine.hooks.OlapConnectionHook;
+
 public class OlapUtilServiceImpl implements OlapUtilService {
 
 	private static final String USERNAME_KEY = "jdbcUser";
 	private static final String PASSWORD_KEY = "jdbcPassword";
 	
 	private HookHandlerService hookHandlerService;
+	private JdbcService jdbcService;
 
 	@Inject
-	public OlapUtilServiceImpl(HookHandlerService hookHandlerService) {
+	public OlapUtilServiceImpl(HookHandlerService hookHandlerService,
+			JdbcService jdbcService) {
 		this.hookHandlerService = hookHandlerService;
+		this.jdbcService = jdbcService;
 	}
 
 	@Override
@@ -137,7 +141,7 @@ public class OlapUtilServiceImpl implements OlapUtilService {
 			props.setProperty(PASSWORD_KEY, mondrianDatasource.getPassword());
 		}
 		if(!props.containsKey(ISaikuConnection.URL_KEY) && null != mondrianDatasource.getUrl()) {
-			props.setProperty(ISaikuConnection.URL_KEY, mondrianDatasource.getUrl());
+			props.setProperty(ISaikuConnection.URL_KEY, jdbcService.adaptJdbcUrl(mondrianDatasource.getUrl()));
 		}
 		
 		String driver = props .getProperty(ISaikuConnection.DRIVER_KEY);

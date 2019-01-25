@@ -94,7 +94,7 @@ public class LibDirClasspathHelper {
 		while(null != cl){
 			if(cl instanceof URLClassLoader){
 				for(URL u : ((URLClassLoader)cl).getURLs()){
-					if(u.toString().contains("reportserver.jar") || u.toString().contains("/ReportServer/") || u.toString().contains("/classes/") ){
+					if(u.toString().contains("reportserver.jar") || u.toString().contains("/classes/") ){
 						candidate = (URLClassLoader) cl;
 					}
 				}

@@ -249,9 +249,14 @@ public class EnvironmentValidator extends HttpServlet {
 	private static void writeJavaProps(StringBuilder sb) {
 		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
 		
+		sb.append("Java Version: ");
+		sb.append(runtimeMxBean.getVmVendor() + " ");
+		sb.append(runtimeMxBean.getVmName() + " ");
+		sb.append(runtimeMxBean.getVmVersion());
+		sb.append(" (" + runtimeMxBean.getSpecVersion() + ")\r\n");
+
 		List<String> arguments = runtimeMxBean.getInputArguments();
 		sb.append("VM Args: " + StringUtils.join(arguments, " ") + "\r\n");
-		
 	}
 
 	private static void writeVersionInfo(StringBuilder sb) {
@@ -333,10 +338,11 @@ public class EnvironmentValidator extends HttpServlet {
 			try{
 				stmt = conn.prepareStatement("SELECT * FROM RS_SCHEMAINFO WHERE KEY_FIELD = 'schemaversion' ORDER BY ENTITY_ID DESC");
 				resultSet = stmt.executeQuery();
-				while(resultSet.next()){
+				if(resultSet.next()){
 					schemaVersion = resultSet.getString("value");
 					sb.append(resultSet.getString("value"));
-					break;
+				} else {
+					sb.append(sb.append("No version number found. Did you forget a commit during installation?"));
 				}
 			}catch(SQLException e){
 				sb.append("Unknown (").append(e.getMessage()).append(")");

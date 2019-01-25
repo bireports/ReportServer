@@ -418,7 +418,8 @@ public class TeamSpaceServiceImpl implements TeamSpaceService {
 		return hasRole(user, teamSpace, TeamSpaceRole.MANAGER);
 	}
 
-	private boolean isOwner(TeamSpace teamSpace){
+	@Override
+	public boolean isOwner(TeamSpace teamSpace){
 		User currentUser = authenticatorServiceProvider.get().getCurrentUser();
 		return isOwner(currentUser, teamSpace);
 	}

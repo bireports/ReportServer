@@ -30,18 +30,19 @@ import javax.inject.Inject;
 import net.datenwerke.rs.fileserver.service.fileserver.FileServerService;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.AbstractFileServerNode;
 import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFile;
+import net.datenwerke.rs.fileserver.service.fileserver.entities.FileServerFolder;
 import net.datenwerke.rs.utils.zip.ZipExtractionConfig;
 
 import com.google.inject.assistedinject.Assisted;
 
 public class BasepathZipExtractConfig extends ZipExtractionConfig {
 
-	private final AbstractFileServerNode loc;
+	private final FileServerFolder loc;
 	private UnzipCommandHelper unzipHelper;
 	private FileServerService fileServerService;
 
 	@Inject
-	public BasepathZipExtractConfig(@Assisted AbstractFileServerNode parent, UnzipCommandHelper unzipHelper, FileServerService fileServerService) {
+	public BasepathZipExtractConfig(@Assisted FileServerFolder parent, UnzipCommandHelper unzipHelper, FileServerService fileServerService) {
 		this.loc = parent;
 		this.unzipHelper = unzipHelper;
 		this.fileServerService = fileServerService;

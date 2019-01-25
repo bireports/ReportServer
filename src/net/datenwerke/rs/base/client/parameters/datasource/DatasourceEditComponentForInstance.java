@@ -32,6 +32,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -84,7 +86,6 @@ import net.datenwerke.rs.base.client.parameters.datasource.dto.MultiSelectionMod
 import net.datenwerke.rs.base.client.parameters.datasource.dto.SingleSelectionModeDto;
 import net.datenwerke.rs.base.client.parameters.datasource.dto.decorator.DatasourceParameterDataDtoDec;
 import net.datenwerke.rs.base.client.parameters.datasource.dto.pa.DatasourceParameterDataDtoPA;
-import net.datenwerke.rs.base.client.parameters.datasource.dto.pa.DatasourceParameterInstanceDtoPA;
 import net.datenwerke.rs.base.client.parameters.locale.RsMessages;
 import net.datenwerke.rs.core.client.parameters.dto.ParameterInstanceDto;
 import net.datenwerke.rs.core.client.parameters.helper.DefaultValueSetter;
@@ -305,6 +306,8 @@ public class DatasourceEditComponentForInstance {
 			final DatasourceParameterInstanceDto instance,
 			List<DatasourceParameterDataDto> data, boolean multi) {
 		int cols = definition.getBoxLayoutPackColSize();
+		if(cols <= 0)
+			cols = 1;
 		int perCol = definition.getBoxLayoutPackColSize();
 		if(BoxLayoutPackModeDto.Packages == definition.getBoxLayoutPackMode())
 			cols = data.size() / cols + (data.size() % cols == 0 ? 0 : 1);
@@ -397,8 +400,9 @@ public class DatasourceEditComponentForInstance {
 				return item.getKey();
 			}
 		});
-		comboBox.setTypeAhead(false);
-		comboBox.setEditable(false);
+		comboBox.setForceSelection(true);
+		comboBox.setTypeAhead(true);
+		comboBox.setEditable(true);
 		comboBox.setTriggerAction(TriggerAction.ALL);
 		comboBox.setWidth(definition.getWidth());
 		
@@ -426,6 +430,21 @@ public class DatasourceEditComponentForInstance {
 			public void onSelection(SelectionEvent<DatasourceParameterDataDto> event) {
 				instance.setSingleValue(event.getSelectedItem());	
 				comboBoxInfo.clear();
+			}
+		});
+		
+		/* reset on null value */
+		comboBox.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				if(null == comboBox.getCurrentValue()){
+					Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							setDefaultValueSingle(store, comboBox, instance, definition);							
+						}
+					});
+				} 
 			}
 		});
 		
@@ -478,9 +497,12 @@ public class DatasourceEditComponentForInstance {
 		boolean choseFirst = false;
 		if(null != definition.getSingleDefaultValueSimpleData())
 			value = definition.getSingleDefaultValueSimpleData();
-		else if(store.getAll().size() > 0){
-			value = store.get(0);
-			choseFirst = true;
+		else {
+			store.removeFilters(); // ensure that we do not have any accidental filters left (due to e.g., type ahead)
+			if(store.getAll().size() > 0){
+				value = store.get(0);
+				choseFirst = true;
+			}
 		}
 				
 		if(null != value){

@@ -23,10 +23,18 @@
  
 package net.datenwerke.rs.adminutils.server.datasourcetester;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
+import com.google.inject.persist.Transactional;
+
 import net.datenwerke.gxtdto.server.dtomanager.DtoService;
+import net.datenwerke.hookhandler.shared.hookhandler.HookHandlerService;
 import net.datenwerke.rs.adminutils.client.datasourcetester.ConnectionTestFailedException;
 import net.datenwerke.rs.adminutils.client.datasourcetester.rpc.DatasourceTesterRPCService;
 import net.datenwerke.rs.base.client.datasources.dto.DatabaseDatasourceDto;
+import net.datenwerke.rs.base.client.datasources.hooks.DatabaseConnectionTesterHook;
 import net.datenwerke.rs.base.service.datasources.definitions.DatabaseDatasource;
 import net.datenwerke.rs.base.service.datasources.definitions.DatabaseDatasourceConfig;
 import net.datenwerke.rs.base.service.dbhelper.DBHelperService;
@@ -42,11 +50,6 @@ import net.datenwerke.security.service.security.annotation.SecurityChecked;
 import net.datenwerke.security.service.security.rights.Execute;
 import net.datenwerke.security.service.security.rights.Read;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import com.google.inject.persist.Transactional;
-
 @Singleton
 public class DatasourceTesterRPCServiceImpl extends SecuredRemoteServiceServlet
 		implements DatasourceTesterRPCService {
@@ -60,13 +63,15 @@ public class DatasourceTesterRPCServiceImpl extends SecuredRemoteServiceServlet
 	private final DBHelperService dbHelperService;
 	private final SimpleDataSupplier simpleDataSupplyer;
 	private final ExceptionServices exceptionServices;
+	private final Provider<HookHandlerService> hookHandlerServiceProvider;
 	
 	@Inject
 	public DatasourceTesterRPCServiceImpl(
 		DtoService dtoService,
 		DBHelperService dbHelperService,
 		SimpleDataSupplier simpleDataSupplyer,
-		ExceptionServices exceptionServices
+		ExceptionServices exceptionServices,
+		Provider<HookHandlerService> hookHandlerServiceProvider
 		){
 		
 		/* store objects */
@@ -74,6 +79,7 @@ public class DatasourceTesterRPCServiceImpl extends SecuredRemoteServiceServlet
 		this.dbHelperService = dbHelperService;
 		this.simpleDataSupplyer = simpleDataSupplyer;
 		this.exceptionServices = exceptionServices;
+		this.hookHandlerServiceProvider = hookHandlerServiceProvider;
 	}
 	
 	@SecurityChecked(
@@ -95,6 +101,12 @@ public class DatasourceTesterRPCServiceImpl extends SecuredRemoteServiceServlet
 		DatabaseHelper dbHelper = dbHelperService.getDatabaseHelper(datasource.getDatabaseDescriptor());
 		if(null == dbHelper)
 			throw new ConnectionTestFailedException("No database type specified"); //$NON-NLS-1$
+		
+		/* check if anybody wants to take over */
+		for(DatabaseConnectionTesterHook tester : hookHandlerServiceProvider.get().getHookers(DatabaseConnectionTesterHook.class)){
+			if(tester.consumes(datasource, dbHelper))
+				return tester.testConnection(datasource, dbHelper);
+		}
 		
 		/* create config */
 		DatabaseDatasourceConfig config = (DatabaseDatasourceConfig) datasource.createConfigObject();

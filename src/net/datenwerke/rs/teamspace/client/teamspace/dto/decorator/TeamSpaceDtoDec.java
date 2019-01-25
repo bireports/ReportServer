@@ -44,6 +44,9 @@ public class TeamSpaceDtoDec extends TeamSpaceDto implements IdedDto {
 	
 	/* the current users role in this teamspace */
 	private TeamSpaceRoleDto role;
+	
+	/* whether or not the current user owns this teamspace */
+	private boolean teamSpaceOwner;
 
 	public TeamSpaceDtoDec() {
 		super();
@@ -72,6 +75,13 @@ public class TeamSpaceDtoDec extends TeamSpaceDto implements IdedDto {
 
 	public void setRole(TeamSpaceRoleDto role) {
 		this.role = role;
+	}
+	
+	public boolean isTeamSpaceOwner() {
+		return teamSpaceOwner;
+	}
+	public void setTeamSpaceOwner(boolean teamSpaceOwner) {
+		this.teamSpaceOwner = teamSpaceOwner;
 	}
 
 	

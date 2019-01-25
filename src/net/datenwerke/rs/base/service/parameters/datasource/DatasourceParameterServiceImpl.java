@@ -176,7 +176,7 @@ public class DatasourceParameterServiceImpl implements DatasourceParameterServic
 			};
 			
 			/* only do postprocessing if no datasource is given */
-			if(null == parameter.getDatasourceContainer().getDatasource()){
+			if(null == parameter.getDatasourceContainer() || null == parameter.getDatasourceContainer().getDatasource()){
 				consumer.consumeRow(null);
 			} else {
 				simpleDataSupplyer.getData(parameter, parameterSet, null, null, new TableDatasourceConfig() {

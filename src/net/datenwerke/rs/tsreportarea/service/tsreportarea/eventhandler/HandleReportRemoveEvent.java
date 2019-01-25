@@ -49,7 +49,7 @@ public class HandleReportRemoveEvent implements EventHandler<RemoveEntityEvent> 
 		
 		List<TsDiskReportReference> references = diskService.getReferencesTo(report);
 		if(null != references && ! references.isEmpty()){
-			StringBuilder error = new StringBuilder("Report " + report.getId() + " is still referenced in team spaces.");
+			StringBuilder error = new StringBuilder("Report " + report.getId() + " is still referenced in TeamSpaces.");
 			throw new NeedForcefulDeleteException(error.toString());
 		}
 	}

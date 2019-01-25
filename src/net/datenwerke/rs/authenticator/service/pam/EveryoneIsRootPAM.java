@@ -27,11 +27,19 @@ import net.datenwerke.security.client.login.AuthToken;
 import net.datenwerke.security.service.authenticator.AuthenticationResult;
 import net.datenwerke.security.service.authenticator.ReportServerPAM;
 import net.datenwerke.security.service.usermanager.UserManagerService;
+import net.datenwerke.security.service.usermanager.entities.User;
+
+import java.util.Collection;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
 public class EveryoneIsRootPAM implements ReportServerPAM{
 
+	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
+	
 	private final UserManagerService userManagerService;
 
 	@Inject
@@ -43,7 +51,28 @@ public class EveryoneIsRootPAM implements ReportServerPAM{
 	
 	@Override
 	public AuthenticationResult authenticate(AuthToken[] tokens) {
-		return new AuthenticationResult(true, userManagerService.getUserByName("root"));
+		logger.warn("Login somebody as a super user without checking credentials!");
+		
+		User root = userManagerService.getUserByName("root");
+		if(null != root && root.isSuperUser())
+			return new AuthenticationResult(true, root);
+		
+		Collection<User> allUsers = userManagerService.getAllUsers();
+		for(User u : userManagerService.getAllUsers()){
+			if(u.isSuperUser())
+				return new AuthenticationResult(true, u);
+		}
+		
+		logger.warn("Could not find a super user");
+		
+		/* login with the first user if everything fails */
+		if(! allUsers.isEmpty())
+			return new AuthenticationResult(true, allUsers.iterator().next());
+		
+		logger.warn("Could not even find any user. Starting to panic.");		
+		
+		/* can't do anything */
+		return new AuthenticationResult(true, null);
 	}
 
 	@Override

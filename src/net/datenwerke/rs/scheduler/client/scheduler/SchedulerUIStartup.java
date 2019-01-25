@@ -23,6 +23,9 @@
  
 package net.datenwerke.rs.scheduler.client.scheduler;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import net.datenwerke.gf.client.administration.AdministrationUIService;
 import net.datenwerke.gf.client.administration.hooks.AdminModuleProviderHook;
 import net.datenwerke.gf.client.homepage.hooks.ClientMainModuleProviderHook;
@@ -39,7 +42,9 @@ import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.Scheduler
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.filters.ExecutionStatusEntriesFilter;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.filters.FailedLastTimeEntriesFilter;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.filters.FilterUserScheduledEntriesFilter;
+import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.filters.JobIdScheduledEntriesFilter;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.filters.MyOrToMeScheduledEntriesFilter;
+import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.filters.ReportIdScheduledEntriesFilter;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.hookers.EditScheduleEntryHooker;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.hookers.LoadDetailsForEntryHooker;
 import net.datenwerke.rs.scheduler.client.scheduler.schedulereportlist.hookers.RemoveScheduleEntryHooker;
@@ -57,9 +62,6 @@ import net.datenwerke.security.client.security.SecurityUIService;
 import net.datenwerke.security.client.security.dto.ReadDto;
 import net.datenwerke.security.client.security.hooks.GenericSecurityViewDomainHook;
 import net.datenwerke.security.client.security.hooks.GenericTargetProviderHook;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class SchedulerUIStartup {
 
@@ -84,6 +86,8 @@ public class SchedulerUIStartup {
 		Provider<ScheduleNowHooker> scheduleNowHooker,
 		
 		Provider<MyOrToMeScheduledEntriesFilter> myOrToMeFilter,
+		Provider<JobIdScheduledEntriesFilter> jobIdFilter,
+		Provider<ReportIdScheduledEntriesFilter> reportIdFilter,
 		Provider<FilterUserScheduledEntriesFilter> userFilter,
 		Provider<ExecutionStatusEntriesFilter> statusFilter,
 		Provider<FailedLastTimeEntriesFilter> failedLastFilter,
@@ -94,9 +98,11 @@ public class SchedulerUIStartup {
 		){
 		
 		hookHandler.attachHooker(ScheduledReportToolbarListFilter.class, myOrToMeFilter);
-		hookHandler.attachHooker(ScheduledReportListFilter.class, userFilter);
-		hookHandler.attachHooker(ScheduledReportListFilter.class, statusFilter);
-		hookHandler.attachHooker(ScheduledReportListFilter.class, failedLastFilter);
+		hookHandler.attachHooker(ScheduledReportListFilter.class, jobIdFilter, 10);
+		hookHandler.attachHooker(ScheduledReportListFilter.class, reportIdFilter, 20);
+		hookHandler.attachHooker(ScheduledReportListFilter.class, userFilter, 30);
+		hookHandler.attachHooker(ScheduledReportListFilter.class, statusFilter, 40);
+		hookHandler.attachHooker(ScheduledReportListFilter.class, failedLastFilter, 50);
 		
 		hookHandler.attachHooker(ScheduleExportSnippetProviderHook.class, emailExportSnippet);
 		

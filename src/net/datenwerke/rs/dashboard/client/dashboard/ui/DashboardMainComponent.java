@@ -454,14 +454,16 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				ArrayList<Long> ids = new ArrayList<Long>();
 				ArrayList<DashboardDto> dashboards = new ArrayList<DashboardDto>(store.getAll());
 				for(int i = 0; i < dashboards.size(); i++){
 					dashboards.get(i).setN(i);
+					ids.add(dashboards.get(i).getId());
 				}
 
 				cardContainer.mask(BaseMessages.INSTANCE.storingMsg());
 				
-				dao.editDashboards(dashboards, new RsAsyncCallback<Void>(){
+				dao.changeDashboardOrder(ids, new RsAsyncCallback<Void>(){
 					@Override
 					public void onSuccess(Void result) {
 						cardContainer.unmask();
@@ -654,7 +656,7 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 			dashboardSelector.setValue(dashboardToSelect,true);
 		else if(! dbStore.getAll().isEmpty())
 			dashboardSelector.setValue(dbStore.get(0),true);
-		else
+		else if(canEdit)
 			createDashboard(false);
 		
 		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -730,6 +732,7 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 			hooker.dashboardDisplayed(view.getDashboard(), view);
 		
 		cardContainer.setActiveWidget(view);	
+		view.makeAwareOfSelection();
 		
 		if(editDashboardOnSelect){
 			editDashboardOnSelect = false;
@@ -797,9 +800,23 @@ public class DashboardMainComponent extends DwContentPanel implements DashboardC
 			loaded = true;
 			reload();
 		} else if(null != dashboard){
+			final DashboardView view = viewMap.get(dashboard);
+			if(null != view){
+				view.makeAwareOfSelection();
+
+				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+					
+					@Override
+					public void execute() {
+						view.doForceLayout();
+					}
+				});
+			}
+			
+			/* selector sometimes does not want to display value .. try and enforce it */
 			dashboardSelector.setValue(dashboard,true);
 		}
-		forceLayout();
+		onResize();
 	}
 
 	public void hideToolbar() {

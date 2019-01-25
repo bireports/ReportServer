@@ -51,6 +51,7 @@ public interface JobFilterConfigurationDtoPA extends PropertyAccess<JobFilterCon
 	public ValueProvider<JobFilterConfigurationDto,Boolean> active();
 	public ValueProvider<JobFilterConfigurationDto,JobExecutionStatusDto> executionStatus();
 	public ValueProvider<JobFilterConfigurationDto,Boolean> inActive();
+	public ValueProvider<JobFilterConfigurationDto,String> jobId();
 	public ValueProvider<JobFilterConfigurationDto,OutcomeDto> lastOutcome();
 	public ValueProvider<JobFilterConfigurationDto,Integer> limit();
 	public ValueProvider<JobFilterConfigurationDto,Integer> offset();

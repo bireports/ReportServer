@@ -83,6 +83,9 @@ public class JobFilterConfiguration2DtoGenerator implements Poso2DtoGenerator<Jo
 			/*  set inActive */
 			dto.setInActive(poso.isInActive() );
 
+			/*  set jobId */
+			dto.setJobId(StringEscapeUtils.escapeXml(StringUtils.left(poso.getJobId(),8192)));
+
 			/*  set lastOutcome */
 			Object tmpDtoOutcomeDtogetLastOutcome = dtoServiceProvider.get().createDto(poso.getLastOutcome(), referenced, referenced);
 			dto.setLastOutcome((OutcomeDto)tmpDtoOutcomeDtogetLastOutcome);

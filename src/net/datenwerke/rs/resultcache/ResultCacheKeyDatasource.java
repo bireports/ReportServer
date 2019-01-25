@@ -23,6 +23,7 @@
  
 package net.datenwerke.rs.resultcache;
 
+import net.datenwerke.rs.core.service.datasourcemanager.entities.CacheableDatasource;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinition;
 import net.datenwerke.rs.core.service.datasourcemanager.entities.DatasourceDefinitionConfig;
 
@@ -30,14 +31,18 @@ public class ResultCacheKeyDatasource extends ResultCacheKey {
 
 	protected DatasourceDefinition datasource;
 	protected DatasourceDefinitionConfig config;
+	private boolean prohibitCaching;
 
 	public ResultCacheKeyDatasource(DatasourceDefinition ds) {
-		this.datasource = ds;
+		this(ds,null);
 	}
 	
 	public ResultCacheKeyDatasource(DatasourceDefinition datasource, DatasourceDefinitionConfig config) {
 		this.datasource = datasource;
 		this.config = config;
+		
+		if(datasource instanceof CacheableDatasource && 0 == ((CacheableDatasource)datasource).getDatabaseCache())
+			setProhibitCaching(true);
 	}
 
 	public DatasourceDefinition getDatasource() {
@@ -46,6 +51,10 @@ public class ResultCacheKeyDatasource extends ResultCacheKey {
 
 	public DatasourceDefinitionConfig getConfig() {
 		return config;
+	}
+	
+	public void setProhibitCaching(boolean prohibit) {
+		this.prohibitCaching = prohibit;
 	}
 
 	@Override
@@ -65,6 +74,9 @@ public class ResultCacheKeyDatasource extends ResultCacheKey {
 
 	@Override
 	public boolean equals(Object obj) {
+		if(prohibitCaching)
+			return false;
+		
 		if (this == obj)
 			return true;
 		if (obj == null)

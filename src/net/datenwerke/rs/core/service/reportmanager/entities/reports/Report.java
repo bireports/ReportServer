@@ -517,11 +517,11 @@ abstract public class Report extends AbstractReportManagerNode implements Parame
 		
 	}
 	
-	public ParameterInstance<?> getParamInstanceById(Long id) {
+	public ParameterInstance<?> getParamInstanceByDefinitionId(Long id) {
 		if(null == id)
 			return null;
 		for(ParameterInstance<?> instance : getParameterInstances())
-			if(id.equals(instance.getId()))
+			if(id.equals(instance.getDefinition().getId()) || id.equals(instance.getDefinition().getOldTransientId()))
 				return instance;
 		return null;
 	}

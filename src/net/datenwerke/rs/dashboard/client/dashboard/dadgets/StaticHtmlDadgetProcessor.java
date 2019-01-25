@@ -23,6 +23,11 @@
  
 package net.datenwerke.rs.dashboard.client.dashboard.dadgets;
 
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+
 import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
 import net.datenwerke.gxtdto.client.codemirror.CodeMirrorPanel.ToolBarEnhancer;
@@ -34,18 +39,10 @@ import net.datenwerke.rs.dashboard.client.dashboard.dto.DadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.StaticHtmlDadgetDto;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.decorator.StaticHtmlDadgetDtoDec;
 import net.datenwerke.rs.dashboard.client.dashboard.dto.pa.StaticHtmlDadgetDtoPA;
-import net.datenwerke.rs.dashboard.client.dashboard.dto.pa.UrlDadgetDtoPA;
 import net.datenwerke.rs.dashboard.client.dashboard.hooks.DadgetProcessorHook;
 import net.datenwerke.rs.dashboard.client.dashboard.locale.DashboardMessages;
 import net.datenwerke.rs.dashboard.client.dashboard.ui.DadgetPanel;
 import net.datenwerke.rs.theme.client.icon.BaseIcon;
-
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 public class StaticHtmlDadgetProcessor implements DadgetProcessorHook {
 
@@ -195,7 +192,7 @@ public class StaticHtmlDadgetProcessor implements DadgetProcessorHook {
 		form.addField(String.class, StaticHtmlDadgetDtoPA.INSTANCE.title(), DashboardMessages.INSTANCE.staticHtmlDadgetTitleLabel());
 		
 		form.addField(Long.class, StaticHtmlDadgetDtoPA.INSTANCE.reloadInterval(), DashboardMessages.INSTANCE.reloadIntervalLabel());
-		form.addField(Double.class, StaticHtmlDadgetDtoPA.INSTANCE.height(), DashboardMessages.INSTANCE.heightLabel());
+		form.addField(Integer.class, StaticHtmlDadgetDtoPA.INSTANCE.height(), DashboardMessages.INSTANCE.heightLabel());
 		
 		form.addField(String.class, StaticHtmlDadgetDtoPA.INSTANCE.data(), DashboardMessages.INSTANCE.staticHtmlDadgetHtmlLabel(), new SFFCCodeMirror() {
 			
@@ -228,6 +225,16 @@ public class StaticHtmlDadgetProcessor implements DadgetProcessorHook {
 		form.bind(dadget);
 		
 		return form;
+	}
+
+	@Override
+	public boolean supportsDadgetLibrary() {
+		return true;
+	}
+	
+	@Override
+	public boolean readyToDisplayParameters(DadgetPanel dadgetPanel) {
+		return false;
 	}
 
 

@@ -496,7 +496,7 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 		}
 
 		/* remove */
-		if(teamSpaceService.isAdmin(currentSpace)){
+		if(teamSpaceService.isAdmin(currentSpace) && teamSpaceService.hasTeamSpaceRemoveRight() ){
 			MenuItem removeItem = new DwMenuItem(TeamSpaceMessages.INSTANCE.removeCurrentSpaceText(), BaseIcon.DELETE);
 			removeItem.addSelectionHandler(new SelectionHandler<Item>() {
 
@@ -517,8 +517,19 @@ public class TeamSpaceMainComponent extends VerticalLayoutContainer {
 		cmb.addDialogHideHandler(new DialogHideHandler() {
 			@Override
 			public void onDialogHide(DialogHideEvent event) {
-				if (event.getHideButton() == PredefinedButton.YES)
-					removeCurrentSpace();	
+				if (event.getHideButton() == PredefinedButton.YES){
+					ConfirmMessageBox cmb = new DwConfirmMessageBox(TeamSpaceMessages.INSTANCE.deleteTeamSpaceConfirmTitle(), TeamSpaceMessages.INSTANCE.removeCurrentSpaceConfirmText(currentSpace.getName()));
+					
+					cmb.addDialogHideHandler(new DialogHideHandler() {
+						@Override
+						public void onDialogHide(DialogHideEvent event) {
+							if (event.getHideButton() == PredefinedButton.YES)
+								removeCurrentSpace();
+						}
+					});
+					
+					cmb.show();
+				}
 			}
 		});
 		cmb.show();

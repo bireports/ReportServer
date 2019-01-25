@@ -83,6 +83,7 @@ import net.datenwerke.gxtdto.client.baseex.widget.DwWindow;
 import net.datenwerke.gxtdto.client.baseex.widget.btn.DwTextButton;
 import net.datenwerke.gxtdto.client.baseex.widget.form.DwFileUploadField;
 import net.datenwerke.gxtdto.client.baseex.widget.layout.DwBorderContainer;
+import net.datenwerke.gxtdto.client.baseex.widget.layout.DwFlowContainer;
 import net.datenwerke.gxtdto.client.dialog.error.DetailErrorDialog;
 import net.datenwerke.gxtdto.client.dtomanager.callback.RsAsyncCallback;
 import net.datenwerke.gxtdto.client.locale.BaseMessages;
@@ -239,7 +240,7 @@ public class EnhanceFilterToolbarHooker implements FilterViewEnhanceToolbarHook 
 
 	protected void displayEditTemplateDialog() {
 		window = new DwWindow();
-		window.setSize(640, 620);
+		window.setSize(640, 640);
 		window.setHeadingText(messages.editTemplateBtn());
 		window.setHeaderIcon(BaseIcon.TEMPLATE);
 		window.setBodyBorder(true);
@@ -369,8 +370,12 @@ public class EnhanceFilterToolbarHooker implements FilterViewEnhanceToolbarHook 
 
 	protected void displayAddTemplateDialog() {
 		final DwWindow window = new DwWindow();
-		window.setSize(350, 520);
+		window.setSize(350, 540);
 		window.setHeadingText(messages.addTemplateBtn());
+		
+		DwFlowContainer wrapper = new DwFlowContainer();
+		wrapper.setScrollMode(ScrollMode.AUTOY);
+		window.add(wrapper, new MarginData(5));
 		
 		final FormPanel form = createEditForm(new SubmitCompleteCallback() {
 			@Override
@@ -386,7 +391,7 @@ public class EnhanceFilterToolbarHooker implements FilterViewEnhanceToolbarHook 
 				displayErrorMessages(msg);
 			}
 		}, null);
-		window.add(form, new MarginData(5));
+		wrapper.add(form, new MarginData(5));
 		
 		window.addCancelButton();
 		
@@ -481,7 +486,11 @@ public class EnhanceFilterToolbarHooker implements FilterViewEnhanceToolbarHook 
 			}
 		});
 		
-		editTemplateComponent.add(form, new MarginData(10));
+		DwFlowContainer wrapper = new DwFlowContainer();
+		wrapper.setScrollMode(ScrollMode.AUTOY);
+		wrapper.add(form);
+		
+		editTemplateComponent.add(wrapper, new MarginData(10));
 
 		
 		ButtonBar bar = new ButtonBar();
@@ -504,7 +513,6 @@ public class EnhanceFilterToolbarHooker implements FilterViewEnhanceToolbarHook 
 		form.setLabelAlign(LabelAlign.TOP);
 		
 		VerticalLayoutContainer layoutContainer = new VerticalLayoutContainer();
-		layoutContainer.setScrollMode(ScrollMode.AUTOY);
 		form.setWidget(layoutContainer);
 		
 		Hidden reportIdField = new Hidden();

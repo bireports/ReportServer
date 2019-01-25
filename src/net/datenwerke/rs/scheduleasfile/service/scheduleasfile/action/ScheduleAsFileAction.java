@@ -100,6 +100,8 @@ public class ScheduleAsFileAction extends AbstractAction {
 		ref.setName(parsedName);
 		
 		folder = tsDiskService.getNodeById(folderId);
+		if(null == folder)
+			throw new ActionExecutionException("could not load folder with id: " + folderId + ". Was it deleted?");
 			
 //			EntityManager em = entityManagerProvider.get();
 //			em.lock(folder, LockModeType.PESSIMISTIC_WRITE);	
